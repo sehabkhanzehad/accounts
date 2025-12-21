@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useEffect, useState } from "react"
 import {
   AudioWaveform,
   BookOpen,
@@ -31,11 +32,6 @@ import {
 
 // This is sample data.
 const data = {
-  user: {
-    name: "Admin User",
-    email: "admin@accounts.com",
-    avatar: "/avatars/admin.jpg",
-  },
   teams: [
     {
       name: "Accounts Inc",
@@ -177,6 +173,20 @@ const data = {
 export function AppSidebar({
   ...props
 }) {
+  const [user, setUser] = useState({ name: "User", email: "user@example.com", avatar: "" });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser({
+        name: parsedUser.attributes.name,
+        email: parsedUser.attributes.email,
+        avatar: "",
+      });
+    }
+  }, []);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -187,7 +197,7 @@ export function AppSidebar({
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

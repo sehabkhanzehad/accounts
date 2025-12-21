@@ -9,6 +9,8 @@ import {
   Sparkles,
 } from "lucide-react"
 
+import { useNavigate } from "react-router-dom"
+
 import {
   Avatar,
   AvatarFallback,
@@ -34,6 +36,15 @@ export function NavUser({
   user
 }) {
   const { isMobile } = useSidebar()
+  const navigate = useNavigate()
+
+  const handleSignOut = () => {
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('user')
+    sessionStorage.removeItem('accessToken')
+    sessionStorage.removeItem('user')
+    navigate('/')
+  }
 
   return (
     <SidebarMenu>
@@ -94,7 +105,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}>
               <LogOut />
               Log out
             </DropdownMenuItem>
