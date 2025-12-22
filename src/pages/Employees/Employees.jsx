@@ -44,12 +44,12 @@ export default function Employees() {
         mutationFn: (data) => api.post('/sections/employees', data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['employees'] })
-            toast.success('Employee created successfully')
+            toast.success(t('app.sectionCreated', { section: t('app.sidebar.options.employees') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to create employee')
+            toast.error(error.response?.data?.message || t('app.failedToCreateSection', { section: t('app.sidebar.options.employees') }))
         }
     })
 
@@ -57,12 +57,12 @@ export default function Employees() {
         mutationFn: ({ id, data }) => api.put(`/sections/employees/${id}`, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['employees'] })
-            toast.success('Employee updated successfully')
+            toast.success(t('app.sectionUpdated', { section: t('app.sidebar.options.employees') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to update employee')
+            toast.error(error.response?.data?.message || t('app.failedToUpdateSection', { section: t('app.sidebar.options.employees') }))
         }
     })
 
@@ -72,10 +72,10 @@ export default function Employees() {
             setOpenDeleteDialog(false)
             setEmployeeToDelete(null)
             queryClient.invalidateQueries({ queryKey: ['employees'] })
-            toast.success('Employee deleted successfully')
+            toast.success(t('app.sectionDeleted', { section: t('app.sidebar.options.employees') }))
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || 'Failed to delete employee')
+            toast.error(error.response?.data?.message || t('app.failedToDeleteSection', { section: t('app.sidebar.options.employees') }))
         }
     })
 
@@ -127,18 +127,18 @@ export default function Employees() {
         >
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
-                    <PageHeading title={t('app.sidebar.options.employees')} description="Manage your employee sections." />
+                    <PageHeading title={t('app.sidebar.options.employees')} description={t('app.manageSections', { section: t('app.sidebar.options.employees').toLowerCase() })} />
                     <Button variant="outline" icon={<Plus />} onClick={openCreateDialog}>
-                        Add Employee
+                        {t('app.addSection', { section: t('app.sidebar.options.employees') })}
                     </Button>
                 </div>
 
                 <div className="flex-1">
                     {employees?.length === 0 && !isLoading ? (
                         <EmptyComponent
-                            title="No employees found"
-                            description="Add employee sections to manage your staff effectively."
-                            actionLabel="Add Employee"
+                            title={t('app.noSectionsFound', { section: t('app.sidebar.options.employees').toLowerCase() })}
+                            description={t('app.addSections', { section: t('app.sidebar.options.employees').toLowerCase(), purpose: t('app.employeePurpose') })}
+                            actionLabel={t('app.addSection', { section: t('app.sidebar.options.employees') })}
                             onAction={openCreateDialog}
                             icon={<Users />}
                         />
@@ -183,8 +183,8 @@ export default function Employees() {
                 deleteData={employeeToDelete}
                 isPending={deleteMutation.isPending}
                 mutate={deleteMutation.mutate}
-                title="Delete employee"
-                description={`Are you sure you want to delete the employee ${employeeToDelete?.attributes?.name}?`}
+                title={t('app.deleteSection', { section: t('app.sidebar.options.employees') })}
+                description={t('app.confirmDeleteSection', { section: t('app.sidebar.options.employees'), name: employeeToDelete?.attributes?.name })}
             />
         </DashboardLayout>
     )

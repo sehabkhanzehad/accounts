@@ -44,12 +44,12 @@ export default function Bills() {
         mutationFn: (data) => api.post('/sections/bills', data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bills'] })
-            toast.success('Bill created successfully')
+            toast.success(t('app.sectionCreated', { section: t('app.sidebar.options.bills') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to create bill')
+            toast.error(error.response?.data?.message || t('app.failedToCreateSection', { section: t('app.sidebar.options.bills') }))
         }
     })
 
@@ -57,12 +57,12 @@ export default function Bills() {
         mutationFn: ({ id, data }) => api.put(`/sections/bills/${id}`, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bills'] })
-            toast.success('Bill updated successfully')
+            toast.success(t('app.sectionUpdated', { section: t('app.sidebar.options.bills') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to update bill')
+            toast.error(error.response?.data?.message || t('app.failedToUpdateSection', { section: t('app.sidebar.options.bills') }))
         }
     })
 
@@ -72,10 +72,10 @@ export default function Bills() {
             setOpenDeleteDialog(false)
             setBillToDelete(null)
             queryClient.invalidateQueries({ queryKey: ['bills'] })
-            toast.success('Bill deleted successfully')
+            toast.success(t('app.sectionDeleted', { section: t('app.sidebar.options.bills') }))
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || 'Failed to delete bill')
+            toast.error(error?.response?.data?.message || t('app.failedToDeleteSection', { section: t('app.sidebar.options.bills') }))
         }
     })
 
@@ -127,18 +127,18 @@ export default function Bills() {
         >
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
-                    <PageHeading title={t('app.sidebar.options.bills')} description="Manage your bill sections." />
+                    <PageHeading title={t('app.sidebar.options.bills')} description={t('app.manageSections', { section: t('app.sidebar.options.bills') })} />
                     <Button variant="outline" icon={<Plus />} onClick={openCreateDialog}>
-                        Add Bill
+                        {t('app.addSection', { section: t('app.sidebar.options.bills') })}
                     </Button>
                 </div>
 
                 <div className="flex-1">
                     {bills?.length === 0 && !isLoading ? (
                         <EmptyComponent
-                            title="No bills found"
-                            description="Add bill sections to manage your billing information effectively."
-                            actionLabel="Add Bill"
+                            title={t('app.noSectionsFound', { section: t('app.sidebar.options.bills') })}
+                            description={t('app.addSections', { section: t('app.sidebar.options.bills'), purpose: t('app.billPurpose') })}
+                            actionLabel={t('app.addSection', { section: t('app.sidebar.options.bills') })}
                             onAction={openCreateDialog}
                             icon={<Receipt />}
                         />
@@ -183,8 +183,8 @@ export default function Bills() {
                 deleteData={billToDelete}
                 isPending={deleteMutation.isPending}
                 mutate={deleteMutation.mutate}
-                title="Delete bill"
-                description={`Are you sure you want to delete the bill ${billToDelete?.attributes?.name}?`}
+                title={t('app.deleteSection', { section: t('app.sidebar.options.bills') })}
+                description={t('app.confirmDeleteSection', { section: t('app.sidebar.options.bills'), name: billToDelete?.attributes?.name })}
             />
         </DashboardLayout>
     )

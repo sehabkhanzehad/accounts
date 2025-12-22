@@ -44,12 +44,12 @@ export default function Others() {
         mutationFn: (data) => api.post('/sections/others', data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['others'] })
-            toast.success('Other section created successfully')
+            toast.success(t('app.sectionCreated', { section: t('app.sidebar.options.others') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to create other section')
+            toast.error(error.response?.data?.message || t('app.failedToCreateSection', { section: t('app.sidebar.options.others') }))
         }
     })
 
@@ -57,12 +57,12 @@ export default function Others() {
         mutationFn: ({ id, data }) => api.put(`/sections/others/${id}`, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['others'] })
-            toast.success('Other section updated successfully')
+            toast.success(t('app.sectionUpdated', { section: t('app.sidebar.options.others') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to update other section')
+            toast.error(error.response?.data?.message || t('app.failedToUpdateSection', { section: t('app.sidebar.options.others') }))
         }
     })
 
@@ -72,10 +72,10 @@ export default function Others() {
             setOpenDeleteDialog(false)
             setOtherToDelete(null)
             queryClient.invalidateQueries({ queryKey: ['others'] })
-            toast.success('Other section deleted successfully')
+            toast.success(t('app.sectionDeleted', { section: t('app.sidebar.options.others') }))
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || 'Failed to delete other section')
+            toast.error(error?.response?.data?.message || t('app.failedToDeleteSection', { section: t('app.sidebar.options.others') }))
         }
     })
 
@@ -116,10 +116,10 @@ export default function Others() {
         <DashboardLayout breadcrumbs={breadcrumbs}>
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-center justify-between">
-                    <PageHeading title={t('app.sidebar.options.others')} description="Manage your other sections." />
+                    <PageHeading title={t('app.sidebar.options.others')} description={t('app.manageSections', { section: t('app.sidebar.options.others') })} />
                     <Button onClick={() => setDialogOpen(true)} className="flex items-center gap-2">
                         <Plus className="h-4 w-4" />
-                        Add Other Section
+                        {t('app.addSection', { section: t('app.sidebar.options.others') })}
                     </Button>
                 </div>
 
@@ -129,9 +129,9 @@ export default function Others() {
                     ) : others?.length === 0 ? (
                         <EmptyComponent
                             icon={<FileText />}
-                            title="No other sections found"
-                            description="Get started by creating your first other section."
-                            actionLabel="Add Other Section"
+                            title={t('app.noSectionsFound', { section: t('app.sidebar.options.others') })}
+                            description={t('app.getStartedSections', { section: t('app.sidebar.options.others') })}
+                            actionLabel={t('app.addSection', { section: t('app.sidebar.options.others') })}
                             onAction={() => setDialogOpen(true)}
                         />
                     ) : (
@@ -165,8 +165,8 @@ export default function Others() {
                     deleteData={otherToDelete}
                     isPending={deleteMutation.isPending}
                     mutate={deleteMutation.mutate}
-                    title="Delete Other Section"
-                    description={`Are you sure you want to delete "${otherToDelete?.attributes?.name}"? This action cannot be undone.`}
+                    title={t('app.deleteSection', { section: t('app.sidebar.options.others') })}
+                    description={t('app.confirmDeleteSection', { section: t('app.sidebar.options.others'), name: otherToDelete?.attributes?.name })}
                 />
             </div>
         </DashboardLayout>

@@ -44,12 +44,12 @@ export default function GroupLeaders() {
         mutationFn: (data) => api.post('/sections/group-leaders', data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader created successfully')
+            toast.success(t('app.sectionCreated', { section: t('app.sidebar.options.groupLeaders') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to create group leader')
+            toast.error(error.response?.data?.message || t('app.failedToCreateSection', { section: t('app.sidebar.options.groupLeaders') }))
         }
     })
 
@@ -57,12 +57,12 @@ export default function GroupLeaders() {
         mutationFn: ({ id, data }) => api.put(`/sections/group-leaders/${id}`, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader updated successfully')
+            toast.success(t('app.sectionUpdated', { section: t('app.sidebar.options.groupLeaders') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to update group leader')
+            toast.error(error.response?.data?.message || t('app.failedToUpdateSection', { section: t('app.sidebar.options.groupLeaders') }))
         }
     })
 
@@ -72,10 +72,10 @@ export default function GroupLeaders() {
             setOpenDeleteDialog(false)
             setGroupLeaderToDelete(null)
             queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader deleted successfully')
+            toast.success(t('app.sectionDeleted', { section: t('app.sidebar.options.groupLeaders') }))
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || 'Failed to delete group leader')
+            toast.error(error?.response?.data?.message || t('app.failedToDeleteSection', { section: t('app.sidebar.options.groupLeaders') }))
         }
     })
 
@@ -127,18 +127,18 @@ export default function GroupLeaders() {
         >
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
-                    <PageHeading title={t('app.sidebar.options.groupLeaders')} description="Manage your group leader sections." />
+                    <PageHeading title={t('app.sidebar.options.groupLeaders')} description={t('app.manageSections', { section: t('app.sidebar.options.groupLeaders') })} />
                     <Button variant="outline" icon={<Plus />} onClick={openCreateDialog}>
-                        Add Group Leader
+                        {t('app.addSection', { section: t('app.sidebar.options.groupLeaders') })}
                     </Button>
                 </div>
 
                 <div className="flex-1">
                     {groupLeaders?.length === 0 && !isLoading ? (
                         <EmptyComponent
-                            title="No group leaders found"
-                            description="Add group leader sections to manage your pilgrim groups effectively."
-                            actionLabel="Add Group Leader"
+                            title={t('app.noSectionsFound', { section: t('app.sidebar.options.groupLeaders') })}
+                            description={t('app.addSections', { section: t('app.sidebar.options.groupLeaders'), purpose: t('app.groupLeaderPurpose') })}
+                            actionLabel={t('app.addSection', { section: t('app.sidebar.options.groupLeaders') })}
                             onAction={openCreateDialog}
                             icon={<Users />}
                         />
@@ -183,8 +183,8 @@ export default function GroupLeaders() {
                 deleteData={groupLeaderToDelete}
                 isPending={deleteMutation.isPending}
                 mutate={deleteMutation.mutate}
-                title="Delete group leader"
-                description={`Are you sure you want to delete the group leader ${groupLeaderToDelete?.attributes?.name}?`}
+                title={t('app.deleteSection', { section: t('app.sidebar.options.groupLeaders') })}
+                description={t('app.confirmDeleteSection', { section: t('app.sidebar.options.groupLeaders'), name: groupLeaderToDelete?.attributes?.name })}
             />
         </DashboardLayout>
     )

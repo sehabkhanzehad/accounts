@@ -61,12 +61,12 @@ export default function Banks() {
         mutationFn: (data) => api.post('/sections/banks', data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['banks'] })
-            toast.success('Bank created successfully')
+            toast.success(t('app.sectionCreated', { section: t('app.sidebar.options.banks') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to create bank')
+            toast.error(error.response?.data?.message || t('app.failedToCreateSection', { section: t('app.sidebar.options.banks') }))
         }
     })
 
@@ -74,12 +74,12 @@ export default function Banks() {
         mutationFn: ({ id, data }) => api.put(`/sections/banks/${id}`, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['banks'] })
-            toast.success('Bank updated successfully')
+            toast.success(t('app.sectionUpdated', { section: t('app.sidebar.options.banks') }))
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to update bank')
+            toast.error(error.response?.data?.message || t('app.failedToUpdateSection', { section: t('app.sidebar.options.banks') }))
         }
     })
 
@@ -89,10 +89,10 @@ export default function Banks() {
             setOpenDeleteDialog(false)
             setBankToDelete(null)
             queryClient.invalidateQueries({ queryKey: ['banks'] })
-            toast.success('Bank deleted successfully')
+            toast.success(t('app.sectionDeleted', { section: t('app.sidebar.options.banks') }))
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || 'Failed to delete bank')
+            toast.error(error?.response?.data?.message || t('app.failedToDeleteSection', { section: t('app.sidebar.options.banks') }))
         }
     })
 
@@ -175,18 +175,18 @@ export default function Banks() {
         >
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
-                    <PageHeading title={t('app.sidebar.options.banks')} description="Manage your bank sections." />
+                    <PageHeading title={t('app.sidebar.options.banks')} description={t('app.manageSections', { section: t('app.sidebar.options.banks').toLowerCase() })} />
                     <Button variant="outline" icon={<Plus />} onClick={openCreateDialog}>
-                        Add Bank
+                        {t('app.addSection', { section: t('app.sidebar.options.banks') })}
                     </Button>
                 </div>
 
                 <div className="flex-1">
                     {banks?.length === 0 && !isLoading ? (
                         <EmptyComponent
-                            title="No banks found"
-                            description="Add bank sections to manage your financial accounts effectively."
-                            actionLabel="Add Bank"
+                            title={t('app.noSectionsFound', { section: t('app.sidebar.options.banks').toLowerCase() })}
+                            description={t('app.addSections', { section: t('app.sidebar.options.banks').toLowerCase(), purpose: t('app.bankPurpose') })}
+                            actionLabel={t('app.addSection', { section: t('app.sidebar.options.banks') })}
                             onAction={openCreateDialog}
                             icon={<CreditCard />}
                         />
