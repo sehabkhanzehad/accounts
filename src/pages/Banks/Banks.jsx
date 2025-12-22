@@ -110,18 +110,18 @@ export default function Banks() {
             code: bank.attributes.code,
             name: bank.attributes.name,
             description: bank.attributes.description || '',
-            branch: bank.relationships?.bank?.branch || '',
-            account_number: bank.relationships?.bank?.account_number || '',
-            account_holder_name: bank.relationships?.bank?.account_holder_name || '',
-            address: bank.relationships?.bank?.address || '',
-            account_type: bank.relationships?.bank?.account_type || '',
-            routing_number: bank.relationships?.bank?.routing_number || '',
-            swift_code: bank.relationships?.bank?.swift_code || '',
-            opening_date: bank.relationships?.bank?.opening_date || '',
-            phone: bank.relationships?.bank?.phone || '',
-            telephone: bank.relationships?.bank?.telephone || '',
-            email: bank.relationships?.bank?.email || '',
-            website: bank.relationships?.bank?.website || ''
+            branch: bank.relationships?.bank?.attributes?.branch || '',
+            account_number: bank.relationships?.bank?.attributes?.accountNumber || '',
+            account_holder_name: bank.relationships?.bank?.attributes?.accountHolderName || '',
+            address: bank.relationships?.bank?.attributes?.address || '',
+            account_type: bank.relationships?.bank?.attributes?.accountType || '',
+            routing_number: bank.relationships?.bank?.attributes?.routingNumber || '',
+            swift_code: bank.relationships?.bank?.attributes?.swiftCode || '',
+            opening_date: bank.relationships?.bank?.attributes?.openingDate || '',
+            phone: bank.relationships?.bank?.attributes?.phone || '',
+            telephone: bank.relationships?.bank?.attributes?.telephone || '',
+            email: bank.relationships?.bank?.attributes?.email || '',
+            website: bank.relationships?.bank?.attributes?.website || ''
         })
         setDialogOpen(true)
     }

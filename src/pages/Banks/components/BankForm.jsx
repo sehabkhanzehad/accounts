@@ -114,8 +114,34 @@ export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitti
         onSubmit(data, editingBank)
     }
 
+    const handleOpenChange = (newOpen) => {
+        if (!newOpen) {
+            form.reset()
+        } else if (newOpen && editingBank) {
+            // Populate form when opening for edit
+            form.reset({
+                code: editingBank.attributes.code,
+                name: editingBank.attributes.name,
+                description: editingBank.attributes.description || '',
+                branch: editingBank.relationships?.bank?.attributes?.branch || '',
+                account_number: editingBank.relationships?.bank?.attributes?.accountNumber || '',
+                account_holder_name: editingBank.relationships?.bank?.attributes?.accountHolderName || '',
+                address: editingBank.relationships?.bank?.attributes?.address || '',
+                account_type: editingBank.relationships?.bank?.attributes?.accountType || '',
+                routing_number: editingBank.relationships?.bank?.attributes?.routingNumber || '',
+                swift_code: editingBank.relationships?.bank?.attributes?.swiftCode || '',
+                opening_date: editingBank.relationships?.bank?.attributes?.openingDate || '',
+                phone: editingBank.relationships?.bank?.attributes?.phone || '',
+                telephone: editingBank.relationships?.bank?.attributes?.telephone || '',
+                email: editingBank.relationships?.bank?.attributes?.email || '',
+                website: editingBank.relationships?.bank?.attributes?.website || '',
+            })
+        }
+        onOpenChange(newOpen)
+    }
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader className="pb-4">
                     <DialogTitle className="text-xl font-semibold">{editingBank ? 'Edit Bank' : 'Add Bank'}</DialogTitle>
@@ -165,7 +191,7 @@ export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitti
                                         <FormControl>
                                             <Textarea
                                                 placeholder="Enter description"
-                                                className="min-h-[80px]"
+                                                className="min-h-20"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -253,7 +279,7 @@ export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitti
                                         <FormControl>
                                             <Textarea
                                                 placeholder="Enter bank address"
-                                                className="min-h-[80px]"
+                                                className="min-h-20"
                                                 {...field}
                                             />
                                         </FormControl>

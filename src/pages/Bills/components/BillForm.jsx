@@ -67,8 +67,24 @@ export function BillForm({ open, onOpenChange, editingBill, onSubmit, isSubmitti
         onSubmit(data, editingBill)
     }
 
+    const handleOpenChange = (newOpen) => {
+        if (!newOpen) {
+            form.reset()
+        } else if (newOpen && editingBill) {
+            // Populate form when opening for edit
+            form.reset({
+                code: editingBill.attributes.code,
+                name: editingBill.attributes.name,
+                description: editingBill.attributes.description || '',
+                number: editingBill.relationships?.bill?.attributes?.number || '',
+                biller_name: editingBill.relationships?.bill?.attributes?.billerName || '',
+            })
+        }
+        onOpenChange(newOpen)
+    }
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader className="pb-4">
                     <DialogTitle className="text-xl font-semibold">{editingBill ? 'Edit Bill' : 'Add Bill'}</DialogTitle>

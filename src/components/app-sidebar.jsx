@@ -393,7 +393,7 @@ export function AppSidebar({ ...props }) {
         },
         {
           title: t('app.sidebar.options.others'),
-          url: "/sections/others ",
+          url: "/sections/others",
         },
       ],
     },

@@ -102,11 +102,11 @@ export function NavUser({
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate('/dashboard/settings/account')} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate('/settings/profile')} className="cursor-pointer">
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/dashboard/settings/account')} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer">
                 <Settings />
                 Settings
               </DropdownMenuItem>

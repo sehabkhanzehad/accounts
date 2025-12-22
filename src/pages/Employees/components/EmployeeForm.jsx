@@ -95,8 +95,29 @@ export function EmployeeForm({ open, onOpenChange, editingEmployee, onSubmit, is
         onSubmit(data, editingEmployee)
     }
 
+    const handleOpenChange = (newOpen) => {
+        if (!newOpen) {
+            form.reset()
+        } else if (newOpen && editingEmployee) {
+            // Populate form when opening for edit
+            form.reset({
+                code: editingEmployee.attributes.code,
+                name: editingEmployee.attributes.name,
+                description: editingEmployee.attributes.description || '',
+                first_name: editingEmployee.relationships?.employee?.attributes?.firstName || '',
+                last_name: editingEmployee.relationships?.employee?.attributes?.lastName || '',
+                email: editingEmployee.relationships?.employee?.attributes?.email || '',
+                phone: editingEmployee.relationships?.employee?.attributes?.phone || '',
+                position: editingEmployee.relationships?.employee?.attributes?.position || '',
+                hire_date: editingEmployee.relationships?.employee?.attributes?.hireDate || '',
+                status: editingEmployee.relationships?.employee?.attributes?.status ?? true,
+            })
+        }
+        onOpenChange(newOpen)
+    }
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader className="pb-4">
                     <DialogTitle className="text-xl font-semibold">{editingEmployee ? 'Edit Employee' : 'Add Employee'}</DialogTitle>
