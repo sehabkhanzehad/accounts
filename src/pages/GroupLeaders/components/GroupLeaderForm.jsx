@@ -20,6 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -33,15 +34,19 @@ import {
 const groupLeaderSchema = z.object({
     code: z.string().min(1, "Code is required"),
     description: z.string().optional(),
-    group_name: z.string().optional(),
+    group_name: z.string().min(1, "Group name is required"),
     first_name: z.string().min(1, "First name is required"),
     last_name: z.string().optional(),
     mother_name: z.string().optional(),
     father_name: z.string().optional(),
-    phone: z.string().min(1, "Phone is required"),
+    // email optional but must be valid when provided
+    email: z.union([z.string().email("Invalid email address"), z.literal("")]).optional(),
+    phone: z.string().optional(),
     gender: z.enum(["male", "female", "other"], {
         required_error: "Please select a gender",
     }),
+    date_of_birth: z.string().optional(),
+    status: z.boolean(),
 })
 
 export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubmit, isSubmitting }) {
@@ -55,25 +60,32 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
             last_name: '',
             mother_name: '',
             father_name: '',
+            email: '',
             phone: '',
             gender: '',
+            date_of_birth: '',
+            status: true,
         },
     })
 
     // Reset form when dialog opens/closes or editing changes
     useEffect(() => {
         if (editingGroupLeader) {
-            // Editing existing - populate with data
+            // Editing existing - populate with data from nested user resource
+            const user = editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes
             form.reset({
                 code: editingGroupLeader.attributes.code,
                 description: editingGroupLeader.attributes.description || '',
                 group_name: editingGroupLeader.relationships?.groupLeader?.attributes?.groupName || '',
-                first_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.firstName || '',
-                last_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.lastName || '',
-                mother_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.motherName || '',
-                father_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.fatherName || '',
-                phone: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.phone || '',
-                gender: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.gender || '',
+                first_name: user?.firstName || '',
+                last_name: user?.lastName || '',
+                mother_name: user?.motherName || '',
+                father_name: user?.fatherName || '',
+                email: user?.email || '',
+                phone: user?.phone || '',
+                gender: user?.gender || '',
+                date_of_birth: user?.dateOfBirth || '',
+                status: editingGroupLeader.relationships?.groupLeader?.attributes?.status ?? true,
             })
         } else if (open) {
             // Creating new - reset to empty
@@ -85,14 +97,32 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                 last_name: '',
                 mother_name: '',
                 father_name: '',
+                email: '',
                 phone: '',
                 gender: '',
+                date_of_birth: '',
+                status: true,
             })
         }
     }, [editingGroupLeader, open, form])
 
     const handleSubmit = (data) => {
-        onSubmit(data, editingGroupLeader)
+        const payload = {
+            code: data.code,
+            group_name: data.group_name,
+            description: data.description && data.description.length ? data.description : null,
+            first_name: data.first_name,
+            last_name: data.last_name && data.last_name.length ? data.last_name : null,
+            mother_name: data.mother_name && data.mother_name.length ? data.mother_name : null,
+            father_name: data.father_name && data.father_name.length ? data.father_name : null,
+            email: data.email && data.email.length ? data.email : null,
+            phone: data.phone && data.phone.length ? data.phone : null,
+            gender: data.gender,
+            date_of_birth: data.date_of_birth && data.date_of_birth.length ? data.date_of_birth : null,
+            status: typeof data.status === 'boolean' ? data.status : Boolean(data.status),
+        }
+
+        onSubmit(payload, editingGroupLeader)
     }
 
     const handleOpenChange = (newOpen) => {
@@ -104,12 +134,14 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                 code: editingGroupLeader.attributes.code,
                 description: editingGroupLeader.attributes.description || '',
                 group_name: editingGroupLeader.relationships?.groupLeader?.attributes?.groupName || '',
-                first_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.firstName || '',
-                last_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.lastName || '',
-                mother_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.motherName || '',
-                father_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.fatherName || '',
-                phone: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.phone || '',
-                gender: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.gender || '',
+                first_name: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.firstName || '',
+                last_name: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.lastName || '',
+                mother_name: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.motherName || '',
+                father_name: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.fatherName || '',
+                email: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.email || '',
+                phone: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.phone || '',
+                gender: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.gender || '',
+                date_of_birth: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.dateOfBirth || '',
             })
         }
         onOpenChange(newOpen)
@@ -138,7 +170,7 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                                     name="code"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Code</FormLabel>
+                                            <FormLabel>Code *</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Enter group leader code"
@@ -155,7 +187,7 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                                     name="group_name"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Group Name</FormLabel>
+                                            <FormLabel>Group Name *</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Enter group name"
@@ -196,7 +228,7 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                                     name="first_name"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>First Name</FormLabel>
+                                            <FormLabel>First Name *</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Enter first name"
@@ -278,10 +310,28 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                                 />
                                 <FormField
                                     control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Email</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="email"
+                                                    placeholder="Enter email (optional)"
+                                                    {...field}
+                                                    className="h-9"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
                                     name="gender"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Gender</FormLabel>
+                                            <FormLabel>Gender *</FormLabel>
                                             <Select onValueChange={field.onChange} value={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger className="h-9 w-full">
@@ -298,6 +348,41 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                                         </FormItem>
                                     )}
                                 />
+                                <FormField
+                                    control={form.control}
+                                    name="date_of_birth"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Date of Birth</FormLabel>
+                                            <FormControl>
+                                                <Input type="date" {...field} className="h-9" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="col-span-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="status"
+                                        render={({ field }) => (
+                                            <FormItem className="rounded-lg border p-4">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="space-y-0.5">
+                                                        <FormLabel className="text-base">Status *</FormLabel>
+                                                        <div className="text-sm text-muted-foreground">Set leader status active/inactive</div>
+                                                    </div>
+                                                    <FormControl>
+                                                        <Switch
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    </FormControl>
+                                                </div>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
                         </div>
 

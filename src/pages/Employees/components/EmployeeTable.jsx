@@ -33,11 +33,17 @@ export function EmployeeTable({ employees, onEdit, onDelete }) {
                 {employees?.map((employee) => (
                     <TableRow key={employee.id}>
                         <TableCell>{employee.attributes.code}</TableCell>
-                        <TableCell>{employee.attributes.name}</TableCell>
+                        <TableCell>
+                            {(() => {
+                                const user = employee.relationships?.employee?.relationships?.user?.attributes
+                                const userName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : ''
+                                return userName || employee.attributes.name || '-'
+                            })()}
+                        </TableCell>
                         <TableCell>{employee.attributes.description}</TableCell>
-                        <TableCell className="text-center">{employee.relationships?.employee?.attributes?.email}</TableCell>
-                        <TableCell className="text-center">{employee.relationships?.employee?.attributes?.phone}</TableCell>
-                        <TableCell className="text-center">{employee.relationships?.employee?.attributes?.position}</TableCell>
+                        <TableCell className="text-center">{employee.relationships?.employee?.relationships?.user?.attributes?.email || '-'}</TableCell>
+                        <TableCell className="text-center">{employee.relationships?.employee?.relationships?.user?.attributes?.phone || '-'}</TableCell>
+                        <TableCell className="text-center">{employee.relationships?.employee?.attributes?.position || '-'}</TableCell>
                         <TableCell>
                             <div className="flex items-center justify-end">
                                 <DropdownMenu>

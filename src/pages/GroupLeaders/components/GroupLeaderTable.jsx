@@ -36,12 +36,12 @@ export function GroupLeaderTable({ groupLeaders, onEdit, onDelete }) {
                         <TableCell>{groupLeader.attributes.name}</TableCell>
                         <TableCell>{groupLeader.relationships?.groupLeader?.attributes?.groupName}</TableCell>
                         <TableCell>
-                            {groupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.firstName}{' '}
-                            {groupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.lastName}
+                            {groupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.firstName || ''}{' '}
+                            {groupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.lastName || ''}
                         </TableCell>
-                        <TableCell>{groupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.phone}</TableCell>
+                        <TableCell>{groupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.phone || '-'}</TableCell>
                         <TableCell className="text-center capitalize">
-                            {groupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.gender}
+                            {groupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.gender || '-'}
                         </TableCell>
                         <TableCell>
                             <div className="flex items-center justify-end">
