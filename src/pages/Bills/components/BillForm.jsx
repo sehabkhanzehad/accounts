@@ -134,7 +134,7 @@ export function BillForm({ open, onOpenChange, editingBill, onSubmit, isSubmitti
                                         <FormControl>
                                             <Textarea
                                                 placeholder="Enter description"
-                                                className="min-h-[80px]"
+                                                className="min-h-20"
                                                 {...field}
                                             />
                                         </FormControl>

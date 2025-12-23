@@ -189,7 +189,7 @@ export function EmployeeForm({ open, onOpenChange, editingEmployee, onSubmit, is
                                         <FormControl>
                                             <Textarea
                                                 placeholder="Enter description"
-                                                className="min-h-[80px]"
+                                                className="min-h-20"
                                                 {...field}
                                             />
                                         </FormControl>
