@@ -6,13 +6,15 @@ import Dashboard from '@/pages/Dashboard'
 import Settings from '@/pages/Settings'
 import Banks from '@/pages/Banks/Banks'
 import GroupLeaders from '@/pages/GroupLeaders/GroupLeaders'
-import ManagementGroupLeaders from '@/pages/ManagementGroupLeaders/ManagementGroupLeaders'
+import HajjPackages from '@/pages/HajjPackages/HajjPackages'
+import UmrahPackages from '@/pages/UmrahPackages/UmrahPackages'
 import Employees from '@/pages/Employees/Employees'
 import Bills from '@/pages/Bills/Bills'
 import Others from '@/pages/Others/Others'
 import Lendings from '@/pages/Lendings/Lendings'
 import Borrowings from '@/pages/Borrowings/Borrowings'
 import PreRegistrations from '@/pages/PreRegistrations/PreRegistrations'
+import ManagementGroupLeaders from './pages/ManagementGroupLeaders/ManagementGroupLeaders'
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -37,6 +39,8 @@ function App() {
           <Route path="/sections/banks" element={isAuthenticated ? <Banks /> : <Navigate to="/" replace />} />
           <Route path="/sections/group-leaders" element={isAuthenticated ? <GroupLeaders /> : <Navigate to="/" replace />} />
           <Route path="/group-leaders" element={isAuthenticated ? <ManagementGroupLeaders /> : <Navigate to="/" replace />} />
+          <Route path="/hajj-packages" element={isAuthenticated ? <HajjPackages /> : <Navigate to="/" replace />} />
+          <Route path="/umrah-packages" element={isAuthenticated ? <UmrahPackages /> : <Navigate to="/" replace />} />
           <Route path="/sections/employees" element={isAuthenticated ? <Employees /> : <Navigate to="/" replace />} />
           <Route path="/sections/bills" element={isAuthenticated ? <Bills /> : <Navigate to="/" replace />} />
           <Route path="/sections/others" element={isAuthenticated ? <Others /> : <Navigate to="/" replace />} />

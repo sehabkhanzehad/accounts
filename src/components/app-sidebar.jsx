@@ -264,18 +264,16 @@ export function AppSidebar({ ...props }) {
 
   const management = [
     {
-      title: t('app.sidebar.menu.pilgrims'),
-      url: "/pilgrims",
+      title: t('app.sidebar.options.groupLeader'),
+      url: "/group-leaders",
       icon: Users,
+      items: [],
+    },
+    {
+      title: "Hajj",
+      url: "/pilgrims",
+      icon: BookOpen,
       items: [
-        // {
-        //   title: t('app.sidebar.options.allPilgrim'),
-        //   url: "/dashboard/analytics",
-        // },
-        {
-          title: t('app.sidebar.options.groupLeader'),
-          url: "/group-leaders",
-        },
         {
           title: t('app.sidebar.options.preRegistration'),
           url: "/pre-registrations",
@@ -284,27 +282,27 @@ export function AppSidebar({ ...props }) {
           title: t('app.sidebar.options.registration'),
           url: "/registrations",
         },
+        {
+          title: "Packages",
+          url: "/hajj-packages",
+        },
       ],
     },
-    // {
-    //   title: t('app.sidebar.menu.umrah'),
-    //   url: "/accounts",
-    //   icon: Users,
-    //   items: [
-    //     {
-    //       title: t('app.allAccounts'),
-    //       url: "/accounts",
-    //     },
-    //     {
-    //       title: t('app.transactions'),
-    //       url: "/accounts/transactions",
-    //     },
-    //     {
-    //       title: t('app.reconciliation'),
-    //       url: "/accounts/reconciliation",
-    //     },
-    //   ],
-    // },
+    {
+      title: "Umrah",
+      url: "/umrah-pilgrims",
+      icon: GalleryVerticalEnd,
+      items: [
+        {
+          title: "Pilgrims",
+          url: "/umrah-pilgrims",
+        },
+        {
+          title: "Packages",
+          url: "/umrah-packages",
+        }
+      ],
+    },
     // {
     //   title: t('app.invoices'),
     //   url: "/invoices",
@@ -399,7 +397,7 @@ export function AppSidebar({ ...props }) {
     {
       title: "Loans",
       url: "/sections/lendings",
-      icon: CreditCard,
+      icon: Wallet,
       items: [
         {
           title: t('app.sidebar.options.lendings'),
