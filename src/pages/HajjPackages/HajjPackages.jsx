@@ -118,7 +118,7 @@ export default function HajjPackages() {
                         title="Hajj Packages"
                         description="Manage Hajj packages for pilgrims"
                     />
-                    <Button onClick={openCreateDialog} className="gap-2">
+                    <Button variant="outline" onClick={openCreateDialog} className="gap-2">
                         <Plus className="h-4 w-4" />
                         Add Hajj Package
                     </Button>
@@ -139,7 +139,7 @@ export default function HajjPackages() {
                             title="No hajj packages found"
                             description="Create your first hajj package to get started"
                             action={
-                                <Button onClick={openCreateDialog} className="gap-2">
+                                <Button variant="outline" onClick={openCreateDialog} className="gap-2">
                                     <Plus className="h-4 w-4" />
                                     Add Hajj Package
                                 </Button>

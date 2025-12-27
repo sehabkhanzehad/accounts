@@ -118,7 +118,7 @@ export default function UmrahPackages() {
                         title="Umrah Packages"
                         description="Manage Umrah packages for pilgrims"
                     />
-                    <Button onClick={openCreateDialog} className="gap-2">
+                    <Button variant="outline" onClick={openCreateDialog} className="gap-2">
                         <Plus className="h-4 w-4" />
                         Add Umrah Package
                     </Button>
@@ -139,7 +139,7 @@ export default function UmrahPackages() {
                             title="No umrah packages found"
                             description="Create your first umrah package to get started"
                             action={
-                                <Button onClick={openCreateDialog} className="gap-2">
+                                <Button variant="outline" onClick={openCreateDialog} className="gap-2">
                                     <Plus className="h-4 w-4" />
                                     Add Umrah Package
                                 </Button>

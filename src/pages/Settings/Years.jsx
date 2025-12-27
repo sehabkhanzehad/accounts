@@ -156,7 +156,7 @@ export default function YearsSettings() {
                         }
                     }}>
                         <DialogTrigger asChild>
-                            <Button onClick={handleOpenDialog}>
+                            <Button variant="outline" onClick={handleOpenDialog}>
                                 <CalendarPlus className="w-4 h-4 mr-2" />
                                 {t('app.addYear')}
                             </Button>

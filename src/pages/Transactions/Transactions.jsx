@@ -58,7 +58,7 @@ export default function Transactions() {
                         title="Transactions"
                         description="Manage your financial transactions"
                     />
-                    <Button onClick={() => setIsModalOpen(true)} className="gap-2">
+                    <Button variant="outline" onClick={() => setIsModalOpen(true)} className="gap-2">
                         <Plus className="h-4 w-4" />
                         Add Transaction
                     </Button>
@@ -71,7 +71,7 @@ export default function Transactions() {
                             title="No transactions found"
                             description="Get started by creating your first transaction."
                             action={
-                                <Button onClick={() => setIsModalOpen(true)} className="gap-2">
+                                <Button variant="outline" onClick={() => setIsModalOpen(true)} className="gap-2">
                                     <Plus className="h-4 w-4" />
                                     Add Transaction
                                 </Button>

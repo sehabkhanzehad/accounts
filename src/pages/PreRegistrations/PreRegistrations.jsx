@@ -133,7 +133,7 @@ export default function PreRegistrations() {
                         title={t('app.pre-registrations.title')}
                         description={t('app.pre-registrations.description')}
                     />
-                    <Button onClick={openCreateDialog} className="gap-2">
+                    <Button variant="outline" onClick={openCreateDialog} className="gap-2">
                         <Plus className="h-4 w-4" />
                         {t('app.pre-registrations.add_new')}
                     </Button>
@@ -154,7 +154,7 @@ export default function PreRegistrations() {
                             title={t('app.pre-registrations.empty.title')}
                             description={t('app.pre-registrations.empty.description')}
                             action={
-                                <Button onClick={openCreateDialog} className="gap-2">
+                                <Button variant="outline" onClick={openCreateDialog} className="gap-2">
                                     <Plus className="h-4 w-4" />
                                     {t('app.pre-registrations.add_new')}
                                 </Button>

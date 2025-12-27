@@ -142,7 +142,7 @@ export default function Registrations() {
                         title="Registrations"
                         description="Manage pilgrim registrations for packages"
                     />
-                    <Button onClick={openCreateDialog} className="gap-2">
+                    <Button variant="outline" onClick={openCreateDialog} className="gap-2">
                         <Plus className="h-4 w-4" />
                         Add Registration
                     </Button>
@@ -163,7 +163,7 @@ export default function Registrations() {
                             title="No registrations found"
                             description="Create your first registration to get started"
                             action={
-                                <Button onClick={openCreateDialog} className="gap-2">
+                                <Button variant="outline" onClick={openCreateDialog} className="gap-2">
                                     <Plus className="h-4 w-4" />
                                     Add Registration
                                 </Button>
