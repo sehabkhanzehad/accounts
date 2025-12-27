@@ -11,32 +11,31 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 // import { LanguageToggle } from '@/components/ui/language-toggle';
-import { Button } from '@/components/ui/button';
-import CreateTransactionModal from '@/components/CreateTransactionModal';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import CreateTransactionModal from '@/pages/Transactions/components/CreateTransactionModal';
 
 class ErrorBoundary extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false, error: null };
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by ErrorBoundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>An error occurred: {this.state.error?.message || 'Unknown error'}</div>;
     }
 
-    static getDerivedStateFromError(error) {
-        return { hasError: true, error };
-    }
-
-    componentDidCatch(error, errorInfo) {
-        console.error('Error caught by ErrorBoundary:', error, errorInfo);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            return <div>An error occurred: {this.state.error?.message || 'Unknown error'}</div>;
-        }
-
-        return this.props.children;
-    }
+    return this.props.children;
+  }
 }
 
 export default function DashboardLayout({ children, breadcrumbs }) {
@@ -119,9 +118,27 @@ export default function DashboardLayout({ children, breadcrumbs }) {
               </div>
 
               <div className="flex items-center justify-end gap-1">
-                <Button onClick={() => { console.log('Button clicked'); setIsModalOpen(true); }} variant="outline" size="sm">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-plus"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="M12 5v14"></path>
+                  </svg>
                   Add Transaction
-                </Button>
+                </button>
                 {/* <LanguageToggle /> */}
                 <ThemeToggle />
               </div>
@@ -130,9 +147,7 @@ export default function DashboardLayout({ children, breadcrumbs }) {
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
         </SidebarInset>
       </SidebarProvider>
-      <ErrorBoundary>
-        <CreateTransactionModal open={isModalOpen} onOpenChange={setIsModalOpen} />
-      </ErrorBoundary>
+      <CreateTransactionModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </>
   );
 }

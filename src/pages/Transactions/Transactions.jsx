@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, Receipt } from 'lucide-react'
 import api from '@/lib/api'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import { EmptyComponent } from '@/components/app/EmptyComponent'
 import TableSkeletons from '@/components/skeletons/TableSkeletons'
 import AppPagination from '@/components/app/AppPagination'
-import CreateTransactionModal from '@/components/CreateTransactionModal'
+import CreateTransactionModal from './components/CreateTransactionModal'
 import PageHeading from '@/components/PageHeading'
 import {
     Table,
@@ -30,7 +30,7 @@ export default function Transactions() {
         queryKey: ['transactions', currentPage, rowsPerPage],
         queryFn: async () => {
             const response = await api.get('/transactions', {
-                params: { 
+                params: {
                     page: currentPage,
                     per_page: rowsPerPage
                 }
@@ -96,11 +96,10 @@ export default function Transactions() {
                                                 {transaction.attributes.title}
                                             </TableCell>
                                             <TableCell>
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                                    transaction.attributes.type === 'income' 
-                                                        ? 'bg-green-100 text-green-800' 
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction.attributes.type === 'income'
+                                                        ? 'bg-green-100 text-green-800'
                                                         : 'bg-red-100 text-red-800'
-                                                }`}>
+                                                    }`}>
                                                     {transaction.attributes.type}
                                                 </span>
                                             </TableCell>
