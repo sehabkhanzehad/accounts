@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import api from '@/lib/api'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import { EmptyComponent } from '@/components/app/EmptyComponent'
+import PageHeading from '@/components/PageHeading'
 import TableSkeletons from '@/components/skeletons/TableSkeletons'
 import AppPagination from '@/components/app/AppPagination'
 import {
@@ -20,7 +21,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { EllipsisVertical, Eye } from 'lucide-react'
+import { EllipsisVertical, Eye, X, User } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
@@ -28,6 +29,8 @@ import {
     DialogTitle,
     DialogClose,
 } from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 
 export default function LoanTransactions() {
     const { id } = useParams()
@@ -97,22 +100,38 @@ export default function LoanTransactions() {
     return (
         <DashboardLayout>
             <div className="flex flex-col h-full gap-4">
+                <PageHeading
+                    title="Loan Transactions"
+                    description="View and manage loan transactions and borrower details"
+                />
+
                 <div className="flex-1">
                     {/* Loan Details Section */}
                     {loanData && (
                         <div className="bg-card border rounded-lg p-4 mb-6 shadow-sm">
-                            <div className="flex items-start justify-between">
-                                <div className="flex items-start space-x-3">
-                                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mt-0.5">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                                         <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-xs font-medium text-muted-foreground mb-1">Borrower Details:</p>
-                                        <h3 className="text-sm font-medium text-foreground">
-                                            {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
-                                        </h3>
+                                        <div className="flex items-center space-x-2 mb-0.5">
+                                            <span className="text-xs font-medium text-muted-foreground">Borrower:</span>
+                                            <span className="text-sm font-medium text-foreground">
+                                                {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
+                                            </span>
+                                            <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                loanData.data.attributes.status === 'active'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                    : loanData.data.attributes.status === 'completed'
+                                                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                                            }`}>
+                                                {loanData.data.attributes.status.charAt(0).toUpperCase() + loanData.data.attributes.status.slice(1)}
+                                            </div>
+                                        </div>
                                         <p className="text-xs text-muted-foreground">
                                             {loanData.data.relationships.loanable.attributes.email}
                                         </p>
@@ -139,16 +158,6 @@ export default function LoanTransactions() {
                                         <p className="text-sm font-semibold text-foreground">
                                             ৳{Number((loanData.data.attributes.amount || 0) - (loanData.data.attributes.paidAmount || 0)).toLocaleString()}
                                         </p>
-                                    </div>
-
-                                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                        loanData.data.attributes.status === 'active'
-                                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                            : loanData.data.attributes.status === 'completed'
-                                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-                                            : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
-                                    }`}>
-                                        {loanData.data.attributes.status.charAt(0).toUpperCase() + loanData.data.attributes.status.slice(1)}
                                     </div>
                                 </div>
                             </div>
@@ -230,95 +239,96 @@ export default function LoanTransactions() {
 
                 {/* Transaction Details Dialog */}
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogContent className="max-w-md p-0 overflow-hidden bg-white border-0 shadow-2xl">
-                        <DialogHeader className="flex flex-row items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center">
-                                    <img src="/logo.png" alt="M/S Raj Travels" className="w-10 h-10 object-contain" />
-                                </div>
-                                <div>
-                                    <DialogTitle className="text-xl font-bold text-gray-900">M/S RAJ TRAVELS</DialogTitle>
-                                    <p className="text-sm text-gray-600">189/1, Nayagla, Chapainawabganj</p>
-                                </div>
-                            </div>
-                            <DialogClose className="rounded-full w-8 h-8 bg-white shadow-md hover:bg-gray-50 flex items-center justify-center transition-colors">
-                                <svg className="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M18 6L6 18M6 6l12 12" />
-                                </svg>
+                    <DialogContent className="max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="text-center text-lg font-semibold">Transaction Details</DialogTitle>
+                            <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                                <X className="h-4 w-4" />
+                                <span className="sr-only">Close</span>
                             </DialogClose>
                         </DialogHeader>
 
-                        <div className="p-4 space-y-3">
-                            {selectedTransaction && (
+                        <div className="space-y-4">
+                            {selectedTransaction && loanData && (
                                 <>
-                                    {/* Receipt Type Badge */}
-                                    <div className="text-center -mt-2">
-                                        <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${
-                                            selectedTransaction?.attributes?.type === 'income'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
-                                        }`}>
-                                            {selectedTransaction?.attributes?.type === 'income' ? 'Income Receipt' : 'Expense Receipt'}
-                                        </span>
+                                    {/* Transaction Type */}
+                                    <div className="flex justify-center">
+                                        <Badge variant={selectedTransaction?.attributes?.type === 'income' ? 'default' : 'destructive'}>
+                                            {selectedTransaction?.attributes?.type === 'income' ? 'Payment Receipt' : 'Loan Disbursement'}
+                                        </Badge>
                                     </div>
 
-                                    {/* Date */}
-                                    <div className="flex justify-end -mt-1">
-                                        <div className="bg-gray-50 px-3 py-1.5 rounded-lg">
-                                            <p className="text-xs text-gray-600">
-                                                <span className="font-medium">Date:</span> {
-                                                    selectedTransaction?.attributes?.date
-                                                        ? new Date(selectedTransaction.attributes.date).toLocaleDateString('en-GB')
-                                                        : 'N/A'
-                                                }
+                                    {/* Transaction Info */}
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <p className="text-muted-foreground">Date</p>
+                                            <p className="font-medium">
+                                                {selectedTransaction?.attributes?.date
+                                                    ? new Date(selectedTransaction.attributes.date).toLocaleDateString('en-GB')
+                                                    : 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-muted-foreground">Type</p>
+                                            <p className="font-medium">
+                                                {selectedTransaction?.attributes?.type === 'income' ? 'Payment' : 'Loan'}
                                             </p>
                                         </div>
                                     </div>
 
-                                    {/* Transaction Details */}
-                                    <div className="bg-white border border-gray-200 rounded-lg p-3 space-y-2">
+                                    <Separator />
+
+                                    {/* Borrower */}
+                                    <div className="flex items-center space-x-3">
+                                        <User className="h-4 w-4 text-muted-foreground" />
                                         <div>
-                                            <h3 className="text-base font-semibold text-gray-900 leading-tight">
-                                                {selectedTransaction?.attributes?.title || 'N/A'}
-                                            </h3>
-                                            {selectedTransaction?.attributes?.description && (
-                                                <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
-                                                    {selectedTransaction.attributes.description}
-                                                </p>
-                                            )}
+                                            <p className="text-sm text-muted-foreground">Borrower</p>
+                                            <p className="text-sm font-medium">
+                                                {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
+                                            </p>
+                                        </div>
+                                        <div className="ml-auto">
+                                            <Badge variant="outline" className="text-xs">
+                                                {loanData.data.attributes.status}
+                                            </Badge>
                                         </div>
                                     </div>
 
-                                    {/* Amount Section */}
-                                    <div className={`rounded-lg p-4 border-2 ${
-                                        selectedTransaction?.attributes?.type === 'income'
-                                            ? 'bg-green-50 border-green-200'
-                                            : 'bg-red-50 border-red-200'
-                                    }`}>
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-700 mb-0.5">Transaction Amount</p>
-                                                <p className={`text-xs font-semibold ${
-                                                    selectedTransaction?.attributes?.type === 'income' ? 'text-green-700' : 'text-red-700'
-                                                }`}>
-                                                    {selectedTransaction?.attributes?.type === 'income' ? 'Credit' : 'Debit'}
-                                                </p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className={`text-2xl font-bold ${
-                                                    selectedTransaction?.attributes?.type === 'income' ? 'text-green-700' : 'text-red-700'
-                                                }`}>
-                                                    ৳{Number(selectedTransaction?.attributes?.amount || 0).toLocaleString()}
-                                                </p>
-                                            </div>
-                                        </div>
+                                    <Separator />
+
+                                    {/* Transaction Details */}
+                                    <div>
+                                        <h4 className="text-sm font-medium mb-2">Transaction</h4>
+                                        <p className="text-sm font-medium">
+                                            {selectedTransaction?.attributes?.title || 'N/A'}
+                                        </p>
+                                        {selectedTransaction?.attributes?.description && (
+                                            <p className="text-sm text-muted-foreground mt-1">
+                                                {selectedTransaction.attributes.description}
+                                            </p>
+                                        )}
                                     </div>
+
+                                    <Separator />
+
+                                    {/* Amount */}
+                                    <div className="text-center py-4">
+                                        <p className="text-sm text-muted-foreground mb-1">
+                                            {selectedTransaction?.attributes?.type === 'income' ? 'Amount Received' : 'Amount Disbursed'}
+                                        </p>
+                                        <p className={`text-2xl font-bold ${
+                                            selectedTransaction?.attributes?.type === 'income' ? 'text-green-600' : 'text-red-600'
+                                        }`}>
+                                            ৳{Number(selectedTransaction?.attributes?.amount || 0).toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    <Separator />
 
                                     {/* Footer */}
-                                    <div className="text-center pt-3 border-t border-gray-200 -mb-1">
-                                        <p className="text-xs text-gray-500">
-                                            Generated on {new Date().toLocaleDateString('en-GB')} • M/S Raj Travels
-                                        </p>
+                                    <div className="text-center text-xs text-muted-foreground">
+                                        <p>Generated on {new Date().toLocaleDateString('en-GB')}</p>
+                                        <p className="mt-1">M/S Raj Travels</p>
                                     </div>
                                 </>
                             )}
