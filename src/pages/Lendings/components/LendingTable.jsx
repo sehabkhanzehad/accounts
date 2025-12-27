@@ -42,15 +42,14 @@ export function LendingTable({ lendings }) {
                         <TableCell>{lending?.attributes?.paidAmount || 0}</TableCell>
                         <TableCell>{((lending?.attributes?.amount || 0) - (lending?.attributes?.paidAmount || 0)).toFixed(2)}</TableCell>
                         <TableCell>
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                lending?.attributes?.status === 'paid' 
-                                    ? 'bg-green-100 text-green-800' 
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${lending?.attributes?.status === 'paid'
+                                    ? 'bg-green-100 text-green-800'
                                     : lending?.attributes?.status === 'unpaid'
-                                    ? 'bg-red-100 text-red-800'
-                                    : lending?.attributes?.status === 'partial'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-gray-100 text-gray-800'
-                            }`}>
+                                        ? 'bg-red-100 text-red-800'
+                                        : lending?.attributes?.status === 'partial'
+                                            ? 'bg-yellow-100 text-yellow-800'
+                                            : 'bg-muted text-muted-foreground'
+                                }`}>
                                 {lending?.attributes?.status ? (lending.attributes.status.charAt(0).toUpperCase() + lending.attributes.status.slice(1)) : 'Unknown'}
                             </span>
                         </TableCell>

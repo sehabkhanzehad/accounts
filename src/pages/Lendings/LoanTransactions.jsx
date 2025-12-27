@@ -122,13 +122,12 @@ export default function LoanTransactions() {
                                             <span className="text-sm font-medium text-foreground">
                                                 {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
                                             </span>
-                                            <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                loanData.data.attributes.status === 'active'
+                                            <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${loanData.data.attributes.status === 'active'
                                                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                     : loanData.data.attributes.status === 'completed'
-                                                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-                                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
-                                            }`}>
+                                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                                                        : 'bg-muted text-muted-foreground'
+                                                }`}>
                                                 {loanData.data.attributes.status.charAt(0).toUpperCase() + loanData.data.attributes.status.slice(1)}
                                             </div>
                                         </div>
@@ -190,18 +189,16 @@ export default function LoanTransactions() {
                                                 {transaction?.attributes?.title || 'N/A'}
                                             </TableCell>
                                             <TableCell>
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                                    transaction?.attributes?.type === 'income'
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction?.attributes?.type === 'income'
                                                         ? 'bg-green-100 text-green-800'
                                                         : 'bg-red-100 text-red-800'
-                                                }`}>
+                                                    }`}>
                                                     {transaction?.attributes?.type ? (transaction.attributes.type.charAt(0).toUpperCase() + transaction.attributes.type.slice(1)) : 'Unknown'}
                                                 </span>
                                             </TableCell>
                                             <TableCell>{Number(transaction?.attributes?.amount) || 0}</TableCell>
-                                            <TableCell className={`font-medium ${
-                                                (transaction?.balance || 0) >= 0 ? 'text-green-600' : 'text-red-600'
-                                            }`}>
+                                            <TableCell className={`font-medium ${(transaction?.balance || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                                                }`}>
                                                 {Number(transaction?.balance || 0).toFixed(2)}
                                             </TableCell>
                                             <TableCell className="text-right">
@@ -316,9 +313,8 @@ export default function LoanTransactions() {
                                         <p className="text-sm text-muted-foreground mb-1">
                                             {selectedTransaction?.attributes?.type === 'income' ? 'Amount Received' : 'Amount Disbursed'}
                                         </p>
-                                        <p className={`text-2xl font-bold ${
-                                            selectedTransaction?.attributes?.type === 'income' ? 'text-green-600' : 'text-red-600'
-                                        }`}>
+                                        <p className={`text-2xl font-bold ${selectedTransaction?.attributes?.type === 'income' ? 'text-green-600' : 'text-red-600'
+                                            }`}>
                                             ৳{Number(selectedTransaction?.attributes?.amount || 0).toLocaleString()}
                                         </p>
                                     </div>

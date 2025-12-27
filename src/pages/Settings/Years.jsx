@@ -95,7 +95,7 @@ export default function YearsSettings() {
     const handleEdit = (year) => {
         setEditingYear(year)
         setYearName(year.attributes.name || '')
-        
+
         // Parse and format dates properly for input[type="date"]
         const formatDateForInput = (dateString) => {
             if (!dateString) return ''
@@ -105,7 +105,7 @@ export default function YearsSettings() {
             // Return in YYYY-MM-DD format
             return date.toISOString().split('T')[0]
         }
-        
+
         setStartDate(formatDateForInput(year.attributes.startDate))
         setEndDate(formatDateForInput(year.attributes.endDate))
         setStatus(year.attributes.status ?? true)
@@ -211,7 +211,7 @@ export default function YearsSettings() {
                                             type="checkbox"
                                             checked={status}
                                             onChange={(e) => setStatus(e.target.checked)}
-                                            className="w-4 h-4 rounded border-gray-300"
+                                            className="w-4 h-4 rounded border-border"
                                         />
                                         <Label htmlFor="status" className="cursor-pointer">
                                             {t('app.active')}

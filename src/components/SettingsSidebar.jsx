@@ -27,9 +27,9 @@ export function SettingsSidebar() {
     const location = useLocation()
 
     return (
-        <div className="flex h-full w-64 flex-col border-r border-gray-200 bg-gray-50">
-            <div className="flex h-16 items-center border-b border-gray-200 px-6">
-                <h2 className="text-lg font-semibold text-gray-900">{t('app.settings')}</h2>
+        <div className="flex h-full w-64 flex-col border-r border-border bg-muted">
+            <div className="flex h-16 items-center border-b border-border px-6">
+                <h2 className="text-lg font-semibold text-foreground">{t('app.settings')}</h2>
             </div>
             <nav className="flex-1 space-y-1 px-3 py-4">
                 {settingsNavItems.map((item) => {
@@ -41,8 +41,8 @@ export function SettingsSidebar() {
                             className={cn(
                                 'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                                 isActive
-                                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
-                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                    ? 'bg-card text-card-foreground shadow-sm border border-border'
+                                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                             )}
                         >
                             <item.icon className="h-4 w-4" />
