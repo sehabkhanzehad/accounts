@@ -10,6 +10,7 @@ import HajjPackages from '@/pages/HajjPackages/HajjPackages'
 import UmrahPackages from '@/pages/UmrahPackages/UmrahPackages'
 import Employees from '@/pages/Employees/Employees'
 import EmployeeTransactions from '@/pages/Employees/EmployeeTransactions'
+import GroupLeaderTransactions from '@/pages/GroupLeaders/GroupLeaderTransactions'
 import Bills from '@/pages/Bills/Bills'
 import BillTransactions from '@/pages/Bills/BillTransactions'
 import Others from '@/pages/Others/Others'
@@ -48,6 +49,7 @@ function App() {
           <Route path="/sections/banks" element={isAuthenticated ? <Banks /> : <Navigate to="/" replace />} />
           <Route path="/sections/banks/:id/transactions" element={isAuthenticated ? <BankTransactions /> : <Navigate to="/" replace />} />
           <Route path="/sections/group-leaders" element={isAuthenticated ? <GroupLeaders /> : <Navigate to="/" replace />} />
+          <Route path="/sections/group-leaders/:id/transactions" element={isAuthenticated ? <GroupLeaderTransactions /> : <Navigate to="/" replace />} />
           <Route path="/group-leaders" element={isAuthenticated ? <ManagementGroupLeaders /> : <Navigate to="/" replace />} />
           <Route path="/hajj-packages" element={isAuthenticated ? <HajjPackages /> : <Navigate to="/" replace />} />
           <Route path="/umrah-packages" element={isAuthenticated ? <UmrahPackages /> : <Navigate to="/" replace />} />

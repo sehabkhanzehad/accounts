@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { EllipsisVertical } from "lucide-react"
 
-export function GroupLeaderTable({ groupLeaders, onEdit, onDelete }) {
+export function GroupLeaderTable({ groupLeaders, onEdit, onDelete, onViewTransactions }) {
     return (
         <Table>
             <TableHeader>
@@ -57,6 +57,10 @@ export function GroupLeaderTable({ groupLeaders, onEdit, onDelete }) {
                                         </button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={() => onViewTransactions(groupLeader)}>
+                                            See Transactions
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={() => onEdit(groupLeader)}>
                                             Edit
                                         </DropdownMenuItem>

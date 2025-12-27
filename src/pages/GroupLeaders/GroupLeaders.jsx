@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -17,6 +18,7 @@ import { Plus, Users } from 'lucide-react'
 export default function GroupLeaders() {
     const { t } = useTranslation();
     const queryClient = useQueryClient()
+    const navigate = useNavigate()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingGroupLeader, setEditingGroupLeader] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
@@ -100,6 +102,10 @@ export default function GroupLeaders() {
         setOpenDeleteDialog(true)
     }
 
+    const handleViewTransactions = (groupLeader) => {
+        navigate(`/sections/group-leaders/${groupLeader.id}/transactions`)
+    }
+
     const resetForm = () => {
         setEditingGroupLeader(null)
     }
@@ -151,6 +157,7 @@ export default function GroupLeaders() {
                                     groupLeaders={groupLeaders}
                                     onEdit={handleEdit}
                                     onDelete={handleDelete}
+                                    onViewTransactions={handleViewTransactions}
                                 />
                             )}
                         </>
