@@ -51,7 +51,19 @@ export default function Transactions() {
     const meta = data?.meta
 
     return (
-        <DashboardLayout>
+        <DashboardLayout
+            breadcrumbs={[
+                {
+                    type: 'link',
+                    text: t('app.home'),
+                    href: '/',
+                },
+                {
+                    type: 'page',
+                    text: 'Transactions',
+                },
+            ]}
+        >
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
                     <PageHeading
@@ -82,16 +94,20 @@ export default function Transactions() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Section</TableHead>
                                         <TableHead>Title</TableHead>
                                         <TableHead>Type</TableHead>
                                         <TableHead>Amount</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Section</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {transactions.map((transaction) => (
                                         <TableRow key={transaction.id}>
+                                            <TableCell>{new Date(transaction.attributes.date).toLocaleDateString('en-GB')}</TableCell>
+                                            <TableCell>
+                                                {transaction.relationships?.section?.attributes?.name || 'N/A'}
+                                            </TableCell>
                                             <TableCell className="font-medium">
                                                 {transaction.attributes.title}
                                             </TableCell>
@@ -104,10 +120,6 @@ export default function Transactions() {
                                                 </span>
                                             </TableCell>
                                             <TableCell>{transaction.attributes.amount}</TableCell>
-                                            <TableCell>{new Date(transaction.attributes.date).toLocaleDateString('en-GB')}</TableCell>
-                                            <TableCell>
-                                                {transaction.relationships?.section?.attributes?.name || 'N/A'}
-                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
