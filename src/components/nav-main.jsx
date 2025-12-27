@@ -30,8 +30,8 @@ export function NavMain({ items, section }) {
         {items.map((item) => {
           const hasChildren = item.items && item.items.length > 0;
 
-          // Check if any subItem is active
-          const isSubActive = item.items?.some((subItem) => subItem.url === currentPath);
+          // Check if any subItem is active or if current path starts with parent URL
+          const isSubActive = item.items?.some((subItem) => subItem.url === currentPath) || currentPath.startsWith(item.url + '/');
 
           if (hasChildren) {
             return (
@@ -52,7 +52,7 @@ export function NavMain({ items, section }) {
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => {
-                        const isSubItemActive = subItem.url === currentPath;
+                        const isSubItemActive = subItem.url === currentPath || currentPath.startsWith(subItem.url + '/');
                         return (
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton asChild isActive={isSubItemActive}>
@@ -70,7 +70,7 @@ export function NavMain({ items, section }) {
             );
           }
 
-          const isActive = item.url === currentPath;
+          const isActive = item.url === currentPath || currentPath.startsWith(item.url + '/');
 
           return (
             <SidebarMenuItem key={item.title}>

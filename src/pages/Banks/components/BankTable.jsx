@@ -80,7 +80,7 @@ export function BankTable({ banks, onEdit, onDelete, onViewTransactions }) {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuItem onClick={() => onViewTransactions(bank)}>
-                                            See Transaction Details
+                                            See Transactions
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={() => onEdit(bank)}>

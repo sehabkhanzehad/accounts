@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import api from '@/lib/api'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import { EmptyComponent } from '@/components/app/EmptyComponent'
@@ -33,6 +34,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
 export default function BankTransactions() {
+    const { t } = useTranslation()
     const { id } = useParams()
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(15)
@@ -77,7 +79,24 @@ export default function BankTransactions() {
     }
 
     return (
-        <DashboardLayout>
+        <DashboardLayout
+            breadcrumbs={[
+                {
+                    type: 'link',
+                    text: t('app.home'),
+                    href: '/',
+                },
+                {
+                    type: 'link',
+                    text: t('app.sidebar.options.banks'),
+                    href: '/sections/banks',
+                },
+                {
+                    type: 'page',
+                    text: 'Transactions',
+                },
+            ]}
+        >
             <div className="flex flex-col h-full gap-4">
                 <PageHeading
                     title="Bank Transactions"
@@ -156,6 +175,7 @@ export default function BankTransactions() {
                                     <TableRow>
                                         <TableHead>Date</TableHead>
                                         <TableHead>Title</TableHead>
+                                        <TableHead>Voucher No</TableHead>
                                         <TableHead>Type</TableHead>
                                         <TableHead>Before Balance</TableHead>
                                         <TableHead>Amount</TableHead>
@@ -170,6 +190,7 @@ export default function BankTransactions() {
                                             <TableCell className="font-medium max-w-xs truncate" title={transaction?.attributes?.title || 'N/A'}>
                                                 {transaction?.attributes?.title || 'N/A'}
                                             </TableCell>
+                                            <TableCell>{transaction?.attributes?.voucherNo || 'N/A'}</TableCell>
                                             <TableCell>
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction?.attributes?.type === 'income'
                                                         ? 'bg-green-100 text-green-800'
@@ -241,13 +262,19 @@ export default function BankTransactions() {
                                     </div>
 
                                     {/* Transaction Info */}
-                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div className="grid grid-cols-3 gap-4 text-sm">
                                         <div>
                                             <p className="text-muted-foreground">Date</p>
                                             <p className="font-medium">
                                                 {selectedTransaction?.attributes?.date
                                                     ? new Date(selectedTransaction.attributes.date).toLocaleDateString('en-GB')
                                                     : 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-muted-foreground">Voucher No</p>
+                                            <p className="font-medium">
+                                                {selectedTransaction?.attributes?.voucherNo || 'N/A'}
                                             </p>
                                         </div>
                                         <div>

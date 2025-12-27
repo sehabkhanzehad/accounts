@@ -22,7 +22,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { EllipsisVertical, Eye, X, User } from 'lucide-react'
+import { EllipsisVertical, X, User, Receipt } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
@@ -33,7 +33,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
-export default function LoanTransactions() {
+export default function EmployeeTransactions() {
     const { t } = useTranslation()
     const { id } = useParams()
     const [currentPage, setCurrentPage] = useState(1)
@@ -42,9 +42,9 @@ export default function LoanTransactions() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
     const { data, isLoading } = useQuery({
-        queryKey: ['loan-transactions', id, currentPage, rowsPerPage],
+        queryKey: ['employee-transactions', id, currentPage, rowsPerPage],
         queryFn: async () => {
-            const response = await api.get(`/sections/loans/lendings/${id}/transactions`, {
+            const response = await api.get(`/sections/employees/${id}/transactions`, {
                 params: {
                     page: currentPage,
                     per_page: rowsPerPage
@@ -54,10 +54,10 @@ export default function LoanTransactions() {
         }
     })
 
-    const { data: loanData } = useQuery({
-        queryKey: ['loan-details', id],
+    const { data: employeeData } = useQuery({
+        queryKey: ['employee-details', id],
         queryFn: async () => {
-            const response = await api.get(`/sections/loans/lendings/${id}`)
+            const response = await api.get(`/sections/employees/${id}`)
             return response.data
         }
     })
@@ -78,26 +78,11 @@ export default function LoanTransactions() {
         setIsDialogOpen(true)
     }
 
-    // Calculate running balance (process from oldest to newest)
-    const transactionsWithBalance = [...transactions].reverse().reduce((acc, transaction, index) => {
-        const amount = Number(transaction?.attributes?.amount) || 0
-        const type = transaction?.attributes?.type
-        const previousBalance = index > 0 ? acc[index - 1].balance : 0
-
-        let currentBalance = previousBalance
-        if (type === 'expense') {
-            currentBalance += amount
-        } else if (type === 'income') {
-            currentBalance -= amount
-        }
-
-        acc.push({
-            ...transaction,
-            balance: currentBalance
-        })
-
-        return acc
-    }, []).reverse() || [] // Reverse back to original order for display
+    const user = employeeData?.relationships?.employee?.relationships?.user?.attributes
+    const employee = employeeData?.relationships?.employee?.attributes
+    const displayName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : employeeData?.attributes?.name || '-'
+    const email = user?.email || '-'
+    const avatarUrl = user?.avatar
 
     return (
         <DashboardLayout
@@ -109,8 +94,8 @@ export default function LoanTransactions() {
                 },
                 {
                     type: 'link',
-                    text: t('app.sidebar.options.lendings'),
-                    href: '/sections/lendings',
+                    text: t('app.sidebar.options.employees'),
+                    href: '/sections/employees',
                 },
                 {
                     type: 'page',
@@ -120,61 +105,36 @@ export default function LoanTransactions() {
         >
             <div className="flex flex-col h-full gap-4">
                 <PageHeading
-                    title="Loan Transactions"
-                    description="View and manage loan transactions and borrower details"
+                    title="Employee Transactions"
+                    description="View and manage employee transactions"
                 />
 
                 <div className="flex-1">
-                    {/* Loan Details Section */}
-                    {loanData && (
+                    {/* Employee Details Section */}
+                    {employeeData && (
                         <div className="bg-card border rounded-lg p-4 mb-6 shadow-sm">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-3">
-                                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
-                                    </div>
+                                    <Avatar className="h-12 w-12">
+                                        <AvatarImage src={avatarUrl} alt={displayName} />
+                                        <AvatarFallback>
+                                            <User className="h-6 w-6" />
+                                        </AvatarFallback>
+                                    </Avatar>
                                     <div>
                                         <div className="flex items-center space-x-2 mb-0.5">
-                                            <span className="text-xs font-medium text-muted-foreground">Borrower:</span>
                                             <span className="text-sm font-medium text-foreground">
-                                                {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
+                                                {displayName}
                                             </span>
-                                            <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${loanData.data.attributes.status === 'active'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : loanData.data.attributes.status === 'completed'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                {loanData.data.attributes.status.charAt(0).toUpperCase() + loanData.data.attributes.status.slice(1)}
-                                            </div>
+                                            <Badge variant="outline" className="text-xs">
+                                                {employee?.position || 'Employee'}
+                                            </Badge>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
-                                            {loanData.data.relationships.loanable.attributes.email}
+                                            {email}
                                         </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-6">
-                                    <div className="text-right">
-                                        <p className="text-xs text-muted-foreground">Loan Amount</p>
-                                        <p className="text-sm font-medium text-foreground">
-                                            ৳{Number(loanData.data.attributes.amount || 0).toLocaleString()}
-                                        </p>
-                                    </div>
-
-                                    <div className="text-right">
-                                        <p className="text-xs text-muted-foreground">Paid Amount</p>
-                                        <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                                            ৳{Number(loanData.data.attributes.paidAmount || 0).toLocaleString()}
-                                        </p>
-                                    </div>
-
-                                    <div className="text-right">
-                                        <p className="text-xs text-muted-foreground">Amount Due</p>
-                                        <p className="text-sm font-semibold text-foreground">
-                                            ৳{Number((loanData.data.attributes.amount || 0) - (loanData.data.attributes.paidAmount || 0)).toLocaleString()}
+                                        <p className="text-xs text-muted-foreground">
+                                            Code: {employeeData.attributes.code}
                                         </p>
                                     </div>
                                 </div>
@@ -185,7 +145,8 @@ export default function LoanTransactions() {
                     {transactions.length === 0 ? (
                         <EmptyComponent
                             title="No transactions found"
-                            description="This loan doesn't have any transactions yet."
+                            description="This employee doesn't have any transactions yet."
+                            icon={<Receipt className="h-12 w-12" />}
                         />
                     ) : (
                         <div className="rounded-md border">
@@ -196,13 +157,14 @@ export default function LoanTransactions() {
                                         <TableHead>Title</TableHead>
                                         <TableHead>Voucher No</TableHead>
                                         <TableHead>Type</TableHead>
+                                        <TableHead>Before Balance</TableHead>
                                         <TableHead>Amount</TableHead>
-                                        <TableHead>Balance</TableHead>
+                                        <TableHead>After Balance</TableHead>
                                         <TableHead className="text-right">Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {transactionsWithBalance?.map((transaction, index) => (
+                                    {transactions?.map((transaction, index) => (
                                         <TableRow key={transaction?.id || `transaction-${index}`}>
                                             <TableCell>{transaction?.attributes?.date ? new Date(transaction.attributes.date).toLocaleDateString('en-GB') : 'N/A'}</TableCell>
                                             <TableCell className="font-medium max-w-xs truncate" title={transaction?.attributes?.title || 'N/A'}>
@@ -210,18 +172,22 @@ export default function LoanTransactions() {
                                             </TableCell>
                                             <TableCell>{transaction?.attributes?.voucherNo || 'N/A'}</TableCell>
                                             <TableCell>
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction?.attributes?.type === 'income'
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                                    transaction?.attributes?.type === 'income'
                                                         ? 'bg-green-100 text-green-800'
                                                         : 'bg-red-100 text-red-800'
-                                                    }`}>
+                                                }`}>
                                                     {transaction?.attributes?.type ? (transaction.attributes.type.charAt(0).toUpperCase() + transaction.attributes.type.slice(1)) : 'Unknown'}
                                                 </span>
                                             </TableCell>
-                                            <TableCell>{Number(transaction?.attributes?.amount) || 0}</TableCell>
-                                            <TableCell className={`font-medium ${(transaction?.balance || 0) >= 0 ? 'text-green-600' : 'text-red-600'
-                                                }`}>
-                                                {Number(transaction?.balance || 0).toFixed(2)}
+                                            <TableCell>{Number(transaction?.attributes?.beforeBalance || 0).toFixed(2)}</TableCell>
+                                            <TableCell>
+                                                <span className={transaction?.attributes?.type === 'income' ? 'text-red-600' : 'text-green-600'}>
+                                                    {transaction?.attributes?.type === 'income' ? '-' : '+'}
+                                                    {Number(transaction?.attributes?.amount || 0).toFixed(2)}
+                                                </span>
                                             </TableCell>
+                                            <TableCell>{Number(transaction?.attributes?.afterBalance || 0).toFixed(2)}</TableCell>
                                             <TableCell className="text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -231,7 +197,6 @@ export default function LoanTransactions() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuItem onClick={() => handleViewTransaction(transaction)}>
-                                                            <Eye className="mr-2 h-4 w-4" />
                                                             View Details
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
@@ -267,12 +232,12 @@ export default function LoanTransactions() {
                         </DialogHeader>
 
                         <div className="space-y-4">
-                            {selectedTransaction && loanData && (
+                            {selectedTransaction && (
                                 <>
                                     {/* Transaction Type */}
                                     <div className="flex justify-center">
                                         <Badge variant={selectedTransaction?.attributes?.type === 'income' ? 'default' : 'destructive'}>
-                                            {selectedTransaction?.attributes?.type === 'income' ? 'Payment Receipt' : 'Loan Disbursement'}
+                                            {selectedTransaction?.attributes?.type === 'income' ? 'Deposit' : 'Expense'}
                                         </Badge>
                                     </div>
 
@@ -295,30 +260,31 @@ export default function LoanTransactions() {
                                         <div>
                                             <p className="text-muted-foreground">Type</p>
                                             <p className="font-medium">
-                                                {selectedTransaction?.attributes?.type === 'income' ? 'Payment' : 'Loan'}
+                                                {selectedTransaction?.attributes?.type === 'income' ? 'Deposit' : 'Expense'}
                                             </p>
                                         </div>
                                     </div>
 
                                     <Separator />
 
-                                    {/* Borrower */}
-                                    <div className="flex items-center space-x-3">
-                                        <User className="h-4 w-4 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Borrower</p>
-                                            <p className="text-sm font-medium">
-                                                {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
-                                            </p>
-                                        </div>
-                                        <div className="ml-auto">
-                                            <Badge variant="outline" className="text-xs">
-                                                {loanData.data.attributes.status}
-                                            </Badge>
-                                        </div>
-                                    </div>
-
-                                    <Separator />
+                                    {/* Employee Info */}
+                                    {employeeData && (
+                                        <>
+                                            <div className="flex items-center space-x-3">
+                                                <User className="h-4 w-4 text-muted-foreground" />
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">Employee</p>
+                                                    <p className="text-sm font-medium">
+                                                        {displayName}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {email}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Separator />
+                                        </>
+                                    )}
 
                                     {/* Transaction Details */}
                                     <div>
@@ -338,11 +304,11 @@ export default function LoanTransactions() {
                                     {/* Amount */}
                                     <div className="text-center py-4">
                                         <p className="text-sm text-muted-foreground mb-1">
-                                            {selectedTransaction?.attributes?.type === 'income' ? 'Amount Received' : 'Amount Disbursed'}
+                                            Amount
                                         </p>
                                         <p className={`text-2xl font-bold ${selectedTransaction?.attributes?.type === 'income' ? 'text-green-600' : 'text-red-600'
                                             }`}>
-                                            ৳{Number(selectedTransaction?.attributes?.amount || 0).toLocaleString()}
+                                            ৳{Number(selectedTransaction?.attributes?.amount || 0).toFixed(2)}
                                         </p>
                                     </div>
 
