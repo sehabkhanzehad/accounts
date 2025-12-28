@@ -56,11 +56,11 @@ export default function PieChart({ data, title, description, height = 300 }) {
     }, [data, total]);
 
     const colors = [
-        'hsl(var(--chart-1))',
-        'hsl(var(--chart-2))',
-        'hsl(var(--chart-3))',
-        'hsl(var(--chart-4))',
-        'hsl(var(--chart-5))',
+        '#3b82f6', // Blue
+        '#10b981', // Green
+        '#f59e0b', // Amber
+        '#ef4444', // Red
+        '#8b5cf6', // Purple
     ];
 
     return (
