@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
-import DashboardLayout from '@/Layouts/DashboardLayout'
-import StatCard from '@/components/analytics/StatCard'
-import LineChart from '@/components/analytics/LineChart'
-import PieChart from '@/components/analytics/PieChart'
-import { analyticsApi } from '@/lib/api'
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import DashboardLayout from '@/Layouts/DashboardLayout';
+import StatCard from '@/components/analytics/StatCard';
+import LineChart from '@/components/analytics/LineChart';
+import BarChart from '@/components/analytics/BarChart';
+import PieChart from '@/components/analytics/PieChart';
+import { analyticsApi } from '@/lib/api';
 import {
     DollarSign,
     TrendingUp,
@@ -17,41 +18,26 @@ import {
     UserCheck,
     Briefcase,
     FileText,
-    Wallet,
-    Calendar
-} from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+    Wallet
+} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function Dashboard() {
+export default function AnalyticsDashboard() {
     const { t } = useTranslation();
     const [selectedYear, setSelectedYear] = useState(null);
-
-    // Fetch years list
-    const { data: yearsData } = useQuery({
-        queryKey: ['analytics', 'years'],
-        queryFn: () => analyticsApi.getYears().then(res => res.data),
-    });
-
-    // Set current year as default when years data loads
-    useEffect(() => {
-        if (yearsData?.current_year_id && !selectedYear) {
-            setSelectedYear(yearsData.current_year_id);
-        }
-    }, [yearsData, selectedYear]);
 
     // Fetch dashboard analytics
     const { data: dashboardData, isLoading: isDashboardLoading } = useQuery({
         queryKey: ['analytics', 'dashboard', selectedYear],
         queryFn: () => analyticsApi.getDashboard(selectedYear).then(res => res.data),
-        enabled: !!selectedYear, // Only fetch when year is selected
+    });
+
+    // Fetch income/expense data
+    const { data: incomeExpenseData, isLoading: isIncomeExpenseLoading } = useQuery({
+        queryKey: ['analytics', 'income-expense', selectedYear],
+        queryFn: () => analyticsApi.getIncomeExpense(selectedYear, 'monthly').then(res => res.data),
     });
 
     // Fetch top performers
@@ -73,7 +59,7 @@ export default function Dashboard() {
             <DashboardLayout
                 breadcrumbs={[
                     { type: 'link', text: t('app.home'), href: '/' },
-                    { type: 'page', text: t('app.dashboard') },
+                    { type: 'page', text: 'Analytics Dashboard' },
                 ]}
             >
                 <div className="space-y-6">
@@ -93,32 +79,10 @@ export default function Dashboard() {
         <DashboardLayout
             breadcrumbs={[
                 { type: 'link', text: t('app.home'), href: '/' },
-                { type: 'page', text: t('app.dashboard') },
+                { type: 'page', text: 'Analytics Dashboard' },
             ]}
         >
             <div className="space-y-6">
-                {/* Year Selector */}
-                <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-                    <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <Select
-                            value={selectedYear?.toString()}
-                            onValueChange={(value) => setSelectedYear(parseInt(value))}
-                        >
-                            <SelectTrigger className="w-[200px]">
-                                <SelectValue placeholder="Select Year" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {yearsData?.years?.map((year) => (
-                                    <SelectItem key={year.id} value={year.id.toString()}>
-                                        {year.name} {year.is_active && '(Current)'}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
                 {/* Overview Stats */}
                 <div>
                     <h2 className="text-2xl font-bold mb-4">Overview</h2>
@@ -421,5 +385,5 @@ export default function Dashboard() {
                 </Card>
             </div>
         </DashboardLayout>
-    )
+    );
 }

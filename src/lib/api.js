@@ -37,4 +37,14 @@ api.interceptors.response.use(
     }
 );
 
+// Analytics API
+export const analyticsApi = {
+    getDashboard: (yearId) => api.get('/analytics/dashboard', { params: { year_id: yearId } }),
+    getIncomeExpense: (yearId, period = 'monthly') => 
+        api.get('/analytics/income-expense', { params: { year_id: yearId, period } }),
+    getTopPerformers: (limit = 5) => 
+        api.get('/analytics/top-performers', { params: { limit } }),
+    getYears: () => api.get('/analytics/years'),
+};
+
 export default api;
