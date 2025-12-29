@@ -23,6 +23,27 @@ export const AuthProvider = ({ children }) => {
         };
 
         checkAuth();
+
+        // Listen for storage changes to update user state
+        const handleStorageChange = (e) => {
+            if (e.key === 'user') {
+                const newUser = e.newValue ? JSON.parse(e.newValue) : null;
+                setUser(newUser);
+            }
+        };
+
+        // Listen for custom user update event in same tab
+        const handleUserUpdate = (e) => {
+            setUser(e.detail);
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('userUpdated', handleUserUpdate);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('userUpdated', handleUserUpdate);
+        };
     }, []);
 
     const login = (token, userData, remember) => {
