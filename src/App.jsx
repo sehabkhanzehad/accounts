@@ -27,9 +27,13 @@ import ManagementGroupLeaders from './pages/ManagementGroupLeaders/ManagementGro
 import Transactions from '@/pages/Transactions/Transactions'
 
 function App() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const { i18n } = useTranslation();
   const language = i18n.language;
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
   return (
     <div className={language === 'bn' ? 'font-bengali' : ''}>
