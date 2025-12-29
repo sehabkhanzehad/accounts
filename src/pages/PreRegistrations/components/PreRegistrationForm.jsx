@@ -43,9 +43,10 @@ const preRegistrationSchema = z.object({
     is_married: z.boolean(),
     date_of_birth: z.string().optional(),
     nid: z.string().min(1, "NID is required"),
-    serial_no: z.string().min(1, "Serial no is required"),
+    serial_no: z.string().optional(),
     bank_voucher_no: z.string().optional(),
-    date: z.string().min(1, "Date is required"),
+    date: z.string().optional(),
+    status: z.enum(['pending', 'active', 'registered', 'archived', 'transferred', 'cancelled'], "Status is required"),
 })
 
 export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration, onSubmit, isSubmitting, groupLeaders, banks }) {
@@ -68,6 +69,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
             serial_no: '',
             bank_voucher_no: '',
             date: new Date().toISOString().split('T')[0],
+            status: 'pending',
         }
     })
 
@@ -91,6 +93,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                 serial_no: editingPreRegistration.attributes.serialNo || '',
                 bank_voucher_no: editingPreRegistration.attributes.bankVoucherNo || '',
                 date: editingPreRegistration.attributes.date ? new Date(editingPreRegistration.attributes.date).toISOString().split('T')[0] : '',
+                status: editingPreRegistration.attributes.status || 'pending',
             })
             form.setValue('date', editingPreRegistration.attributes.date ? new Date(editingPreRegistration.attributes.date).toISOString().split('T')[0] : '')
             form.trigger('date')
@@ -111,6 +114,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                 serial_no: '',
                 bank_voucher_no: '',
                 date: new Date().toISOString().split('T')[0],
+                status: 'pending',
             })
         }
     }, [editingPreRegistration, open, form])
@@ -351,7 +355,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     name="serial_no"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Serial No *</FormLabel>
+                                            <FormLabel>Serial No</FormLabel>
                                             <FormControl>
                                                 <Input {...field} />
                                             </FormControl>
@@ -379,7 +383,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     name="date"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Date *</FormLabel>
+                                            <FormLabel>Date</FormLabel>
                                             <FormControl>
                                                 <Input type="date" {...field} />
                                             </FormControl>
@@ -388,6 +392,31 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     )}
                                 />
                             </div>
+                            <FormField
+                                control={form.control}
+                                name="status"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Status *</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select status" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="pending">Pending</SelectItem>
+                                                <SelectItem value="active">Active</SelectItem>
+                                                <SelectItem value="registered">Registered</SelectItem>
+                                                <SelectItem value="archived">Archived</SelectItem>
+                                                <SelectItem value="transferred">Transferred</SelectItem>
+                                                <SelectItem value="cancelled">Cancelled</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
                         <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
