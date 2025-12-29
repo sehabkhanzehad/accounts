@@ -23,7 +23,7 @@ const signInSchema = z.object({
 });
 
 export default function Home() {
-    usePageTitle('Sign In');
+    usePageTitle(t('app.signIn'));
     const [formData, setFormData] = useState({
         email: "",
         password: "",

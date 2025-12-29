@@ -1,3 +1,5 @@
+import { LanguageToggle } from '@/components/ui/language-toggle';
+
 const AuthLayout = ({ children }) => {
   return (
     <div className="flex min-h-screen">
@@ -35,7 +37,10 @@ const AuthLayout = ({ children }) => {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex flex-1 items-center justify-center p-6 bg-background">
+      <div className="flex flex-1 items-center justify-center p-6 bg-background relative">
+        <div className="absolute top-4 right-4">
+          <LanguageToggle />
+        </div>
         <div className="w-full max-w-md">
           {children}
         </div>

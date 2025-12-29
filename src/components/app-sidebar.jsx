@@ -58,7 +58,7 @@ export function AppSidebar({ ...props }) {
       items: [],
     },
     {
-      title: "Hajj",
+      title: t('app.sidebar.options.hajj'),
       url: "/pilgrims",
       icon: BookOpen,
       items: [
@@ -71,22 +71,22 @@ export function AppSidebar({ ...props }) {
           url: "/registrations",
         },
         {
-          title: "Packages",
+          title: t('app.sidebar.options.packages'),
           url: "/hajj-packages",
         },
       ],
     },
     {
-      title: "Umrah",
+      title: t('app.sidebar.options.umrah'),
       url: "/umrah",
       icon: GalleryVerticalEnd,
       items: [
         {
-          title: "Pilgrims",
+          title: t('app.sidebar.options.pilgrims'),
           url: "/umrah",
         },
         {
-          title: "Packages",
+          title: t('app.sidebar.options.packages'),
           url: "/umrah-packages",
         }
       ],
@@ -122,7 +122,7 @@ export function AppSidebar({ ...props }) {
       ],
     },
     {
-      title: "Loans",
+      title: t('app.sidebar.options.loans'),
       url: "/sections/lendings",
       icon: Wallet,
       items: [
@@ -137,7 +137,7 @@ export function AppSidebar({ ...props }) {
       ],
     },
     {
-      title: "Transactions",
+      title: t('app.sidebar.options.transactions'),
       url: "/transactions",
       icon: Receipt,
       items: [],

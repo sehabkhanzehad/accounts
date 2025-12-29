@@ -10,7 +10,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-// import { LanguageToggle } from '@/components/ui/language-toggle';
+import { LanguageToggle } from '@/components/ui/language-toggle';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CreateTransactionModal from '@/pages/Transactions/components/CreateTransactionModal';
@@ -137,9 +137,9 @@ export default function DashboardLayout({ children, breadcrumbs }) {
                     <path d="M5 12h14"></path>
                     <path d="M12 5v14"></path>
                   </svg>
-                  Add Transaction
+                  {t('app.addTransaction')}
                 </button>
-                {/* <LanguageToggle /> */}
+                <LanguageToggle />
                 <ThemeToggle />
               </div>
             </div>

@@ -21,7 +21,13 @@
                 "bills": "Bills",
                 "others": "Others",
                 "lendings": "Lending & Collection",
-                "borrowings": "Borrowing & Repayment"
+                "borrowings": "Borrowing & Repayment",
+                "hajj": "Hajj",
+                "umrah": "Umrah",
+                "pilgrims": "Pilgrims",
+                "packages": "Packages",
+                "loans": "Loans",
+                "transactions": "Transactions"
             }
         },
         "title": "Accounts",
@@ -105,6 +111,10 @@
         "toggleTheme": "Toggle between light and dark mode",
         "language": "Language",
         "selectLanguage": "Select your preferred language",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "saving": "Saving changes...",
+        "save": "Save",
         "cancel": "Cancel",
         "noYears": "No Years Found",
         "noYearsDescription": "Get started by adding your first year",

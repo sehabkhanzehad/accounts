@@ -36,7 +36,7 @@ export default function Dashboard() {
     const [selectedYear, setSelectedYear] = useState(null);
 
     // Set page title
-    usePageTitle('Dashboard');
+    usePageTitle(t('app.dashboard'));
 
     // Fetch years list
     const { data: yearsData } = useQuery({
