@@ -3,7 +3,7 @@
         "sidebar": {
             "section": {
                 "platform": "প্ল্যাটফর্ম",
-                "management": "ব্যবস্থাপনা",
+                "management": "ম্যানেজমেন্ট",
                 "accounts": "অ্যাকাউন্টস"
             },
             "menu": {
@@ -26,12 +26,12 @@
                 "umrah": "উমরাহ",
                 "pilgrims": "পিলগ্রিম",
                 "packages": "প্যাকেজ",
-                "loans": "ঋণ",
+                "loans": "ধার",
                 "transactions": "লেনদেন"
             }
         },
         "title": "অ্যাকাউন্টস",
-        "welcome": "অ্যাকাউন্টসে স্বাগতম",
+        "welcome": "ওয়েলকাম ব্যাক টু অ্যাকাউন্টস!",
         "dashboard": "ড্যাশবোর্ড",
         "home": "হোম",
         "signIn": "সাইন ইন",
