@@ -78,6 +78,8 @@
         "updateFailed": "অ্যাকাউন্ট আপডেট ব্যর্থ",
         "passwordSettings": "পাসওয়ার্ড সেটিংস",
         "updatePassword": "আপনার পাসওয়ার্ড আপডেট করুন",
+        "updatePasswordButton": "পাসওয়ার্ড আপডেট করুন",
+        "updatingPassword": "পাসওয়ার্ড আপডেট হচ্ছে...",
         "currentPassword": "বর্তমান পাসওয়ার্ড",
         "newPassword": "নতুন পাসওয়ার্ড",
         "confirmNewPassword": "নতুন পাসওয়ার্ড নিশ্চিত করুন",

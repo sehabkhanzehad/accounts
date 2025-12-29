@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useTranslation } from 'react-i18next'
 import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
+import api from '@/lib/api'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -40,7 +40,7 @@ export default function PasswordSettings() {
     })
 
     const { mutate, isPending } = useMutation({
-        mutationFn: async (data) => await axios.post('/api/user/change-password', data),
+        mutationFn: async (data) => await api.post('/user/change-password', data),
         onSuccess: () => {
             setError('')
             reset()
@@ -97,65 +97,65 @@ export default function PasswordSettings() {
                             <div className="relative">
                                 <Input
                                     id="password"
-                                type={showNew ? 'text' : 'password'}
-                                {...register('password')}
-                                className="pr-10"
-                            />
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="absolute inset-y-0 right-0 px-3 flex items-center"
-                                onClick={() => setShowNew(!showNew)}
-                            >
-                                {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    type={showNew ? 'text' : 'password'}
+                                    {...register('password')}
+                                    className="pr-10"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute inset-y-0 right-0 px-3 flex items-center"
+                                    onClick={() => setShowNew(!showNew)}
+                                >
+                                    {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                            {errors.password && (
+                                <p className="text-sm text-destructive">{errors.password.message}</p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="password_confirmation">
+                                {t('app.confirmNewPassword')}
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    id="password_confirmation"
+                                    type={showConfirm ? 'text' : 'password'}
+                                    {...register('password_confirmation')}
+                                    className="pr-10"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute inset-y-0 right-0 px-3 flex items-center"
+                                    onClick={() => setShowConfirm(!showConfirm)}
+                                >
+                                    {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                            {errors.password_confirmation && (
+                                <p className="text-sm text-destructive">{errors.password_confirmation.message}</p>
+                            )}
+                        </div>
+
+                        {error && (
+                            <div className="rounded-lg bg-destructive/10 p-3">
+                                <p className="text-sm text-destructive">{error}</p>
+                            </div>
+                        )}
+
+                        <div className="flex justify-end pt-4">
+                            <Button type="submit" disabled={isPending}>
+                                {isPending ? t('app.updatingPassword') : t('app.updatePasswordButton')}
                             </Button>
                         </div>
-                        {errors.password && (
-                            <p className="text-sm text-destructive">{errors.password.message}</p>
-                        )}
                     </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="password_confirmation">
-                            {t('app.confirmNewPassword')}
-                        </Label>
-                        <div className="relative">
-                            <Input
-                                id="password_confirmation"
-                                type={showConfirm ? 'text' : 'password'}
-                                {...register('password_confirmation')}
-                                className="pr-10"
-                            />
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="absolute inset-y-0 right-0 px-3 flex items-center"
-                                onClick={() => setShowConfirm(!showConfirm)}
-                            >
-                                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                        </div>
-                        {errors.password_confirmation && (
-                            <p className="text-sm text-destructive">{errors.password_confirmation.message}</p>
-                        )}
-                    </div>
-
-                    {error && (
-                        <div className="rounded-lg bg-destructive/10 p-3">
-                            <p className="text-sm text-destructive">{error}</p>
-                        </div>
-                    )}
-
-                    <div className="flex justify-end pt-4">
-                        <Button type="submit" disabled={isPending}>
-                            {isPending ? t('app.signingIn') : t('app.updateAccount')}
-                        </Button>
-                    </div>
-                </div>
-            </form>
-        </CardContent>
-    </Card>
+                </form>
+            </CardContent>
+        </Card>
     )
 }

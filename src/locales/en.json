@@ -78,6 +78,8 @@
         "updateFailed": "Failed to update account",
         "passwordSettings": "Password Settings",
         "updatePassword": "Update your password",
+        "updatePasswordButton": "Update Password",
+        "updatingPassword": "Updating password...",
         "currentPassword": "Current Password",
         "newPassword": "New Password",
         "confirmNewPassword": "Confirm New Password",
