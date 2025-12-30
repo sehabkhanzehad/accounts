@@ -45,6 +45,13 @@ const AuthLayout = ({ children }) => {
           {children}
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="absolute bottom-0 left-0 right-0 border-t bg-background px-4 py-4">
+        <div className="flex items-center justify-center text-sm text-muted-foreground">
+          <p>Developed by Zehad</p>
+        </div>
+      </footer>
     </div>
   );
 };
