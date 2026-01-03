@@ -234,7 +234,7 @@
         "internal": "ইন্টার্নাল",
         "external": "এক্সটার্নাল",
         "manageSections": "আপনার {{section}} সেকশন ম্যানেজ করুন।",
-        "addSection": "{{section}} যোগ করুন",
+        "addSection": "অ্যাড {{section}}",
         "addSections": "{{purpose}} কার্যকরভাবে ব্যবস্থাপনা করার জন্য {{section}} সেকশন যোগ করুন।",
         "noSectionsFound": "কোনো {{section}} সেকশন পাওয়া যায়নি",
         "getStartedSections": "আপনার প্রথম {{section}} সেকশন তৈরি করে শুরু করুন।",
