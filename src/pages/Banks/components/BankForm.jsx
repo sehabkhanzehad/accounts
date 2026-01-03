@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { useTranslation } from 'react-i18next'
 import {
     Dialog,
     DialogContent,
@@ -49,6 +50,8 @@ const bankSchema = z.object({
 })
 
 export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitting }) {
+    const { t, i18n } = useTranslation()
+    const language = i18n.language
     const form = useForm({
         resolver: zodResolver(bankSchema),
         defaultValues: {
@@ -142,7 +145,7 @@ export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitti
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+            <DialogContent className={`max-w-3xl max-h-[85vh] overflow-y-auto ${language === 'bn' ? 'font-bengali' : ''}`}>
                 <DialogHeader className="pb-4">
                     <DialogTitle className="text-xl font-semibold">{editingBank ? 'Edit Bank' : 'Add Bank'}</DialogTitle>
                     <DialogDescription className="text-muted-foreground">
