@@ -220,7 +220,7 @@
         "public": "পাবলিক",
         "internal": "অভ্যন্তরীণ",
         "external": "বাহ্যিক",
-        "manageSections": "আপনার {{section}} সেকশন ব্যবস্থাপনা করুন।",
+        "manageSections": "আপনার {{section}} সেকশন ম্যানেজ করুন।",
         "addSection": "{{section}} যোগ করুন",
         "addSections": "{{purpose}} কার্যকরভাবে ব্যবস্থাপনা করার জন্য {{section}} সেকশন যোগ করুন।",
         "noSectionsFound": "কোনো {{section}} সেকশন পাওয়া যায়নি",
