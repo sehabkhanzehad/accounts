@@ -332,7 +332,7 @@ export default function CreateUmrah() {
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <PageHeading
-                        title="Create Umrah Registration"
+                        title="Create Umrah"
                         description="Register a pilgrim for Umrah"
                     />
                 </div>
