@@ -27,8 +27,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import api from '@/lib/api'
 
 const umrahSchema = z.object({
     group_leader_id: z.string().min(1, "Group leader is required"),
@@ -45,6 +46,16 @@ const umrahSchema = z.object({
         date_of_birth: z.string().optional(),
     }).optional(),
     package_id: z.string().min(1, "Package is required"),
+    passport_type: z.enum(['existing', 'new', 'none']).optional(),
+    passport_id: z.string().optional(),
+    new_passport: z.object({
+        passport_number: z.string().optional(),
+        issue_date: z.string().optional(),
+        expiry_date: z.string().optional(),
+        passport_type: z.enum(['ordinary', 'official', 'diplomatic']).optional(),
+        file: z.any().optional(),
+        notes: z.string().optional(),
+    }).optional(),
 }).superRefine((data, ctx) => {
     const pilgrimType = data.pilgrim_type || 'existing'
     
@@ -80,10 +91,66 @@ const umrahSchema = z.object({
             }
         }
     }
+
+    // Passport validation
+    const passportType = data.passport_type || 'none'
+    if (passportType === 'existing') {
+        if (!data.passport_id || data.passport_id.length === 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Please select an existing passport",
+                path: ["passport_id"]
+            })
+        }
+    } else if (passportType === 'new') {
+        if (!data.new_passport) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Please fill in passport details",
+                path: ["new_passport", "passport_number"]
+            })
+        } else {
+            const hasAnyPassportField = Object.values(data.new_passport).some(val => val && String(val).trim().length > 0)
+            
+            if (hasAnyPassportField) {
+                if (!data.new_passport.passport_number || data.new_passport.passport_number.trim().length === 0) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Passport number is required",
+                        path: ["new_passport", "passport_number"]
+                    })
+                }
+                if (!data.new_passport.issue_date || data.new_passport.issue_date.trim().length === 0) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Issue date is required",
+                        path: ["new_passport", "issue_date"]
+                    })
+                }
+                if (!data.new_passport.expiry_date || data.new_passport.expiry_date.trim().length === 0) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Expiry date is required",
+                        path: ["new_passport", "expiry_date"]
+                    })
+                }
+                if (!data.new_passport.passport_type || data.new_passport.passport_type.trim().length === 0) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Passport type is required",
+                        path: ["new_passport", "passport_type"]
+                    })
+                }
+            }
+        }
+    }
 })
 
 export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmitting, packages, groupLeaders, pilgrims }) {
     const [pilgrimType, setPilgrimType] = useState('existing')
+    const [passportType, setPassportType] = useState('none')
+    const [availablePassports, setAvailablePassports] = useState([])
+    const [loadingPassports, setLoadingPassports] = useState(false)
 
     const form = useForm({
         resolver: zodResolver(umrahSchema),
@@ -102,12 +169,25 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
                 date_of_birth: '',
             },
             package_id: '',
+            passport_type: 'none',
+            passport_id: '',
+            new_passport: {
+                passport_number: '',
+                issue_date: '',
+                expiry_date: '',
+                passport_type: 'ordinary',
+                file: null,
+                notes: '',
+            },
         }
     })
 
     useEffect(() => {
         if (open) {
-            setPilgrimType('existing') // Reset pilgrim type state
+            setPilgrimType('existing')
+            setPassportType('none')
+            setAvailablePassports([])
+            
             if (editingUmrah) {
                 form.reset({
                     group_leader_id: editingUmrah.relationships?.groupLeader?.id?.toString() || '',
@@ -131,10 +211,48 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
                         date_of_birth: '',
                     },
                     package_id: '',
+                    passport_type: 'none',
+                    passport_id: '',
+                    new_passport: {
+                        passport_number: '',
+                        issue_date: '',
+                        expiry_date: '',
+                        passport_type: 'ordinary',
+                        file: null,
+                        notes: '',
+                    },
                 })
             }
         }
     }, [editingUmrah, form, open])
+
+    // Fetch passports when existing pilgrim is selected
+    const fetchPilgrimPassports = async (pilgrimId) => {
+        if (!pilgrimId) {
+            setAvailablePassports([])
+            return
+        }
+
+        setLoadingPassports(true)
+        try {
+            const response = await api.get(`/umrah/passports?pilgrim_id=${pilgrimId}`)
+            setAvailablePassports(response.data.data || [])
+        } catch (error) {
+            console.error('Error fetching passports:', error)
+            setAvailablePassports([])
+        } finally {
+            setLoadingPassports(false)
+        }
+    }
+
+    const handlePilgrimChange = (pilgrimId) => {
+        form.setValue('pilgrim_id', pilgrimId)
+        fetchPilgrimPassports(pilgrimId)
+        // Reset passport selection when pilgrim changes
+        setPassportType('none')
+        form.setValue('passport_type', 'none')
+        form.setValue('passport_id', '')
+    }
 
     const handlePilgrimTypeChange = (value) => {
         setPilgrimType(value)
@@ -146,24 +264,69 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
         } else if (value === 'new') {
             form.clearErrors('pilgrim_id')
         }
+
+        // Reset passport when changing pilgrim type
+        setPassportType('none')
+        setAvailablePassports([])
+        form.setValue('passport_type', 'none')
+        form.setValue('passport_id', '')
+    }
+
+    const handlePassportTypeChange = (value) => {
+        setPassportType(value)
+        form.setValue('passport_type', value)
+        
+        // Clear validation errors
+        if (value === 'existing') {
+            form.clearErrors(['new_passport'])
+        } else if (value === 'new' || value === 'none') {
+            form.clearErrors('passport_id')
+        }
     }
 
     const handleFormSubmit = (data) => {
-        const submitData = {
-            group_leader_id: data.group_leader_id,
-            package_id: data.package_id,
-        }
+        const formData = new FormData()
 
-        // For editing, pilgrim_type is not in the form, so we assume existing pilgrim
+        // Basic fields
+        formData.append('group_leader_id', data.group_leader_id)
+        formData.append('package_id', data.package_id)
+
+        // Pilgrim data
         const pilgrimType = data.pilgrim_type || 'existing'
-
         if (pilgrimType === 'existing') {
-            submitData.pilgrim_id = data.pilgrim_id
+            formData.append('pilgrim_id', data.pilgrim_id)
         } else {
-            submitData.new_pilgrim = data.new_pilgrim
+            Object.keys(data.new_pilgrim).forEach(key => {
+                if (data.new_pilgrim[key] !== undefined && data.new_pilgrim[key] !== '') {
+                    formData.append(`new_pilgrim[${key}]`, data.new_pilgrim[key])
+                }
+            })
         }
 
-        onSubmit(submitData)
+        // Passport data
+        const passportType = data.passport_type || 'none'
+        if (passportType === 'existing' && data.passport_id) {
+            formData.append('passport_id', data.passport_id)
+        } else if (passportType === 'new' && data.new_passport) {
+            const hasAnyPassportField = Object.entries(data.new_passport).some(([key, val]) => {
+                if (key === 'file') return false
+                return val && String(val).trim().length > 0
+            })
+
+            if (hasAnyPassportField) {
+                Object.keys(data.new_passport).forEach(key => {
+                    if (key === 'file') {
+                        if (data.new_passport.file) {
+                            formData.append('new_passport[file]', data.new_passport.file)
+                        }
+                    } else if (data.new_passport[key] !== undefined && data.new_passport[key] !== '') {
+                        formData.append(`new_passport[${key}]`, data.new_passport[key])
+                    }
+                })
+            }
+        }
+
+        onSubmit(formData)
     }
 
     return (
@@ -274,7 +437,10 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Pilgrim</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
+                                        <Select 
+                                            onValueChange={handlePilgrimChange}
+                                            value={field.value}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select pilgrim" />
@@ -423,6 +589,185 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
                                     />
                                 </div>
 
+                            </div>
+                        )}
+
+                        {/* Passport Section */}
+                        {!editingUmrah && (
+                            <div className="space-y-4 border-t pt-4">
+                                <h3 className="text-lg font-semibold">Passport Information (Optional)</h3>
+                                
+                                <FormField
+                                    control={form.control}
+                                    name="passport_type"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Passport Type</FormLabel>
+                                            <Select 
+                                                onValueChange={handlePassportTypeChange} 
+                                                value={field.value}
+                                                disabled={pilgrimType === 'new'}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue placeholder="Select passport option" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="none">No Passport</SelectItem>
+                                                    {pilgrimType === 'existing' && (
+                                                        <SelectItem value="existing">Existing Passport</SelectItem>
+                                                    )}
+                                                    <SelectItem value="new">New Passport</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {passportType === 'existing' && pilgrimType === 'existing' && (
+                                    <FormField
+                                        control={form.control}
+                                        name="passport_id"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Select Passport</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder={
+                                                                loadingPassports 
+                                                                    ? "Loading passports..." 
+                                                                    : availablePassports.length === 0 
+                                                                        ? "No passports available" 
+                                                                        : "Select passport"
+                                                            } />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {availablePassports?.map((passport) => (
+                                                            <SelectItem key={passport.id} value={passport.id.toString()}>
+                                                                {passport.attributes.passportNumber} - Exp: {passport.attributes.expiryDate}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+
+                                {passportType === 'new' && (
+                                    <div className="space-y-4 p-4 border rounded-lg">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="new_passport.passport_number"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Passport Number *</FormLabel>
+                                                        <FormControl>
+                                                            <Input placeholder="Enter passport number" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="new_passport.passport_type"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Passport Type *</FormLabel>
+                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="w-full">
+                                                                    <SelectValue placeholder="Select type" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="ordinary">Ordinary</SelectItem>
+                                                                <SelectItem value="official">Official</SelectItem>
+                                                                <SelectItem value="diplomatic">Diplomatic</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="new_passport.issue_date"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Issue Date *</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="date" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="new_passport.expiry_date"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Expiry Date *</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="date" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <FormField
+                                            control={form.control}
+                                            name="new_passport.file"
+                                            render={({ field: { value, onChange, ...field } }) => (
+                                                <FormItem>
+                                                    <FormLabel>Passport Scan/Photo</FormLabel>
+                                                    <FormControl>
+                                                        <Input 
+                                                            type="file" 
+                                                            accept="image/jpeg,image/png,image/jpg"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files?.[0]
+                                                                onChange(file)
+                                                            }}
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="new_passport.notes"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Notes</FormLabel>
+                                                    <FormControl>
+                                                        <Textarea 
+                                                            placeholder="Additional notes about passport" 
+                                                            {...field} 
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
 
