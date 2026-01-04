@@ -691,7 +691,11 @@ export default function CreateUmrah() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Passport Information (Optional)</CardTitle>
-                                <CardDescription>Select existing passport or add new one</CardDescription>
+                                <CardDescription>
+                                    {pilgrimType === 'existing' 
+                                        ? 'Select existing passport, add new passport, or skip' 
+                                        : 'Add new passport or skip'}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <FormField
@@ -703,7 +707,6 @@ export default function CreateUmrah() {
                                             <Select
                                                 onValueChange={handlePassportTypeChange}
                                                 value={field.value}
-                                                disabled={pilgrimType === 'new'}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
@@ -729,7 +732,7 @@ export default function CreateUmrah() {
                                         name="passport_id"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Select Passport *</FormLabel>
+                                                <FormLabel>Select Passport</FormLabel>
                                                 <Select onValueChange={field.onChange} value={field.value}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
