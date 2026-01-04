@@ -472,215 +472,270 @@ export default function CreateUmrah() {
                                         )}
                                     />
                                 ) : (
-                                    <div className="space-y-4 border rounded-lg p-4">
-                                        <h4 className="font-semibold">New Pilgrim Details</h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.first_name"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>First Name *</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="Enter first name" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.last_name"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Last Name</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="Enter last name" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.first_name_bangla"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>First Name (Bangla) *</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="প্রথম নাম বাংলায়" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.last_name_bangla"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Last Name (Bangla)</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="শেষ নাম বাংলায়" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.father_name"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Father Name</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="Enter father name" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.father_name_bangla"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Father Name (Bangla)</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="পিতার নাম বাংলায়" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.mother_name"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Mother Name</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="Enter mother name" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.mother_name_bangla"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Mother Name (Bangla)</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="মাতার নাম বাংলায়" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.email"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Email</FormLabel>
-                                                        <FormControl>
-                                                            <Input type="email" placeholder="Enter email" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.phone"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Phone</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="Enter phone" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.gender"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Gender *</FormLabel>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                    <div className="space-y-6">
+                                        {/* Personal Information - English & Bangla Names */}
+                                        <div className="border rounded-lg p-4 bg-muted/50">
+                                            <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+                                                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
+                                                Personal Information
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.first_name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>First Name (English) *</FormLabel>
                                                             <FormControl>
-                                                                <SelectTrigger className="w-full">
-                                                                    <SelectValue placeholder="Select gender" />
-                                                                </SelectTrigger>
+                                                                <Input placeholder="Enter first name" {...field} />
                                                             </FormControl>
-                                                            <SelectContent>
-                                                                <SelectItem value="male">Male</SelectItem>
-                                                                <SelectItem value="female">Female</SelectItem>
-                                                                <SelectItem value="other">Other</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.date_of_birth"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Date of Birth</FormLabel>
-                                                        <FormControl>
-                                                            <Input type="date" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.nid"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>NID</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="Enter NID" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.birth_certificate_number"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Birth Certificate Number</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="Enter birth certificate number" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.is_married"
-                                                render={({ field }) => (
-                                                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                                                        <FormControl>
-                                                            <Switch
-                                                                checked={field.value}
-                                                                onCheckedChange={field.onChange}
-                                                            />
-                                                        </FormControl>
-                                                        <FormLabel>Married</FormLabel>
-                                                    </FormItem>
-                                                )}
-                                            />
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.first_name_bangla"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>First Name (Bangla) *</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="প্রথম নাম বাংলায়" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.last_name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Last Name (English)</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Enter last name" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.last_name_bangla"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Last Name (Bangla)</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="শেষ নাম বাংলায়" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Parent Information */}
+                                        <div className="border rounded-lg p-4 bg-muted/50">
+                                            <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+                                                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">2</span>
+                                                Parent Information
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.father_name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Father Name (English)</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Enter father name" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.father_name_bangla"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Father Name (Bangla)</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="পিতার নাম বাংলায়" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.mother_name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Mother Name (English)</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Enter mother name" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.mother_name_bangla"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Mother Name (Bangla)</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="মাতার নাম বাংলায়" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Contact Information */}
+                                        <div className="border rounded-lg p-4 bg-muted/50">
+                                            <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+                                                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">3</span>
+                                                Contact Information
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.email"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Email</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="email" placeholder="example@email.com" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.phone"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Phone</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="+880 1XXX-XXXXXX" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Personal Details */}
+                                        <div className="border rounded-lg p-4 bg-muted/50">
+                                            <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+                                                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">4</span>
+                                                Personal Details
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.gender"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Gender *</FormLabel>
+                                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                                <FormControl>
+                                                                    <SelectTrigger className="w-full">
+                                                                        <SelectValue placeholder="Select gender" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    <SelectItem value="male">Male</SelectItem>
+                                                                    <SelectItem value="female">Female</SelectItem>
+                                                                    <SelectItem value="other">Other</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.date_of_birth"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Date of Birth</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="date" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.is_married"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Marital Status</FormLabel>
+                                                            <Select
+                                                                onValueChange={(value) => field.onChange(value === 'true')}
+                                                                value={field.value ? 'true' : 'false'}
+                                                            >
+                                                                <FormControl>
+                                                                    <SelectTrigger className="w-full">
+                                                                        <SelectValue placeholder="Select status" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    <SelectItem value="false">Single</SelectItem>
+                                                                    <SelectItem value="true">Married</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Identification Documents */}
+                                        <div className="border rounded-lg p-4 bg-muted/50">
+                                            <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+                                                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">5</span>
+                                                Identification Documents
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.nid"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>NID Number</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Enter NID number" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.birth_certificate_number"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Birth Certificate Number</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Enter birth certificate number" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -692,8 +747,8 @@ export default function CreateUmrah() {
                             <CardHeader>
                                 <CardTitle>Passport Information (Optional)</CardTitle>
                                 <CardDescription>
-                                    {pilgrimType === 'existing' 
-                                        ? 'Select existing passport, add new passport, or skip' 
+                                    {pilgrimType === 'existing'
+                                        ? 'Select existing passport, add new passport, or skip'
                                         : 'Add new passport or skip'}
                                 </CardDescription>
                             </CardHeader>
