@@ -69,10 +69,10 @@ export default function ViewUmrahPilgrim() {
             queryClient.invalidateQueries({ queryKey: ['umrah', id] })
             setShowPassportModal(false)
             setEditingPassport(null)
-            toast.success(t({ en: 'Passport added successfully', bn: 'পাসপোর্ট সফলভাবে যোগ করা হয়েছে' }))
+            toast.success(t({ en: 'Passport added successfully', bn: 'পাসপোর্ট সফলভাবে অ্যাড করা হয়েছে' }))
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || t({ en: 'Failed to add passport', bn: 'পাসপোর্ট যোগ করতে ব্যর্থ' }))
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to add passport', bn: 'পাসপোর্ট অ্যাড করতে ব্যর্থ' }))
         }
     })
 
@@ -164,16 +164,45 @@ export default function ViewUmrahPilgrim() {
     if (isLoading) {
         return (
             <DashboardLayout>
-                <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="h-10 w-10 rounded" />
-                        <Skeleton className="h-8 w-64" />
+                <div className="space-y-6 pb-8">
+                    {/* Header Skeleton */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="h-10 w-10 rounded-full" />
+                            <div>
+                                <Skeleton className="h-6 w-40 mb-2" />
+                                <Skeleton className="h-4 w-24" />
+                            </div>
+                        </div>
+                        <div className="space-y-2 text-right">
+                            <Skeleton className="h-5 w-20 rounded" />
+                            <Skeleton className="h-4 w-32" />
+                        </div>
                     </div>
-                    <div className="grid gap-6 lg:grid-cols-3">
-                        <Skeleton className="h-96 lg:col-span-3" />
-                        <Skeleton className="h-80" />
-                        <Skeleton className="h-80" />
-                        <Skeleton className="h-80" />
+
+                    {/* Profile Card Skeleton */}
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                        <Skeleton className="h-24 w-24 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-4 w-32" />
+                            <div className="flex gap-2">
+                                <Skeleton className="h-5 w-20" />
+                                <Skeleton className="h-5 w-20" />
+                                <Skeleton className="h-5 w-20" />
+                            </div>
+                        </div>
+                        <div className="shrink-0 space-y-2">
+                            <Skeleton className="h-4 w-16" />
+                            <Skeleton className="h-6 w-24" />
+                            <Skeleton className="h-4 w-20" />
+                        </div>
+                    </div>
+
+                    {/* Main Content Grid Skeleton */}
+                    <div className="grid gap-4 lg:grid-cols-2">
+                        <Skeleton className="h-80 w-full" />
+                        <Skeleton className="h-80 w-full" />
                     </div>
                 </div>
             </DashboardLayout>
@@ -200,7 +229,13 @@ export default function ViewUmrahPilgrim() {
     }
 
     return (
-        <DashboardLayout>
+        <DashboardLayout
+            breadcrumbs={[
+                { type: 'link', text: t('app.home'), href: '/' },
+                { type: 'link', text: t({ en: 'Umrah Pilgrims', bn: 'উমরাহ পিলগ্রিম' }), href: '/umrah' },
+                { type: 'page', text: t({ en: 'Pilgrim Details', bn: ' পিলগ্রিম বিস্তারিত' }) },
+            ]}
+        >
             <div className="space-y-6 pb-8">
                 {/* Header with Back Button and Status */}
                 <div className="flex items-center justify-between">
@@ -214,9 +249,9 @@ export default function ViewUmrahPilgrim() {
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <div>
-                            <PageHeading title="Umrah Details" />
+                            <PageHeading title={t({ en: "Pilgrim Details", bn: "পিলগ্রিম বিস্তারিত" })} />
                             <p className="text-sm text-muted-foreground mt-1">
-                                ID: #{umrah.id}
+                                {t({ en: "ID", bn: "আইডি" })}: #{umrah.id}
                             </p>
                         </div>
                     </div>
@@ -306,7 +341,7 @@ export default function ViewUmrahPilgrim() {
                             <div className="flex items-center justify-between">
                                 <CardTitle className="text-base font-semibold flex items-center gap-2">
                                     <User className="h-4 w-4 text-primary" />
-                                    Personal & Family Information
+                                    {t({ en: "Personal Information", bn: "পার্সোনাল তথ্য" })}
                                 </CardTitle>
                                 <Button
                                     variant="ghost"
@@ -322,35 +357,35 @@ export default function ViewUmrahPilgrim() {
                         <CardContent className="space-y-4">
                             {/* Personal Details */}
                             <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Personal Details</h4>
+                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                    {t({ en: "Personal Details", bn: "ব্যক্তিগত তথ্য" })}
+                                </h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">First Name</p>
-                                        <p className="text-sm font-medium">{user?.firstName || 'N/A'}</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "First Name", bn: "প্রথম নাম" })}</p>
+                                        <p className="text-sm font-medium">{user?.firstName || t({ en: "N/A", bn: "নেই" })}</p>
                                         {user?.firstNameBangla && (
                                             <p className="text-xs text-muted-foreground">{user.firstNameBangla}</p>
                                         )}
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">Last Name</p>
-                                        <p className="text-sm font-medium">{user?.lastName || 'N/A'}</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Last Name", bn: "শেষ নাম" })}</p>
+                                        <p className="text-sm font-medium">{user?.lastName || t({ en: "N/A", bn: "নেই" })}</p>
                                         {user?.lastNameBangla && (
                                             <p className="text-xs text-muted-foreground">{user.lastNameBangla}</p>
                                         )}
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">Date of Birth</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Date of Birth", bn: "জন্ম তারিখ" })}</p>
                                         <p className="text-sm font-medium">
-                                            {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric'
-                                            }) : 'N/A'}
+                                            {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', {
+                                                year: 'numeric', month: 'short', day: 'numeric'
+                                            }) : t({ en: "N/A", bn: "নেই" })}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">Marital Status</p>
-                                        <p className="text-sm font-medium">{user?.isMarried ? 'Married' : 'Single'}</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Marital Status", bn: "বৈবাহিক অবস্থা" })}</p>
+                                        <p className="text-sm font-medium">{user?.isMarried ? t({ en: "Married", bn: "বিবাহিত" }) : t({ en: "Single", bn: "অবিবাহিত" })}</p>
                                     </div>
                                 </div>
                             </div>
@@ -359,11 +394,13 @@ export default function ViewUmrahPilgrim() {
 
                             {/* Family Details */}
                             <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Family Details</h4>
+                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                    {t({ en: "Family Details", bn: "পারিবারিক তথ্য" })}
+                                </h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                     {user?.fatherName && (
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Father's Name</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Father's Name", bn: "বাবার নাম" })}</p>
                                             <p className="text-sm font-medium">{user.fatherName}</p>
                                             {user?.fatherNameBangla && (
                                                 <p className="text-xs text-muted-foreground">{user.fatherNameBangla}</p>
@@ -372,7 +409,7 @@ export default function ViewUmrahPilgrim() {
                                     )}
                                     {user?.motherName && (
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Mother's Name</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Mother's Name", bn: "মায়ের নাম" })}</p>
                                             <p className="text-sm font-medium">{user.motherName}</p>
                                             {user?.motherNameBangla && (
                                                 <p className="text-xs text-muted-foreground">{user.motherNameBangla}</p>
@@ -390,7 +427,7 @@ export default function ViewUmrahPilgrim() {
                             <div className="flex items-center justify-between">
                                 <CardTitle className="text-base font-semibold flex items-center gap-2">
                                     <IdCard className="h-4 w-4 text-primary" />
-                                    Identification & Documents
+                                    {t({ en: "Identification & Documents", bn: "আইডেন্টিটিফিকেশন ও ডকুমেন্টস" })}
                                 </CardTitle>
                                 <Button
                                     variant="ghost"
@@ -406,7 +443,9 @@ export default function ViewUmrahPilgrim() {
                         <CardContent className="space-y-4">
                             {/* ID Documents */}
                             <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Identity Documents</h4>
+                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                    {t({ en: "Identity", bn: "আইডেন্টিটি" })}
+                                </h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                     <div>
                                         <p className="text-[10px] text-muted-foreground">National ID (NID)</p>
@@ -427,7 +466,9 @@ export default function ViewUmrahPilgrim() {
                             {passport ? (
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Passport Details</h4>
+                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                            {t({ en: "Passport Details", bn: "পাসপোর্টের বিস্তারিত" })}
+                                        </h4>
                                         <Button
                                             variant="ghost"
                                             size="sm"
@@ -440,17 +481,17 @@ export default function ViewUmrahPilgrim() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Passport Number</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Passport Number", bn: "পাসপোর্ট নম্বর" })}</p>
                                             <p className="text-sm font-medium">{passport.passportNumber}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Type</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Type", bn: "টাইপ" })}</p>
                                             <p className="text-sm font-medium capitalize">
                                                 {passport.passportType || 'N/A'}
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Issue Date</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Issue Date", bn: "ইস্যু ডেট" })}</p>
                                             <p className="text-sm font-medium">
                                                 {passport.issueDate ? new Date(passport.issueDate).toLocaleDateString('en-US', {
                                                     year: 'numeric',
@@ -460,7 +501,7 @@ export default function ViewUmrahPilgrim() {
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Expiry Date</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Expiry Date", bn: "এক্সপায়ারি ডেট" })}</p>
                                             <p className={`text-sm font-medium ${passport.expiryDate && new Date(passport.expiryDate) < new Date()
                                                 ? 'text-red-600 dark:text-red-400'
                                                 : ''
@@ -494,7 +535,9 @@ export default function ViewUmrahPilgrim() {
                                 </div>
                             ) : (
                                 <div>
-                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Passport Details</h4>
+                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                        {t({ en: "Passport Details", bn: "পাসপোর্টের বিস্তারিত" })}
+                                    </h4>
                                     <div className="text-center py-4 text-muted-foreground">
                                         <FileText className="h-8 w-8 mx-auto mb-1 opacity-50" />
                                         <p className="text-xs mb-3">{t({ en: "No passport information", bn: "কোন পাসপোর্ট তথ্য নেই" })}</p>
@@ -518,13 +561,13 @@ export default function ViewUmrahPilgrim() {
                         <CardHeader className="pb-3">
                             <CardTitle className="text-base font-semibold flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-primary" />
-                                Registration Timeline
+                                {t({ en: "Registration Timeline", bn: "রেজিস্ট্রেশন টাইমলাইন" })}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                 <div>
-                                    <p className="text-[10px] text-muted-foreground">Registered On</p>
+                                    <p className="text-[10px] text-muted-foreground">{t({ en: "Registered On", bn: "রেজিস্ট্রেশন তারিখ" })}</p>
                                     <p className="text-sm font-medium">
                                         {new Date(umrah.attributes.createdAt).toLocaleDateString('en-US', {
                                             year: 'numeric',
@@ -537,7 +580,7 @@ export default function ViewUmrahPilgrim() {
                                 </div>
                                 {umrah.attributes.updatedAt !== umrah.attributes.createdAt && (
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">Last Updated</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Last Updated", bn: "শেষ আপডেট" })}</p>
                                         <p className="text-sm font-medium">
                                             {new Date(umrah.attributes.updatedAt).toLocaleDateString('en-US', {
                                                 year: 'numeric',
