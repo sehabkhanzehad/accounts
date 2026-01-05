@@ -90,41 +90,6 @@ export default function ViewUmrahPilgrim() {
         return `${first}${last}` || 'U'
     }
 
-    // const InfoRow = ({ icon: Icon, label, value, valueClassName = "", badge = false }) => {
-    //     if (!value && !badge) return null
-
-    //     return (
-    //         <div className="flex items-center gap-2.5 py-1.5">
-    //             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted/50">
-    //                 <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-    //             </div>
-    //             <div className="flex-1 min-w-0">
-    //                 <p className="text-[11px] font-medium text-muted-foreground mb-0.5">{label}</p>
-    //                 <p className={`text-sm truncate ${valueClassName}`}>
-    //                     {badge ? value : (value || 'N/A')}
-    //                 </p>
-    //             </div>
-    //         </div>
-    //     )
-    // }
-
-    // const Section = ({ title, icon: Icon, children, className = "" }) => (
-    //     <Card className={className}>
-    //         <CardHeader className="pb-2">
-    //             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-    //                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-    //                     <Icon className="h-3.5 w-3.5 text-primary" />
-    //                 </div>
-    //                 {title}
-    //             </CardTitle>
-    //         </CardHeader>
-    //         <Separator />
-    //         <CardContent className="pt-3">
-    //             {children}
-    //         </CardContent>
-    //     </Card>
-    // )
-
     return (
         <DashboardLayout>
             <div className="space-y-6 pb-8">
