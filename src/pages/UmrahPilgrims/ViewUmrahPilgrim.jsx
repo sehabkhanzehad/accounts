@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { PassportModal } from './components/PassportModal'
+import { EditPersonalInfoModal } from './components/EditPersonalInfoModal'
+import { EditContactInfoModal } from './components/EditContactInfoModal'
+import { EditAvatarModal } from './components/EditAvatarModal'
+import { toast } from 'sonner'
+import { useI18n } from '@/contexts/I18nContext'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -26,23 +32,126 @@ import {
     IdCard,
     Heart,
     Clock,
-    Image
+    Image,
+    Edit,
+    Plus
 } from 'lucide-react'
 import api from '@/lib/api'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import PageHeading from '@/components/PageHeading'
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function ViewUmrah() {
+export default function ViewUmrahPilgrim() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
+    const { t, language } = useI18n()
     const [showPassportDialog, setShowPassportDialog] = useState(false)
+    const [showPassportModal, setShowPassportModal] = useState(false)
+    const [editingPassport, setEditingPassport] = useState(null)
+    const [showPersonalInfoModal, setShowPersonalInfoModal] = useState(false)
+    const [showContactInfoModal, setShowContactInfoModal] = useState(false)
+    const [showAvatarModal, setShowAvatarModal] = useState(false)
 
     const { data: umrah, isLoading, error } = useQuery({
         queryKey: ['umrah', id],
         queryFn: async () => {
             const response = await api.get(`/umrahs/${id}`)
             return response.data.data
+        }
+    })
+
+    const addPassportMutation = useMutation({
+        mutationFn: (formData) => api.post(`/umrahs/${id}/passport`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowPassportModal(false)
+            setEditingPassport(null)
+            toast.success(t({ en: 'Passport added successfully', bn: 'পাসপোর্ট সফলভাবে অ্যাড করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to add passport', bn: 'পাসপোর্ট অ্যাড করতে ব্যর্থ' }))
+        }
+    })
+
+    const updatePassportMutation = useMutation({
+        mutationFn: (formData) => {
+            const passportId = umrah?.relationships?.passport?.id
+            return api.post(`/umrahs/passport/${passportId}?_method=PUT`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowPassportModal(false)
+            setEditingPassport(null)
+            toast.success(t({ en: 'Passport updated successfully', bn: 'পাসপোর্ট সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update passport', bn: 'পাসপোর্ট আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
+    const handlePassportSubmit = (formData) => {
+        if (editingPassport) {
+            updatePassportMutation.mutate(formData)
+        } else {
+            addPassportMutation.mutate(formData)
+        }
+    }
+
+    const handleAddPassport = () => {
+        setEditingPassport(null)
+        setShowPassportModal(true)
+    }
+
+    const handleEditPassport = () => {
+        if (passport) {
+            setEditingPassport(passport)
+            setShowPassportModal(true)
+        }
+    }
+
+    // Personal Info mutation
+    const updatePersonalInfoMutation = useMutation({
+        mutationFn: (data) => api.put(`/umrahs/${id}/pilgrim/personal-info`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowPersonalInfoModal(false)
+            toast.success(t({ en: 'Personal information updated successfully', bn: 'ব্যক্তিগত তথ্য সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update personal information', bn: 'ব্যক্তিগত তথ্য আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
+    // Contact Info mutation
+    const updateContactInfoMutation = useMutation({
+        mutationFn: (data) => api.put(`/umrahs/${id}/pilgrim/contact-info`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowContactInfoModal(false)
+            toast.success(t({ en: 'Contact & identification updated successfully', bn: 'যোগাযোগ এবং পরিচয় সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update contact & identification', bn: 'যোগাযোগ এবং পরিচয় আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
+    // Avatar mutation
+    const updateAvatarMutation = useMutation({
+        mutationFn: (formData) => api.post(`/umrahs/${id}/pilgrim/avatar`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowAvatarModal(false)
+            toast.success(t({ en: 'Photo updated successfully', bn: 'ছবি সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update photo', bn: 'ছবি আপডেট করতে ব্যর্থ' }))
         }
     })
 
@@ -55,16 +164,45 @@ export default function ViewUmrah() {
     if (isLoading) {
         return (
             <DashboardLayout>
-                <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="h-10 w-10 rounded" />
-                        <Skeleton className="h-8 w-64" />
+                <div className="space-y-6 pb-8">
+                    {/* Header Skeleton */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="h-10 w-10 rounded-full" />
+                            <div>
+                                <Skeleton className="h-6 w-40 mb-2" />
+                                <Skeleton className="h-4 w-24" />
+                            </div>
+                        </div>
+                        <div className="space-y-2 text-right">
+                            <Skeleton className="h-5 w-20 rounded" />
+                            <Skeleton className="h-4 w-32" />
+                        </div>
                     </div>
-                    <div className="grid gap-6 lg:grid-cols-3">
-                        <Skeleton className="h-96 lg:col-span-3" />
-                        <Skeleton className="h-80" />
-                        <Skeleton className="h-80" />
-                        <Skeleton className="h-80" />
+
+                    {/* Profile Card Skeleton */}
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                        <Skeleton className="h-24 w-24 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-4 w-32" />
+                            <div className="flex gap-2">
+                                <Skeleton className="h-5 w-20" />
+                                <Skeleton className="h-5 w-20" />
+                                <Skeleton className="h-5 w-20" />
+                            </div>
+                        </div>
+                        <div className="shrink-0 space-y-2">
+                            <Skeleton className="h-4 w-16" />
+                            <Skeleton className="h-6 w-24" />
+                            <Skeleton className="h-4 w-20" />
+                        </div>
+                    </div>
+
+                    {/* Main Content Grid Skeleton */}
+                    <div className="grid gap-4 lg:grid-cols-2">
+                        <Skeleton className="h-80 w-full" />
+                        <Skeleton className="h-80 w-full" />
                     </div>
                 </div>
             </DashboardLayout>
@@ -90,43 +228,14 @@ export default function ViewUmrah() {
         return `${first}${last}` || 'U'
     }
 
-    // const InfoRow = ({ icon: Icon, label, value, valueClassName = "", badge = false }) => {
-    //     if (!value && !badge) return null
-
-    //     return (
-    //         <div className="flex items-center gap-2.5 py-1.5">
-    //             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted/50">
-    //                 <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-    //             </div>
-    //             <div className="flex-1 min-w-0">
-    //                 <p className="text-[11px] font-medium text-muted-foreground mb-0.5">{label}</p>
-    //                 <p className={`text-sm truncate ${valueClassName}`}>
-    //                     {badge ? value : (value || 'N/A')}
-    //                 </p>
-    //             </div>
-    //         </div>
-    //     )
-    // }
-
-    // const Section = ({ title, icon: Icon, children, className = "" }) => (
-    //     <Card className={className}>
-    //         <CardHeader className="pb-2">
-    //             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-    //                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-    //                     <Icon className="h-3.5 w-3.5 text-primary" />
-    //                 </div>
-    //                 {title}
-    //             </CardTitle>
-    //         </CardHeader>
-    //         <Separator />
-    //         <CardContent className="pt-3">
-    //             {children}
-    //         </CardContent>
-    //     </Card>
-    // )
-
     return (
-        <DashboardLayout>
+        <DashboardLayout
+            breadcrumbs={[
+                { type: 'link', text: t('app.home'), href: '/' },
+                { type: 'link', text: t({ en: 'Umrah Pilgrims', bn: 'উমরাহ পিলগ্রিম' }), href: '/umrah' },
+                { type: 'page', text: t({ en: 'Pilgrim Details', bn: ' পিলগ্রিম বিস্তারিত' }) },
+            ]}
+        >
             <div className="space-y-6 pb-8">
                 {/* Header with Back Button and Status */}
                 <div className="flex items-center justify-between">
@@ -140,9 +249,9 @@ export default function ViewUmrah() {
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <div>
-                            <PageHeading title="Umrah Details" />
+                            <PageHeading title={t({ en: "Pilgrim Details", bn: "পিলগ্রিম বিস্তারিত" })} />
                             <p className="text-sm text-muted-foreground mt-1">
-                                ID: #{umrah.id}
+                                {t({ en: "ID", bn: "আইডি" })}: #{umrah.id}
                             </p>
                         </div>
                     </div>
@@ -163,12 +272,22 @@ export default function ViewUmrah() {
                 <Card className="border-2">
                     <CardContent className="pt-6">
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                            <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-                                <AvatarImage src={user?.avatar} alt={user?.fullName} />
-                                <AvatarFallback className="text-2xl font-bold bg-linear-to-br from-primary/20 to-primary/5">
-                                    {getInitials(user?.firstName, user?.lastName)}
-                                </AvatarFallback>
-                            </Avatar>
+                            <div className="relative">
+                                <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                                    <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                                    <AvatarFallback className="text-2xl font-bold bg-linear-to-br from-primary/20 to-primary/5">
+                                        {getInitials(user?.firstName, user?.lastName)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <Button
+                                    variant="secondary"
+                                    size="icon"
+                                    onClick={() => setShowAvatarModal(true)}
+                                    className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full shadow-md"
+                                >
+                                    <Edit className="h-3.5 w-3.5" />
+                                </Button>
+                            </div>
                             <div className="flex-1 text-center sm:text-left space-y-2">
                                 <div>
                                     <h2 className="text-2xl font-bold tracking-tight">{user?.fullName || 'N/A'}</h2>
@@ -219,43 +338,54 @@ export default function ViewUmrah() {
                     {/* Personal & Family Information Combined */}
                     <Card>
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                <User className="h-4 w-4 text-primary" />
-                                Personal & Family Information
-                            </CardTitle>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <User className="h-4 w-4 text-primary" />
+                                    {t({ en: "Personal Information", bn: "পার্সোনাল তথ্য" })}
+                                </CardTitle>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setShowPersonalInfoModal(true)}
+                                    className="h-8 gap-1"
+                                >
+                                    <Edit className="h-3.5 w-3.5" />
+                                    {t({ en: "Edit", bn: "এডিট" })}
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {/* Personal Details */}
                             <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Personal Details</h4>
+                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                    {t({ en: "Personal Details", bn: "ব্যক্তিগত তথ্য" })}
+                                </h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">First Name</p>
-                                        <p className="text-sm font-medium">{user?.firstName || 'N/A'}</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "First Name", bn: "প্রথম নাম" })}</p>
+                                        <p className="text-sm font-medium">{user?.firstName || t({ en: "N/A", bn: "নেই" })}</p>
                                         {user?.firstNameBangla && (
                                             <p className="text-xs text-muted-foreground">{user.firstNameBangla}</p>
                                         )}
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">Last Name</p>
-                                        <p className="text-sm font-medium">{user?.lastName || 'N/A'}</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Last Name", bn: "শেষ নাম" })}</p>
+                                        <p className="text-sm font-medium">{user?.lastName || t({ en: "N/A", bn: "নেই" })}</p>
                                         {user?.lastNameBangla && (
                                             <p className="text-xs text-muted-foreground">{user.lastNameBangla}</p>
                                         )}
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">Date of Birth</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Date of Birth", bn: "জন্ম তারিখ" })}</p>
                                         <p className="text-sm font-medium">
-                                            {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric'
-                                            }) : 'N/A'}
+                                            {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', {
+                                                year: 'numeric', month: 'short', day: 'numeric'
+                                            }) : t({ en: "N/A", bn: "নেই" })}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">Marital Status</p>
-                                        <p className="text-sm font-medium">{user?.isMarried ? 'Married' : 'Single'}</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Marital Status", bn: "বৈবাহিক অবস্থা" })}</p>
+                                        <p className="text-sm font-medium">{user?.isMarried ? t({ en: "Married", bn: "বিবাহিত" }) : t({ en: "Single", bn: "অবিবাহিত" })}</p>
                                     </div>
                                 </div>
                             </div>
@@ -264,11 +394,13 @@ export default function ViewUmrah() {
 
                             {/* Family Details */}
                             <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Family Details</h4>
+                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                    {t({ en: "Family Details", bn: "পারিবারিক তথ্য" })}
+                                </h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                     {user?.fatherName && (
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Father's Name</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Father's Name", bn: "বাবার নাম" })}</p>
                                             <p className="text-sm font-medium">{user.fatherName}</p>
                                             {user?.fatherNameBangla && (
                                                 <p className="text-xs text-muted-foreground">{user.fatherNameBangla}</p>
@@ -277,7 +409,7 @@ export default function ViewUmrah() {
                                     )}
                                     {user?.motherName && (
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Mother's Name</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Mother's Name", bn: "মায়ের নাম" })}</p>
                                             <p className="text-sm font-medium">{user.motherName}</p>
                                             {user?.motherNameBangla && (
                                                 <p className="text-xs text-muted-foreground">{user.motherNameBangla}</p>
@@ -292,15 +424,28 @@ export default function ViewUmrah() {
                     {/* Identification & Passport Combined */}
                     <Card>
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                <IdCard className="h-4 w-4 text-primary" />
-                                Identification & Documents
-                            </CardTitle>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <IdCard className="h-4 w-4 text-primary" />
+                                    {t({ en: "Identification & Documents", bn: "আইডেন্টিটিফিকেশন ও ডকুমেন্টস" })}
+                                </CardTitle>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setShowContactInfoModal(true)}
+                                    className="h-8 gap-1"
+                                >
+                                    <Edit className="h-3.5 w-3.5" />
+                                    {t({ en: "Edit", bn: "এডিট" })}
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {/* ID Documents */}
                             <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Identity Documents</h4>
+                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                    {t({ en: "Identity", bn: "আইডেন্টিটি" })}
+                                </h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                     <div>
                                         <p className="text-[10px] text-muted-foreground">National ID (NID)</p>
@@ -320,20 +465,33 @@ export default function ViewUmrah() {
                             {/* Passport Information */}
                             {passport ? (
                                 <div>
-                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Passport Details</h4>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                            {t({ en: "Passport Details", bn: "পাসপোর্টের বিস্তারিত" })}
+                                        </h4>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={handleEditPassport}
+                                            className="h-7 gap-1"
+                                        >
+                                            <Edit className="h-3 w-3" />
+                                            {t({ en: "Edit", bn: "এডিট" })}
+                                        </Button>
+                                    </div>
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Passport Number</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Passport Number", bn: "পাসপোর্ট নম্বর" })}</p>
                                             <p className="text-sm font-medium">{passport.passportNumber}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Type</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Type", bn: "টাইপ" })}</p>
                                             <p className="text-sm font-medium capitalize">
                                                 {passport.passportType || 'N/A'}
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Issue Date</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Issue Date", bn: "ইস্যু ডেট" })}</p>
                                             <p className="text-sm font-medium">
                                                 {passport.issueDate ? new Date(passport.issueDate).toLocaleDateString('en-US', {
                                                     year: 'numeric',
@@ -343,7 +501,7 @@ export default function ViewUmrah() {
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">Expiry Date</p>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Expiry Date", bn: "এক্সপায়ারি ডেট" })}</p>
                                             <p className={`text-sm font-medium ${passport.expiryDate && new Date(passport.expiryDate) < new Date()
                                                 ? 'text-red-600 dark:text-red-400'
                                                 : ''
@@ -377,10 +535,21 @@ export default function ViewUmrah() {
                                 </div>
                             ) : (
                                 <div>
-                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Passport Details</h4>
+                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                        {t({ en: "Passport Details", bn: "পাসপোর্টের বিস্তারিত" })}
+                                    </h4>
                                     <div className="text-center py-4 text-muted-foreground">
                                         <FileText className="h-8 w-8 mx-auto mb-1 opacity-50" />
-                                        <p className="text-xs">No passport information</p>
+                                        <p className="text-xs mb-3">{t({ en: "No passport information", bn: "কোন পাসপোর্ট তথ্য নেই" })}</p>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleAddPassport}
+                                            className="gap-2"
+                                        >
+                                            <Plus className="h-4 w-4" />
+                                            {t({ en: "Add Passport", bn: "পাসপোর্ট যোগ করুন" })}
+                                        </Button>
                                     </div>
                                 </div>
                             )}
@@ -392,13 +561,13 @@ export default function ViewUmrah() {
                         <CardHeader className="pb-3">
                             <CardTitle className="text-base font-semibold flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-primary" />
-                                Registration Timeline
+                                {t({ en: "Registration Timeline", bn: "রেজিস্ট্রেশন টাইমলাইন" })}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                 <div>
-                                    <p className="text-[10px] text-muted-foreground">Registered On</p>
+                                    <p className="text-[10px] text-muted-foreground">{t({ en: "Registered On", bn: "রেজিস্ট্রেশন তারিখ" })}</p>
                                     <p className="text-sm font-medium">
                                         {new Date(umrah.attributes.createdAt).toLocaleDateString('en-US', {
                                             year: 'numeric',
@@ -411,7 +580,7 @@ export default function ViewUmrah() {
                                 </div>
                                 {umrah.attributes.updatedAt !== umrah.attributes.createdAt && (
                                     <div>
-                                        <p className="text-[10px] text-muted-foreground">Last Updated</p>
+                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Last Updated", bn: "শেষ আপডেট" })}</p>
                                         <p className="text-sm font-medium">
                                             {new Date(umrah.attributes.updatedAt).toLocaleDateString('en-US', {
                                                 year: 'numeric',
@@ -438,7 +607,7 @@ export default function ViewUmrah() {
                     <div className="flex justify-center items-center p-4">
                         {passport?.filePath ? (
                             <img
-                                src={passport.filePath}
+                                src={`${passport.filePath}?t=${Date.now()}`}
                                 alt="Passport"
                                 className="max-w-full h-auto rounded-lg shadow-lg"
                                 onError={(e) => {
@@ -453,6 +622,42 @@ export default function ViewUmrah() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Passport Management Modal */}
+            <PassportModal
+                open={showPassportModal}
+                onOpenChange={setShowPassportModal}
+                editingPassport={editingPassport}
+                onSubmit={handlePassportSubmit}
+                isSubmitting={addPassportMutation.isPending || updatePassportMutation.isPending}
+            />
+
+            {/* Personal Info Edit Modal */}
+            <EditPersonalInfoModal
+                open={showPersonalInfoModal}
+                onOpenChange={setShowPersonalInfoModal}
+                pilgrimData={user}
+                onSubmit={(data) => updatePersonalInfoMutation.mutate(data)}
+                isSubmitting={updatePersonalInfoMutation.isPending}
+            />
+
+            {/* Contact Info Edit Modal */}
+            <EditContactInfoModal
+                open={showContactInfoModal}
+                onOpenChange={setShowContactInfoModal}
+                pilgrimData={user}
+                onSubmit={(data) => updateContactInfoMutation.mutate(data)}
+                isSubmitting={updateContactInfoMutation.isPending}
+            />
+
+            {/* Avatar Edit Modal */}
+            <EditAvatarModal
+                open={showAvatarModal}
+                onOpenChange={setShowAvatarModal}
+                currentAvatar={user?.avatar}
+                onSubmit={(formData) => updateAvatarMutation.mutate(formData)}
+                isSubmitting={updateAvatarMutation.isPending}
+            />
         </DashboardLayout>
     )
 }

@@ -12,20 +12,23 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useI18n } from '@/contexts/I18nContext'
 import { EllipsisVertical, Eye } from "lucide-react"
 
 export function UmrahTable({ umrahs, onDelete, onView }) {
+    const { t, language } = useI18n();
     return (
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Pilgrim Details</TableHead>
-                    <TableHead>NID & DOB</TableHead>
-                    <TableHead>Passport</TableHead>
-                    <TableHead>Group Leader</TableHead>
-                    <TableHead>Package</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
+                    <TableHead>{t({ en: "Pilgrim", bn: "পিলগ্রিম" })}</TableHead>
+                    <TableHead>{t({ en: "NID & DOB", bn: "এনআইডি ও জন্ম তারিখ" })}</TableHead>
+                    <TableHead>{t({ en: "Passport", bn: "পাসপোর্ট" })}</TableHead>
+                    <TableHead>{t({ en: "Group Leader", bn: "গ্রুপ লিডার" })}</TableHead>
+                    <TableHead>{t({ en: "Package", bn: "প্যাকেজ" })}</TableHead>
+                    <TableHead>{t({ en: "Status", bn: "স্ট্যাটাস" })}</TableHead>
+                    <TableHead className="text-right">{t({ en: "Action", bn: "অ্যাকশন" })}</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -38,20 +41,28 @@ export function UmrahTable({ umrahs, onDelete, onView }) {
                     return (
                         <TableRow key={umrah.id}>
                             <TableCell>
-                                <div className="space-y-1">
-                                    <div className="font-medium text-sm">
-                                        {user?.firstName} {user?.lastName}
-                                        {user?.gender && (
-                                            <span className="ml-1 uppercase">
-                                                ({user.gender === 'male' ? 'M' : user.gender === 'female' ? 'F' : 'O'})
-                                            </span>
-                                        )}
-                                    </div>
-                                    {user?.phone ? (
-                                        <div className="text-xs text-muted-foreground">
-                                            {user.phone}
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src={user?.avatar} alt={`${user?.firstName} ${user?.lastName}`} />
+                                        <AvatarFallback>
+                                            {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="space-y-1">
+                                        <div className="font-medium text-sm">
+                                            {user?.firstName} {user?.lastName}
+                                            {user?.gender && (
+                                                <span className="ml-1 uppercase">
+                                                    ({user.gender === 'male' ? 'M' : user.gender === 'female' ? 'F' : 'O'})
+                                                </span>
+                                            )}
                                         </div>
-                                    ) : (<div>Phone: N/A</div>)}
+                                        {user?.phone ? (
+                                            <div className="text-xs text-muted-foreground">
+                                                {user.phone}
+                                            </div>
+                                        ) : (<div>Phone: N/A</div>)}
+                                    </div>
                                 </div>
                             </TableCell>
                             <TableCell>

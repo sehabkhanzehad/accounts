@@ -29,6 +29,7 @@ import { toast } from 'sonner'
 import api from '@/lib/api'
 import PageHeading from '@/components/PageHeading'
 import DashboardLayout from '@/Layouts/DashboardLayout'
+import { useI18n } from '@/contexts/I18nContext'
 import { ArrowLeft } from 'lucide-react'
 
 const umrahSchema = z.object({
@@ -36,6 +37,7 @@ const umrahSchema = z.object({
     pilgrim_type: z.enum(['existing', 'new']),
     pilgrim_id: z.string().optional(),
     new_pilgrim: z.object({
+        avatar: z.any().optional(),
         first_name: z.string().min(1, "First name is required"),
         first_name_bangla: z.string().min(1, "First name (Bangla) is required"),
         last_name: z.string().optional(),
@@ -138,8 +140,9 @@ const umrahSchema = z.object({
     // If passport_type is 'none', no validation needed
 })
 
-export default function CreateUmrah() {
+export default function CreateUmrahPilgrim() {
     const navigate = useNavigate()
+    const { t, language } = useI18n()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [pilgrimType, setPilgrimType] = useState('new')
     const [passportType, setPassportType] = useState('new')
@@ -177,6 +180,7 @@ export default function CreateUmrah() {
             pilgrim_type: 'new',
             pilgrim_id: '',
             new_pilgrim: {
+                avatar: null,
                 first_name: '',
                 first_name_bangla: '',
                 last_name: '',
@@ -274,8 +278,14 @@ export default function CreateUmrah() {
             } else {
                 Object.keys(data.new_pilgrim).forEach(key => {
                     const value = data.new_pilgrim[key]
+                    // Handle file uploads separately
+                    if (key === 'avatar') {
+                        if (value instanceof File) {
+                            formData.append(`new_pilgrim[${key}]`, value)
+                        }
+                    }
                     // Always include boolean fields
-                    if (key === 'is_married') {
+                    else if (key === 'is_married') {
                         formData.append(`new_pilgrim[${key}]`, value ? '1' : '0')
                     } else if (value !== undefined && value !== '') {
                         formData.append(`new_pilgrim[${key}]`, value)
@@ -311,17 +321,23 @@ export default function CreateUmrah() {
                 },
             })
 
-            toast.success('Umrah created successfully')
+            toast.success(t({ en: 'Umrah created successfully', bn: 'উমরাহ সফলভাবে তৈরি হয়েছে' }))
             navigate('/umrah')
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Failed to create umrah')
+            toast.error(error.response?.data?.message || t({ en: 'Failed to create umrah', bn: 'উমরাহ তৈরি করতে ব্যর্থ' }))
         } finally {
             setIsSubmitting(false)
         }
     }
 
     return (
-        <DashboardLayout>
+        <DashboardLayout
+            breadcrumbs={[
+                { type: 'link', text: t('app.home'), href: '/' },
+                { type: 'link', text: t({ en: 'Umrah Pilgrims', bn: 'উমরাহ পিলগ্রিম' }), href: '/umrah' },
+                { type: 'page', text: t({ en: 'Add Umrah Pilgrim', bn: 'অ্যাড উমরাহ পিলগ্রিম' }) },
+            ]}
+        >
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
                     <Button
@@ -332,8 +348,8 @@ export default function CreateUmrah() {
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <PageHeading
-                        title="Create Umrah"
-                        description="Register a pilgrim for Umrah"
+                        title={t({ en: 'Add Umrah Pilgrim', bn: 'অ্যাড উমরাহ পিলগ্রিম' })}
+                        description={t({ en: 'Add a pilgrim for Umrah', bn: 'একজন পিলগ্রিমকে উমরাহর জন্য অ্যাড করুন' })}
                     />
                 </div>
 
@@ -342,8 +358,8 @@ export default function CreateUmrah() {
                         {/* Basic Information */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Basic Information</CardTitle>
-                                <CardDescription>Select group leader and package</CardDescription>
+                                <CardTitle>{t({ en: 'Basic Information', bn: 'বেসিক ইনফরমেশন' })}</CardTitle>
+                                <CardDescription>{t({ en: 'Select group leader and package', bn: 'গ্রুপ লিডার এবং প্যাকেজ নির্বাচন করুন' })}</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -352,11 +368,11 @@ export default function CreateUmrah() {
                                         name="group_leader_id"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Group Leader *</FormLabel>
+                                                <FormLabel>{t({ en: 'Group Leader *', bn: 'গ্রুপ লিডার *' })}</FormLabel>
                                                 <Select onValueChange={field.onChange} value={field.value || ""}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select group leader" />
+                                                            <SelectValue placeholder={t({ en: 'Select group leader', bn: 'গ্রুপ লিডার নির্বাচন করুন' })} />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
@@ -377,11 +393,11 @@ export default function CreateUmrah() {
                                         name="package_id"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Package *</FormLabel>
+                                                <FormLabel>{t({ en: 'Package *', bn: 'প্যাকেজ *' })}</FormLabel>
                                                 <Select onValueChange={field.onChange} value={field.value || ""}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select package" />
+                                                            <SelectValue placeholder={t({ en: 'Select package', bn: 'প্যাকেজ নির্বাচন করুন' })} />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
@@ -403,8 +419,8 @@ export default function CreateUmrah() {
                         {/* Pilgrim Information */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Pilgrim Information</CardTitle>
-                                <CardDescription>Select existing pilgrim or create new</CardDescription>
+                                <CardTitle>{t({ en: 'Pilgrim Information', bn: 'পিলগ্রিম তথ্য' })}</CardTitle>
+                                <CardDescription>{t({ en: 'Select existing pilgrim or create new', bn: 'এক্সিস্টিং পিলগ্রিম সিলেক্ট অথবা নতুন তৈরি করুন' })}</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <FormField
@@ -412,16 +428,16 @@ export default function CreateUmrah() {
                                     name="pilgrim_type"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Pilgrim Type *</FormLabel>
+                                            <FormLabel>{t({ en: 'Pilgrim Type *', bn: 'পিলগ্রিম টাইপ *' })}</FormLabel>
                                             <Select onValueChange={handlePilgrimTypeChange} value={field.value || ""}>
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select pilgrim type" />
+                                                        <SelectValue placeholder={t({ en: 'Select pilgrim type', bn: 'পিলগ্রিম টাইপ নির্বাচন করুন' })} />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="existing">Existing Pilgrim</SelectItem>
-                                                    <SelectItem value="new">New Pilgrim</SelectItem>
+                                                    <SelectItem value="existing">{t({ en: 'Existing Pilgrim', bn: 'এক্সিস্টিং পিলগ্রিম' })}</SelectItem>
+                                                    <SelectItem value="new">{t({ en: 'New Pilgrim', bn: 'নতুন পিলগ্রিম' })}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -435,11 +451,11 @@ export default function CreateUmrah() {
                                         name="pilgrim_id"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Pilgrim *</FormLabel>
+                                                <FormLabel>{t({ en: 'Pilgrim *', bn: 'পিলগ্রিম *' })}</FormLabel>
                                                 <Select onValueChange={handlePilgrimChange} value={field.value || ""}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select pilgrim" />
+                                                            <SelectValue placeholder={t({ en: 'Select pilgrim', bn: 'পিলগ্রিম নির্বাচন করুন' })} />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
@@ -460,58 +476,81 @@ export default function CreateUmrah() {
                                         <div className="border rounded-lg p-4 bg-muted/50">
                                             <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
                                                 <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
-                                                Personal Information
+                                                {t({ en: 'Personal Information', bn: 'ব্যক্তিগত তথ্য' })}
                                             </h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                {/* Name fields - Take 2 columns */}
+                                                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="new_pilgrim.first_name"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>{t({ en: 'First Name (English) *', bn: 'প্রথম নাম (ইংরেজি) *' })}</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder={t({ en: 'Enter first name', bn: 'প্রথম নাম লিখুন' })} {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="new_pilgrim.first_name_bangla"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>{t({ en: 'First Name (Bangla) *', bn: 'প্রথম নাম (বাংলা) *' })}</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder={t({ en: 'Enter first name (Bangla)', bn: 'প্রথম নাম বাংলায় লিখুন' })} {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="new_pilgrim.last_name"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>{t({ en: 'Last Name (English)', bn: 'শেষ নাম (ইংরেজি)' })}</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder={t({ en: 'Enter last name', bn: 'শেষ নাম লিখুন' })} {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="new_pilgrim.last_name_bangla"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>{t({ en: 'Last Name (Bangla)', bn: 'শেষ নাম (বাংলা)' })}</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder={t({ en: 'Enter last name (Bangla)', bn: 'শেষ নাম বাংলায় লিখুন' })} {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                {/* Avatar Upload - Takes 1 column */}
                                                 <FormField
                                                     control={form.control}
-                                                    name="new_pilgrim.first_name"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>First Name (English) *</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Enter first name" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_pilgrim.first_name_bangla"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>First Name (Bangla) *</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="প্রথম নাম বাংলায়" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_pilgrim.last_name"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Last Name (English)</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Enter last name" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_pilgrim.last_name_bangla"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Last Name (Bangla)</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="শেষ নাম বাংলায়" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
+                                                    name="new_pilgrim.avatar"
+                                                    render={({ field: { value, onChange, ...field } }) => (
+                                                        <FormItem className="flex flex-col items-center justify-center h-full">
+                                                            <div className="flex flex-col">
+                                                                <FormLabel className="mb-2">{t({ en: 'Photo', bn: 'ছবি' })}</FormLabel>
+                                                                <FormControl>
+                                                                    <ImageUpload
+                                                                        value={value instanceof File ? URL.createObjectURL(value) : value}
+                                                                        onChange={(file) => onChange(file)}
+                                                                        onRemove={() => onChange(null)}
+                                                                    />
+                                                                </FormControl>
+                                                            </div>
+                                                            <FormMessage className="text-center" />
                                                         </FormItem>
                                                     )}
                                                 />
@@ -522,7 +561,7 @@ export default function CreateUmrah() {
                                         <div className="border rounded-lg p-4 bg-muted/50">
                                             <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
                                                 <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">2</span>
-                                                Parent Information
+                                                {t({ en: 'Parent Information', bn: 'অভিভাবক তথ্য' })}
                                             </h4>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <FormField
@@ -530,9 +569,9 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.father_name"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Father Name (English)</FormLabel>
+                                                            <FormLabel>{t({ en: 'Father Name (English)', bn: 'পিতার নাম (ইংরেজি)' })}</FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Enter father name" {...field} />
+                                                                <Input placeholder={t({ en: 'Enter father name', bn: 'পিতার নাম লিখুন' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -543,9 +582,9 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.father_name_bangla"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Father Name (Bangla)</FormLabel>
+                                                            <FormLabel>{t({ en: 'Father Name (Bangla)', bn: 'পিতার নাম (বাংলা)' })}</FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="পিতার নাম বাংলায়" {...field} />
+                                                                <Input placeholder={t({ en: 'Enter father name (Bangla)', bn: 'পিতার নাম বাংলায় লিখুন' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -556,9 +595,9 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.mother_name"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Mother Name (English)</FormLabel>
+                                                            <FormLabel>{t({ en: 'Mother Name (English)', bn: 'মাতার নাম (ইংরেজি)' })}</FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Enter mother name" {...field} />
+                                                                <Input placeholder={t({ en: 'Enter mother name', bn: 'মাতার নাম লিখুন' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -569,9 +608,9 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.mother_name_bangla"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Mother Name (Bangla)</FormLabel>
+                                                            <FormLabel>{t({ en: 'Mother Name (Bangla)', bn: 'মাতার নাম (বাংলা)' })}</FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="মাতার নাম বাংলায়" {...field} />
+                                                                <Input placeholder={t({ en: 'Enter mother name (Bangla)', bn: 'মাতার নাম বাংলায় লিখুন' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -584,7 +623,7 @@ export default function CreateUmrah() {
                                         <div className="border rounded-lg p-4 bg-muted/50">
                                             <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
                                                 <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">3</span>
-                                                Contact Information
+                                                {t({ en: 'Contact Information', bn: 'যোগাযোগ তথ্য' })}
                                             </h4>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <FormField
@@ -592,9 +631,9 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.email"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Email</FormLabel>
+                                                            <FormLabel>{t({ en: 'Email', bn: 'ইমেইল' })}</FormLabel>
                                                             <FormControl>
-                                                                <Input type="email" placeholder="example@email.com" {...field} />
+                                                                <Input type="email" placeholder={t({ en: 'example@email.com', bn: 'example@email.com' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -605,9 +644,9 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.phone"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Phone</FormLabel>
+                                                            <FormLabel>{t({ en: 'Phone', bn: 'ফোন' })}</FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="+880 1XXX-XXXXXX" {...field} />
+                                                                <Input placeholder={t({ en: '+880 1XXX-XXXXXX', bn: '+880 1XXX-XXXXXX' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -620,7 +659,7 @@ export default function CreateUmrah() {
                                         <div className="border rounded-lg p-4 bg-muted/50">
                                             <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
                                                 <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">4</span>
-                                                Personal Details
+                                                {t({ en: 'Personal Details', bn: 'ব্যক্তিগত তথ্য' })}
                                             </h4>
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                                 <FormField
@@ -628,17 +667,17 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.gender"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Gender *</FormLabel>
+                                                            <FormLabel>{t({ en: 'Gender *', bn: 'লিঙ্গ *' })}</FormLabel>
                                                             <Select onValueChange={field.onChange} value={field.value || ""}>
                                                                 <FormControl>
                                                                     <SelectTrigger className="w-full">
-                                                                        <SelectValue placeholder="Select gender" />
+                                                                        <SelectValue placeholder={t({ en: 'Select gender', bn: 'লিঙ্গ নির্বাচন করুন' })} />
                                                                     </SelectTrigger>
                                                                 </FormControl>
                                                                 <SelectContent>
-                                                                    <SelectItem value="male">Male</SelectItem>
-                                                                    <SelectItem value="female">Female</SelectItem>
-                                                                    <SelectItem value="other">Other</SelectItem>
+                                                                    <SelectItem value="male">{t({ en: 'Male', bn: 'পুরুষ' })}</SelectItem>
+                                                                    <SelectItem value="female">{t({ en: 'Female', bn: 'মহিলা' })}</SelectItem>
+                                                                    <SelectItem value="other">{t({ en: 'Other', bn: 'অন্যান্য' })}</SelectItem>
                                                                 </SelectContent>
                                                             </Select>
                                                             <FormMessage />
@@ -650,7 +689,7 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.date_of_birth"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Date of Birth</FormLabel>
+                                                            <FormLabel>{t({ en: 'Date of Birth', bn: 'জন্ম তারিখ' })}</FormLabel>
                                                             <FormControl>
                                                                 <Input type="date" {...field} />
                                                             </FormControl>
@@ -663,19 +702,19 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.is_married"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Marital Status</FormLabel>
+                                                            <FormLabel>{t({ en: 'Marital Status', bn: 'বৈবাহিক অবস্থা' })}</FormLabel>
                                                             <Select
                                                                 onValueChange={(value) => field.onChange(value === 'true')}
                                                                 value={field.value ? 'true' : 'false'}
                                                             >
                                                                 <FormControl>
                                                                     <SelectTrigger className="w-full">
-                                                                        <SelectValue placeholder="Select status" />
+                                                                        <SelectValue placeholder={t({ en: 'Select status', bn: 'অবস্থা নির্বাচন করুন' })} />
                                                                     </SelectTrigger>
                                                                 </FormControl>
                                                                 <SelectContent>
-                                                                    <SelectItem value="false">Single</SelectItem>
-                                                                    <SelectItem value="true">Married</SelectItem>
+                                                                    <SelectItem value="false">{t({ en: 'Single', bn: 'অবিবাহিত' })}</SelectItem>
+                                                                    <SelectItem value="true">{t({ en: 'Married', bn: 'বিবাহিত' })}</SelectItem>
                                                                 </SelectContent>
                                                             </Select>
                                                             <FormMessage />
@@ -689,7 +728,7 @@ export default function CreateUmrah() {
                                         <div className="border rounded-lg p-4 bg-muted/50">
                                             <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
                                                 <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">5</span>
-                                                Identification Documents
+                                                {t({ en: 'Identification', bn: 'পরিচয়' })}
                                             </h4>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <FormField
@@ -697,9 +736,9 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.nid"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>NID Number</FormLabel>
+                                                            <FormLabel>{t({ en: 'NID Number', bn: 'এনআইডি নম্বর' })}</FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Enter NID number" {...field} />
+                                                                <Input placeholder={t({ en: 'Enter NID number', bn: 'এনআইডি নম্বর লিখুন' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -710,9 +749,9 @@ export default function CreateUmrah() {
                                                     name="new_pilgrim.birth_certificate_number"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Birth Certificate Number</FormLabel>
+                                                            <FormLabel>{t({ en: 'Birth Certificate Number', bn: 'জন্ম সনদ নম্বর' })}</FormLabel>
                                                             <FormControl>
-                                                                <Input placeholder="Enter birth certificate number" {...field} />
+                                                                <Input placeholder={t({ en: 'Enter birth certificate number', bn: 'জন্ম সনদ নম্বর লিখুন' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -728,11 +767,11 @@ export default function CreateUmrah() {
                         {/* Passport Information */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Passport Information (Optional)</CardTitle>
+                                <CardTitle>{t({ en: 'Passport Information (Optional)', bn: 'পাসপোর্ট তথ্য (অপশনাল)' })}</CardTitle>
                                 <CardDescription>
                                     {pilgrimType === 'existing'
-                                        ? 'Select existing passport, add new passport, or skip'
-                                        : 'Add new passport or skip'}
+                                        ? t({ en: 'Select existing passport, add new passport, or skip', bn: 'এক্সিস্টিং পাসপোর্ট সিলেক্ট, নতুন পাসপোর্ট যোগ করুন অথবা স্কিপ করুন' })
+                                        : t({ en: 'Add new passport or skip', bn: 'নতুন পাসপোর্ট যোগ করুন অথবা স্কিপ করুন' })}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -741,22 +780,22 @@ export default function CreateUmrah() {
                                     name="passport_type"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Passport Option</FormLabel>
+                                            <FormLabel>{t({ en: 'Passport Option', bn: 'পাসপোর্ট অপশন' })}</FormLabel>
                                             <Select
                                                 onValueChange={handlePassportTypeChange}
                                                 value={field.value || ""}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select passport option" />
+                                                        <SelectValue placeholder={t({ en: 'Select passport option', bn: 'পাসপোর্ট অপশন নির্বাচন করুন' })} />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="none">No Passport</SelectItem>
+                                                    <SelectItem value="none">{t({ en: 'No Passport', bn: 'নো পাসপোর্ট' })}</SelectItem>
                                                     {pilgrimType === 'existing' && (
-                                                        <SelectItem value="existing">Existing Passport</SelectItem>
+                                                        <SelectItem value="existing">{t({ en: 'Existing Passport', bn: 'এক্সিস্টিং পাসপোর্ট' })}</SelectItem>
                                                     )}
-                                                    <SelectItem value="new">New Passport</SelectItem>
+                                                    <SelectItem value="new">{t({ en: 'New Passport', bn: 'নতুন পাসপোর্ট' })}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -776,10 +815,10 @@ export default function CreateUmrah() {
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder={
                                                                 loadingPassports
-                                                                    ? "Loading passports..."
+                                                                    ? t({ en: 'Loading passports...', bn: 'পাসপোর্ট লোড হচ্ছে...' })
                                                                     : availablePassports.length === 0
-                                                                        ? "No passports available"
-                                                                        : "Select passport"
+                                                                        ? t({ en: 'No passports available', bn: 'কোন পাসপোর্ট নেই' })
+                                                                        : t({ en: 'Select passport', bn: 'পাসপোর্ট নির্বাচন করুন' })
                                                             } />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -799,16 +838,16 @@ export default function CreateUmrah() {
 
                                 {passportType === 'new' && (
                                     <div className="space-y-4 border rounded-lg p-4">
-                                        <h4 className="font-semibold text-foreground">New Passport Details</h4>
+                                        <h4 className="font-semibold text-foreground">{t({ en: 'New Passport Details', bn: 'নতুন পাসপোর্টের বিবরণ' })}</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <FormField
                                                 control={form.control}
                                                 name="new_passport.passport_number"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Passport Number *</FormLabel>
+                                                        <FormLabel>{t({ en: 'Passport Number *', bn: 'পাসপোর্ট নম্বর *' })}</FormLabel>
                                                         <FormControl>
-                                                            <Input placeholder="Enter passport number" {...field} />
+                                                            <Input placeholder={t({ en: 'Enter passport number', bn: 'পাসপোর্ট নম্বর লিখুন' })} {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -819,17 +858,17 @@ export default function CreateUmrah() {
                                                 name="new_passport.passport_type"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Passport Type *</FormLabel>
+                                                        <FormLabel>{t({ en: 'Passport Type *', bn: 'পাসপোর্ট টাইপ *' })}</FormLabel>
                                                         <Select onValueChange={field.onChange} value={field.value || ""}>
                                                             <FormControl>
                                                                 <SelectTrigger className="w-full">
-                                                                    <SelectValue placeholder="Select type" />
+                                                                    <SelectValue placeholder={t({ en: 'Select type', bn: 'টাইপ নির্বাচন করুন' })} />
                                                                 </SelectTrigger>
                                                             </FormControl>
                                                             <SelectContent>
-                                                                <SelectItem value="ordinary">Ordinary</SelectItem>
-                                                                <SelectItem value="official">Official</SelectItem>
-                                                                <SelectItem value="diplomatic">Diplomatic</SelectItem>
+                                                                <SelectItem value="ordinary">{t({ en: 'Ordinary', bn: 'সাধারণ' })}</SelectItem>
+                                                                <SelectItem value="official">{t({ en: 'Official', bn: 'সরকারি' })}</SelectItem>
+                                                                <SelectItem value="diplomatic">{t({ en: 'Diplomatic', bn: 'কূটনৈতিক' })}</SelectItem>
                                                             </SelectContent>
                                                         </Select>
                                                         <FormMessage />
@@ -841,7 +880,7 @@ export default function CreateUmrah() {
                                                 name="new_passport.issue_date"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Issue Date *</FormLabel>
+                                                        <FormLabel>{t({ en: 'Issue Date *', bn: 'ইস্যু তারিখ *' })}</FormLabel>
                                                         <FormControl>
                                                             <Input type="date" {...field} />
                                                         </FormControl>
@@ -854,7 +893,7 @@ export default function CreateUmrah() {
                                                 name="new_passport.expiry_date"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Expiry Date *</FormLabel>
+                                                        <FormLabel>{t({ en: 'Expiry Date *', bn: 'মেয়াদ শেষের তারিখ *' })}</FormLabel>
                                                         <FormControl>
                                                             <Input type="date" {...field} />
                                                         </FormControl>
@@ -869,7 +908,7 @@ export default function CreateUmrah() {
                                                 name="new_passport.file"
                                                 render={({ field: { value, onChange, ...field } }) => (
                                                     <FormItem>
-                                                        <FormLabel>Passport Scan/Photo</FormLabel>
+                                                        <FormLabel>{t({ en: 'Passport Scan/Photo', bn: 'পাসপোর্ট স্ক্যান/ছবি' })}</FormLabel>
                                                         <FormControl>
                                                             <ImageUpload
                                                                 value={value instanceof File ? URL.createObjectURL(value) : value}
@@ -886,10 +925,10 @@ export default function CreateUmrah() {
                                                 name="new_passport.notes"
                                                 render={({ field }) => (
                                                     <FormItem className="flex flex-col">
-                                                        <FormLabel>Notes</FormLabel>
+                                                        <FormLabel>{t({ en: 'Notes', bn: 'নোটস' })}</FormLabel>
                                                         <FormControl>
                                                             <Textarea
-                                                                placeholder="Additional notes"
+                                                                placeholder={t({ en: 'Additional notes', bn: 'অতিরিক্ত নোট' })}
                                                                 className="resize-none flex-1"
                                                                 {...field}
                                                             />
@@ -911,10 +950,10 @@ export default function CreateUmrah() {
                                 onClick={() => navigate('/umrah')}
                                 disabled={isSubmitting}
                             >
-                                Cancel
+                                {t({ en: 'Cancel', bn: 'বাতিল' })}
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting ? 'Creating...' : 'Create Umrah'}
+                                {isSubmitting ? t({ en: 'Creating...', bn: 'তৈরি করা হচ্ছে...' }) : t({ en: 'Create Umrah', bn: 'উমরাহ তৈরি করুন' })}
                             </Button>
                         </div>
                     </form>
