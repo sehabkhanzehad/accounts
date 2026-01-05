@@ -36,6 +36,7 @@ const umrahSchema = z.object({
     pilgrim_type: z.enum(['existing', 'new']),
     pilgrim_id: z.string().optional(),
     new_pilgrim: z.object({
+        avatar: z.any().optional(),
         first_name: z.string().min(1, "First name is required"),
         first_name_bangla: z.string().min(1, "First name (Bangla) is required"),
         last_name: z.string().optional(),
@@ -177,6 +178,7 @@ export default function CreateUmrahPilgrim() {
             pilgrim_type: 'new',
             pilgrim_id: '',
             new_pilgrim: {
+                avatar: null,
                 first_name: '',
                 first_name_bangla: '',
                 last_name: '',
@@ -274,8 +276,14 @@ export default function CreateUmrahPilgrim() {
             } else {
                 Object.keys(data.new_pilgrim).forEach(key => {
                     const value = data.new_pilgrim[key]
+                    // Handle file uploads separately
+                    if (key === 'avatar') {
+                        if (value instanceof File) {
+                            formData.append(`new_pilgrim[${key}]`, value)
+                        }
+                    }
                     // Always include boolean fields
-                    if (key === 'is_married') {
+                    else if (key === 'is_married') {
                         formData.append(`new_pilgrim[${key}]`, value ? '1' : '0')
                     } else if (value !== undefined && value !== '') {
                         formData.append(`new_pilgrim[${key}]`, value)
@@ -462,6 +470,24 @@ export default function CreateUmrahPilgrim() {
                                                 <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
                                                 Personal Information
                                             </h4>
+                                            {/* Avatar Upload */}
+                                            <FormField
+                                                control={form.control}
+                                                name="new_pilgrim.avatar"
+                                                render={({ field: { value, onChange, ...field } }) => (
+                                                    <FormItem className="mb-4">
+                                                        <FormLabel>Avatar</FormLabel>
+                                                        <FormControl>
+                                                            <ImageUpload
+                                                                value={value instanceof File ? URL.createObjectURL(value) : value}
+                                                                onChange={(file) => onChange(file)}
+                                                                onRemove={() => onChange(null)}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <FormField
                                                     control={form.control}
