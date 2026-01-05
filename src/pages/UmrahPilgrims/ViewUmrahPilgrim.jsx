@@ -378,7 +378,7 @@ export default function ViewUmrahPilgrim() {
                                     <div>
                                         <p className="text-[10px] text-muted-foreground">{t({ en: "Date of Birth", bn: "জন্ম তারিখ" })}</p>
                                         <p className="text-sm font-medium">
-                                            {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', {
+                                            {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-US', {
                                                 year: 'numeric', month: 'short', day: 'numeric'
                                             }) : t({ en: "N/A", bn: "নেই" })}
                                         </p>
@@ -392,7 +392,7 @@ export default function ViewUmrahPilgrim() {
 
                             <Separator />
 
-                            { /* Family Details */}
+                            {/* Family Details */}
                             <div>
                                 <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                                     {t({ en: "Family Details", bn: "পারিবারিক তথ্য" })}
