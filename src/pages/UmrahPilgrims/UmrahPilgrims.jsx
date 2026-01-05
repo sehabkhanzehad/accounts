@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
+import { useI18n } from '@/contexts/I18nContext'
 import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
@@ -15,7 +15,7 @@ import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Plus, FileText } from 'lucide-react'
 
 export default function UmrahPilgrims() {
-    const { t } = useTranslation();
+    const { t } = useI18n();
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [currentPage, setCurrentPage] = useState(1)
@@ -94,12 +94,12 @@ export default function UmrahPilgrims() {
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
                     <PageHeading
-                        title="Umrah"
-                        description="Manage pilgrim umrah registrations"
+                        title={t({ en: "Umrah Pilgrims", bn: "উমরাহ পিলগ্রিম" })}
+                        description={t({ en: "Manage your Umrah pilgrims here.", bn: "উমরাহ পিলগ্রিম ম্যানেজ করুন।" })}
                     />
                     <Button variant="outline" onClick={openCreatePage} className="gap-2">
                         <Plus className="h-4 w-4" />
-                        Add Umrah
+                        {t({ en: "Add Pilgrim", bn: "অ্যাড পিলগ্রিম" })}
                     </Button>
                 </div>
 
@@ -115,12 +115,12 @@ export default function UmrahPilgrims() {
                     ) : (
                         <EmptyComponent
                             icon={<FileText />}
-                            title="No umrah registrations found"
-                            description="Create your first umrah registration to get started"
+                            title={t({ en: "No Pilgrims Found.", bn: "কোন পিলগ্রিম পাওয়া যায়নি।" })}
+                            description={t({ en: "Create your first pilgrim.", bn: "আপনার প্রথম পিলগ্রিম তৈরি করুন।" })}
                             action={
                                 <Button variant="outline" onClick={openCreatePage} className="gap-2">
                                     <Plus className="h-4 w-4" />
-                                    Add Umrah
+                                    {t({ en: "Add Pilgrim", bn: "অ্যাড পিলগ্রিম" })}
                                 </Button>
                             }
                         />
