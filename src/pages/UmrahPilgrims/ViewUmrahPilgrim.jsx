@@ -323,47 +323,49 @@ export default function ViewUmrahPilgrim() {
 
                 {/* Profile Card with Avatar */}
                 <Card className="border-2 relative">
-                    {/* Status action menu (top-right of card) */}
-                    <div className="absolute top-4 right-4 z-10">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button size="sm" variant="ghost" className="h-8 w-8 p-1">
-                                    <EllipsisVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
-                                {/* When registered: Complete + Cancel */}
-                                {umrah.attributes.status === 'registered' && (
-                                    <>
-                                        <DropdownMenuItem onClick={() => setShowConfirmComplete(true)} disabled={markAsCompletedMutation.isPending} className="gap-2">
-                                            <Check className="h-4 w-4 text-green-600" />
-                                            <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Mark as Completed', bn: 'সম্পন্ন হিসেবে চিহ্নিত করুন' })}</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => setShowConfirmCancel(true)} className="text-destructive gap-2" disabled={markAsCanceledMutation.isPending}>
-                                            <XCircle className="h-4 w-4" />
-                                            <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel Umrah', bn: 'উমরাহ বাতিল করুন' })}</span>
-                                        </DropdownMenuItem>
-                                    </>
-                                )}
+                    {/* Status action menu (top-right of card) - Hide if completed and no passport */}
+                    {!(umrah.attributes.status === 'completed' && !passport) && (
+                        <div className="absolute top-4 right-4 z-10">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button size="sm" variant="ghost" className="h-8 w-8 p-1">
+                                        <EllipsisVertical className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                    {/* When registered: Complete + Cancel */}
+                                    {umrah.attributes.status === 'registered' && (
+                                        <>
+                                            <DropdownMenuItem onClick={() => setShowConfirmComplete(true)} disabled={markAsCompletedMutation.isPending} className="gap-2">
+                                                <Check className="h-4 w-4 text-green-600" />
+                                                <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Mark as Completed', bn: 'সম্পন্ন হিসেবে চিহ্নিত করুন' })}</span>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => setShowConfirmCancel(true)} className="text-destructive gap-2" disabled={markAsCanceledMutation.isPending}>
+                                                <XCircle className="h-4 w-4" />
+                                                <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel Umrah', bn: 'উমরাহ বাতিল করুন' })}</span>
+                                            </DropdownMenuItem>
+                                        </>
+                                    )}
 
-                                {/* When cancelled: Restore */}
-                                {umrah.attributes.status === 'cancelled' && (
-                                    <DropdownMenuItem onClick={() => setShowConfirmRestore(true)} disabled={restoreMutation.isPending} className="gap-2">
-                                        <RotateCw className="h-4 w-4" />
-                                        <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Restore Umrah', bn: 'উমরাহ পুনরুদ্ধার করুন' })}</span>
-                                    </DropdownMenuItem>
-                                )}
+                                    {/* When cancelled: Restore */}
+                                    {umrah.attributes.status === 'cancelled' && (
+                                        <DropdownMenuItem onClick={() => setShowConfirmRestore(true)} disabled={restoreMutation.isPending} className="gap-2">
+                                            <RotateCw className="h-4 w-4" />
+                                            <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Restore Umrah', bn: 'উমরাহ পুনরুদ্ধার করুন' })}</span>
+                                        </DropdownMenuItem>
+                                    )}
 
-                                {/* Always available: View Passports (if any) */}
-                                {passport && (
-                                    <DropdownMenuItem onClick={() => setShowPassportDialog(true)} className="gap-2">
-                                        <Image className="h-4 w-4" />
-                                        <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'View Passport', bn: 'পাসপোর্ট দেখুন' })}</span>
-                                    </DropdownMenuItem>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
+                                    {/* Always available: View Passports (if any) */}
+                                    {passport && (
+                                        <DropdownMenuItem onClick={() => setShowPassportDialog(true)} className="gap-2">
+                                            <Image className="h-4 w-4" />
+                                            <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'View Passport', bn: 'পাসপোর্ট দেখুন' })}</span>
+                                        </DropdownMenuItem>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    )}
 
                     <CardContent className="pt-6">
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -740,7 +742,7 @@ export default function ViewUmrahPilgrim() {
                         <DialogTitle className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Confirm Cancel', bn: 'বাতিল নিশ্চিতকরণ' })}</DialogTitle>
                     </DialogHeader>
                     <div className="py-2">
-                        <p className={`text-sm ${language === 'bn' ? 'font-bengali' : ''}`}>{t({ en: 'Are you sure you want to cancel this Umrah? This action cannot be undone.', bn: 'আপনি কি নিশ্চিত যে আপনি এই উমরাহ বাতিল করতে চান? এটি পূর্বাবস্থায় ফেরানো যাবে না।' })}</p>
+                        <p className={`text-sm ${language === 'bn' ? 'font-bengali' : ''}`}>{t({ en: 'Are you sure you want to cancel this Umrah?', bn: 'আপনি কি নিশ্চিত যে আপনি এই উমরাহ বাতিল করতে চান?' })}</p>
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setShowConfirmCancel(false)} disabled={markAsCanceledMutation.isPending} className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel', bn: 'বাতিল' })}</Button>
@@ -758,7 +760,7 @@ export default function ViewUmrahPilgrim() {
                         <DialogTitle className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Confirm Complete', bn: 'সম্পন্ন নিশ্চিতকরণ' })}</DialogTitle>
                     </DialogHeader>
                     <div className="py-2">
-                        <p className={`text-sm ${language === 'bn' ? 'font-bengali' : ''}`}>{t({ en: 'Mark this Umrah as completed? This will finalize the registration.', bn: 'আপনি কি এই উমরাহ সম্পন্ন হিসেবে চিহ্নিত করতে চান? এটি রেজিস্ট্রেশন চূড়ান্ত করবে।' })}</p>
+                        <p className={`text-sm ${language === 'bn' ? 'font-bengali' : ''}`}>{t({ en: 'Mark this Umrah as completed?', bn: 'আপনি কি এই উমরাহ সম্পন্ন হিসেবে চিহ্নিত করতে চান?' })}</p>
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setShowConfirmComplete(false)} disabled={markAsCompletedMutation.isPending} className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel', bn: 'বাতিল' })}</Button>
