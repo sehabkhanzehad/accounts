@@ -470,74 +470,79 @@ export default function CreateUmrahPilgrim() {
                                                 <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
                                                 Personal Information
                                             </h4>
-                                            {/* Avatar Upload */}
-                                            <FormField
-                                                control={form.control}
-                                                name="new_pilgrim.avatar"
-                                                render={({ field: { value, onChange, ...field } }) => (
-                                                    <FormItem className="mb-4">
-                                                        <FormLabel>Avatar</FormLabel>
-                                                        <FormControl>
-                                                            <ImageUpload
-                                                                value={value instanceof File ? URL.createObjectURL(value) : value}
-                                                                onChange={(file) => onChange(file)}
-                                                                onRemove={() => onChange(null)}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                {/* Name fields - Take 2 columns */}
+                                                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="new_pilgrim.first_name"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>First Name (English) *</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder="Enter first name" {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="new_pilgrim.first_name_bangla"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>First Name (Bangla) *</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder="প্রথম নাম বাংলায়" {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="new_pilgrim.last_name"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Last Name (English)</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder="Enter last name" {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="new_pilgrim.last_name_bangla"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Last Name (Bangla)</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder="শেষ নাম বাংলায়" {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                {/* Avatar Upload - Takes 1 column */}
                                                 <FormField
                                                     control={form.control}
-                                                    name="new_pilgrim.first_name"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>First Name (English) *</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Enter first name" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_pilgrim.first_name_bangla"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>First Name (Bangla) *</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="প্রথম নাম বাংলায়" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_pilgrim.last_name"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Last Name (English)</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Enter last name" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_pilgrim.last_name_bangla"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Last Name (Bangla)</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="শেষ নাম বাংলায়" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
+                                                    name="new_pilgrim.avatar"
+                                                    render={({ field: { value, onChange, ...field } }) => (
+                                                        <FormItem className="flex flex-col items-center justify-center h-full">
+                                                            <div className="flex flex-col">
+                                                                <FormLabel className="mb-2">Photo</FormLabel>
+                                                                <FormControl>
+                                                                    <ImageUpload
+                                                                        value={value instanceof File ? URL.createObjectURL(value) : value}
+                                                                        onChange={(file) => onChange(file)}
+                                                                        onRemove={() => onChange(null)}
+                                                                    />
+                                                                </FormControl>
+                                                            </div>
+                                                            <FormMessage className="text-center" />
                                                         </FormItem>
                                                     )}
                                                 />

@@ -12,6 +12,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { EllipsisVertical, Eye } from "lucide-react"
 
 export function UmrahTable({ umrahs, onDelete, onView }) {
@@ -38,20 +39,28 @@ export function UmrahTable({ umrahs, onDelete, onView }) {
                     return (
                         <TableRow key={umrah.id}>
                             <TableCell>
-                                <div className="space-y-1">
-                                    <div className="font-medium text-sm">
-                                        {user?.firstName} {user?.lastName}
-                                        {user?.gender && (
-                                            <span className="ml-1 uppercase">
-                                                ({user.gender === 'male' ? 'M' : user.gender === 'female' ? 'F' : 'O'})
-                                            </span>
-                                        )}
-                                    </div>
-                                    {user?.phone ? (
-                                        <div className="text-xs text-muted-foreground">
-                                            {user.phone}
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src={user?.avatar} alt={`${user?.firstName} ${user?.lastName}`} />
+                                        <AvatarFallback>
+                                            {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="space-y-1">
+                                        <div className="font-medium text-sm">
+                                            {user?.firstName} {user?.lastName}
+                                            {user?.gender && (
+                                                <span className="ml-1 uppercase">
+                                                    ({user.gender === 'male' ? 'M' : user.gender === 'female' ? 'F' : 'O'})
+                                                </span>
+                                            )}
                                         </div>
-                                    ) : (<div>Phone: N/A</div>)}
+                                        {user?.phone ? (
+                                            <div className="text-xs text-muted-foreground">
+                                                {user.phone}
+                                            </div>
+                                        ) : (<div>Phone: N/A</div>)}
+                                    </div>
                                 </div>
                             </TableCell>
                             <TableCell>
