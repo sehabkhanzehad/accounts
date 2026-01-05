@@ -392,31 +392,37 @@ export default function ViewUmrahPilgrim() {
 
                             <Separator />
 
-                            {/* Family Details */}
+                            { /* Family Details */}
                             <div>
                                 <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                                     {t({ en: "Family Details", bn: "পারিবারিক তথ্য" })}
                                 </h4>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                    {user?.fatherName && (
-                                        <div>
-                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Father's Name", bn: "বাবার নাম" })}</p>
-                                            <p className="text-sm font-medium">{user.fatherName}</p>
-                                            {user?.fatherNameBangla && (
-                                                <p className="text-xs text-muted-foreground">{user.fatherNameBangla}</p>
-                                            )}
-                                        </div>
-                                    )}
-                                    {user?.motherName && (
-                                        <div>
-                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Mother's Name", bn: "মায়ের নাম" })}</p>
-                                            <p className="text-sm font-medium">{user.motherName}</p>
-                                            {user?.motherNameBangla && (
-                                                <p className="text-xs text-muted-foreground">{user.motherNameBangla}</p>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
+                                {!user?.fatherName && !user?.motherName ? (
+                                    <div className="text-center py-3 text-muted-foreground">
+                                        <p className="text-xs">{t({ en: "No family information available", bn: "কোন পারিবারিক তথ্য নেই" })}</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                        {user?.fatherName && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Father's Name", bn: "পিতার নাম" })}</p>
+                                                <p className="text-sm font-medium">{user.fatherName}</p>
+                                                {user?.fatherNameBangla && (
+                                                    <p className="text-xs text-muted-foreground">{user.fatherNameBangla}</p>
+                                                )}
+                                            </div>
+                                        )}
+                                        {user?.motherName && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Mother's Name", bn: "মায়ের নাম" })}</p>
+                                                <p className="text-sm font-medium">{user.motherName}</p>
+                                                {user?.motherNameBangla && (
+                                                    <p className="text-xs text-muted-foreground">{user.motherNameBangla}</p>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
