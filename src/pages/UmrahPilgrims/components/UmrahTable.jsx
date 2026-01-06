@@ -57,6 +57,7 @@ export function UmrahTable({ umrahs, onDelete, onView }) {
                     <TableHead>{t({ en: "Passport", bn: "পাসপোর্ট" })}</TableHead>
                     <TableHead>{t({ en: "Group Leader", bn: "গ্রুপ লিডার" })}</TableHead>
                     <TableHead>{t({ en: "Package", bn: "প্যাকেজ" })}</TableHead>
+                    <TableHead>{t({ en: "Address", bn: "ঠিকানা" })}</TableHead>
                     <TableHead>{t({ en: "Status", bn: "স্ট্যাটাস" })}</TableHead>
                     <TableHead className="text-right">{t({ en: "Action", bn: "অ্যাকশন" })}</TableHead>
                 </TableRow>
@@ -144,6 +145,22 @@ export function UmrahTable({ umrahs, onDelete, onView }) {
                                     )}
                                 </div>
                             </TableCell>
+
+                            <TableCell>
+                                <div className="text-sm text-muted-foreground">
+                                    <div className="font-medium text-sm truncate max-w-[220px]">
+                                        {umrah.relationships?.pilgrim?.relationships?.user?.relationships?.presentAddress?.attributes?.district
+                                            || umrah.relationships?.pilgrim?.relationships?.user?.relationships?.permanentAddress?.attributes?.district
+                                            || 'N/A'}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {umrah.relationships?.pilgrim?.relationships?.user?.relationships?.presentAddress?.attributes?.postal_code
+                                            || umrah.relationships?.pilgrim?.relationships?.user?.relationships?.permanentAddress?.attributes?.postal_code
+                                            || ''}
+                                    </div>
+                                </div>
+                            </TableCell>
+
                             <TableCell>
                                 <div className="space-y-1.5">
                                     <span className={`inline-block px-2 capitalize py-0.5 rounded text-[10px] font-medium ${umrah.attributes.status === 'registered'

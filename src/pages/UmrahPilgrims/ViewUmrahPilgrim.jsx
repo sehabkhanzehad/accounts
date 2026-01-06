@@ -5,6 +5,7 @@ import { PassportModal } from './components/PassportModal'
 import { EditPersonalInfoModal } from './components/EditPersonalInfoModal'
 import { EditContactInfoModal } from './components/EditContactInfoModal'
 import { EditAvatarModal } from './components/EditAvatarModal'
+import { EditAddressModal } from './components/EditAddressModal'
 import { toast } from 'sonner'
 import { useI18n } from '@/contexts/I18nContext'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -63,6 +64,7 @@ export default function ViewUmrahPilgrim() {
     const [showPersonalInfoModal, setShowPersonalInfoModal] = useState(false)
     const [showContactInfoModal, setShowContactInfoModal] = useState(false)
     const [showAvatarModal, setShowAvatarModal] = useState(false)
+    const [showAddressModal, setShowAddressModal] = useState(false)
 
     // Status action dialogs
     const [showConfirmCancel, setShowConfirmCancel] = useState(false)
@@ -171,6 +173,19 @@ export default function ViewUmrahPilgrim() {
         }
     })
 
+    // Address mutation
+    const updateAddressMutation = useMutation({
+        mutationFn: (data) => api.put(`/umrahs/${id}/pilgrim/addresses`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowAddressModal(false)
+            toast.success(t({ en: 'Address updated successfully', bn: 'ঠিকানা সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update address', bn: 'ঠিকানা আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
     // Status actions
     const markAsCanceledMutation = useMutation({
         mutationFn: () => api.post(`/umrahs/${id}/cancel`),
@@ -268,6 +283,8 @@ export default function ViewUmrahPilgrim() {
     const groupLeader = umrah.relationships?.groupLeader?.attributes
     const packageData = umrah.relationships?.package?.attributes
     const passport = umrah.relationships?.passport?.attributes
+    const presentAddress = umrah.relationships?.pilgrim?.relationships?.user?.relationships?.presentAddress
+    const permanentAddress = umrah.relationships?.pilgrim?.relationships?.user?.relationships?.permanentAddress
 
     const statusColors = {
         registered: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
@@ -434,7 +451,7 @@ export default function ViewUmrahPilgrim() {
                 <div className="grid gap-4 lg:grid-cols-2">
                     {/* Personal & Family Information Combined */}
                     <Card>
-                        <CardHeader className="pb-3">
+                        <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle className="text-base font-semibold flex items-center gap-2">
                                     <User className="h-4 w-4 text-primary" />
@@ -526,7 +543,7 @@ export default function ViewUmrahPilgrim() {
 
                     {/* Identification & Passport Combined */}
                     <Card>
-                        <CardHeader className="pb-3">
+                        <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle className="text-base font-semibold flex items-center gap-2">
                                     <IdCard className="h-4 w-4 text-primary" />
@@ -659,9 +676,147 @@ export default function ViewUmrahPilgrim() {
                         </CardContent>
                     </Card>
 
+                    {/* Address Information */}
+                    <Card className="lg:col-span-2">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <MapPin className="h-4 w-4 text-primary" />
+                                    {t({ en: "Address", bn: "ঠিকানা" })}
+                                </CardTitle>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setShowAddressModal(true)}
+                                    className="h-8 gap-1"
+                                >
+                                    <Edit className="h-3.5 w-3.5" />
+                                    {t({ en: "Edit", bn: "এডিট" })}
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {/* Present Address */}
+                            <div>
+                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                    {t({ en: "Present Address", bn: "বর্তমান ঠিকানা" })}
+                                </h4>
+                                {presentAddress?.attributes ? (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
+                                        {presentAddress.attributes.house_no && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "House No.", bn: "বাড়ি নং" })}</p>
+                                                <p className="text-sm font-medium">{presentAddress.attributes.house_no}</p>
+                                            </div>
+                                        )}
+                                        {presentAddress.attributes.road_no && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Road No.", bn: "রোড নং" })}</p>
+                                                <p className="text-sm font-medium">{presentAddress.attributes.road_no}</p>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Village", bn: "গ্রাম" })}</p>
+                                            <p className="text-sm font-medium">{presentAddress.attributes.village || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Post Office", bn: "পোস্ট অফিস" })}</p>
+                                            <p className="text-sm font-medium">{presentAddress.attributes.post_office || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Police Station", bn: "থানা" })}</p>
+                                            <p className="text-sm font-medium">{presentAddress.attributes.police_station || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "District", bn: "জেলা" })}</p>
+                                            <p className="text-sm font-medium">{presentAddress.attributes.district || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Division", bn: "বিভাগ" })}</p>
+                                            <p className="text-sm font-medium">{presentAddress.attributes.division || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Postal Code", bn: "পোস্টাল কোড" })}</p>
+                                            <p className="text-sm font-medium">{presentAddress.attributes.postal_code || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        {presentAddress.attributes.country && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Country", bn: "দেশ" })}</p>
+                                                <p className="text-sm font-medium">{presentAddress.attributes.country}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-3 text-muted-foreground">
+                                        <p className="text-xs">{t({ en: "No present address available", bn: "কোন বর্তমান ঠিকানা নেই" })}</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <Separator />
+
+                            {/* Permanent Address */}
+                            <div>
+                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                    {t({ en: "Permanent Address", bn: "স্থায়ী ঠিকানা" })}
+                                </h4>
+                                {permanentAddress?.attributes ? (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
+                                        {permanentAddress.attributes.house_no && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "House No.", bn: "বাড়ি নং" })}</p>
+                                                <p className="text-sm font-medium">{permanentAddress.attributes.house_no}</p>
+                                            </div>
+                                        )}
+                                        {permanentAddress.attributes.road_no && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Road No.", bn: "রোড নং" })}</p>
+                                                <p className="text-sm font-medium">{permanentAddress.attributes.road_no}</p>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Village", bn: "গ্রাম" })}</p>
+                                            <p className="text-sm font-medium">{permanentAddress.attributes.village || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Post Office", bn: "পোস্ট অফিস" })}</p>
+                                            <p className="text-sm font-medium">{permanentAddress.attributes.post_office || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Police Station", bn: "থানা" })}</p>
+                                            <p className="text-sm font-medium">{permanentAddress.attributes.police_station || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "District", bn: "জেলা" })}</p>
+                                            <p className="text-sm font-medium">{permanentAddress.attributes.district || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Division", bn: "বিভাগ" })}</p>
+                                            <p className="text-sm font-medium">{permanentAddress.attributes.division || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Postal Code", bn: "পোস্টাল কোড" })}</p>
+                                            <p className="text-sm font-medium">{permanentAddress.attributes.postal_code || t({ en: "N/A", bn: "নেই" })}</p>
+                                        </div>
+                                        {permanentAddress.attributes.country && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Country", bn: "দেশ" })}</p>
+                                                <p className="text-sm font-medium">{permanentAddress.attributes.country}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-3 text-muted-foreground">
+                                        <p className="text-xs">{t({ en: "No permanent address available", bn: "কোন স্থায়ী ঠিকানা নেই" })}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     {/* Registration Timeline */}
                     <Card className="lg:col-span-2">
-                        <CardHeader className="pb-3">
+                        <CardHeader >
                             <CardTitle className="text-base font-semibold flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-primary" />
                                 {t({ en: "Registration Timeline", bn: "রেজিস্ট্রেশন টাইমলাইন" })}
@@ -814,6 +969,15 @@ export default function ViewUmrahPilgrim() {
                 currentAvatar={user?.avatar}
                 onSubmit={(formData) => updateAvatarMutation.mutate(formData)}
                 isSubmitting={updateAvatarMutation.isPending}
+            />
+
+            {/* Address Edit Modal */}
+            <EditAddressModal
+                open={showAddressModal}
+                onOpenChange={setShowAddressModal}
+                addressData={{ presentAddress, permanentAddress }}
+                onSubmit={(data) => updateAddressMutation.mutate(data)}
+                isSubmitting={updateAddressMutation.isPending}
             />
         </DashboardLayout>
     )

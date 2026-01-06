@@ -875,9 +875,9 @@ export default function CreateUmrahPilgrim() {
                         {/* Address Information */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>{t({ en: 'Address Information', bn: 'ঠিকানা তথ্য' })}</CardTitle>
+                                <CardTitle>{t({ en: 'Address', bn: 'ঠিকানা' })}</CardTitle>
                                 <CardDescription>
-                                    {t({ en: 'Enter present and permanent address details', bn: 'বর্তমান এবং স্থায়ী ঠিকানা তথ্য লিখুন' })}
+                                    {t({ en: 'Enter present and permanent address details', bn: 'বর্তমান এবং স্থায়ী ঠিকানা লিখুন' })}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
