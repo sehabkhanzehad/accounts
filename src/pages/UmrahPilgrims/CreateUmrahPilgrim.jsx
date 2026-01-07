@@ -46,6 +46,8 @@ const umrahSchema = z.object({
         mother_name_bangla: z.string().optional(),
         father_name: z.string().optional(),
         father_name_bangla: z.string().optional(),
+        occupation: z.string().optional(),
+        spouse_name: z.string().optional(),
         email: z.string().optional(),
         phone: z.string().optional(),
         gender: z.enum(['male', 'female', 'other'], {
@@ -262,6 +264,8 @@ export default function CreateUmrahPilgrim() {
                 mother_name_bangla: '',
                 father_name: '',
                 father_name_bangla: '',
+                occupation: '',
+                spouse_name: '',
                 email: '',
                 phone: '',
                 gender: '',
@@ -719,6 +723,32 @@ export default function CreateUmrahPilgrim() {
                                                             <FormLabel>{t({ en: 'Mother Name (Bangla)', bn: 'মাতার নাম (বাংলা)' })}</FormLabel>
                                                             <FormControl>
                                                                 <Input placeholder={t({ en: 'Enter mother name (Bangla)', bn: 'মাতার নাম বাংলায় লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.occupation"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Occupation', bn: 'পেশা' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter occupation', bn: 'পেশা লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.spouse_name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Spouse Name', bn: 'স্বামী/স্ত্রীর নাম' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter spouse name', bn: 'স্বামী/স্ত্রীর নাম লিখুন' })} {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>

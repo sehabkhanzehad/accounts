@@ -31,6 +31,8 @@ const personalInfoSchema = z.object({
     father_name_bangla: z.string().optional(),
     mother_name: z.string().optional(),
     mother_name_bangla: z.string().optional(),
+    occupation: z.string().optional(),
+    spouse_name: z.string().optional(),
 })
 
 export function EditPersonalInfoModal({ open, onOpenChange, pilgrimData, onSubmit, isSubmitting }) {
@@ -47,6 +49,8 @@ export function EditPersonalInfoModal({ open, onOpenChange, pilgrimData, onSubmi
             father_name_bangla: '',
             mother_name: '',
             mother_name_bangla: '',
+            occupation: '',
+            spouse_name: '',
         }
     })
 
@@ -61,6 +65,8 @@ export function EditPersonalInfoModal({ open, onOpenChange, pilgrimData, onSubmi
                 father_name_bangla: pilgrimData.fatherNameBangla || '',
                 mother_name: pilgrimData.motherName || '',
                 mother_name_bangla: pilgrimData.motherNameBangla || '',
+                occupation: pilgrimData.occupation || '',
+                spouse_name: pilgrimData.spouseName || '',
             })
         }
     }, [open, pilgrimData, form])
@@ -179,6 +185,32 @@ export function EditPersonalInfoModal({ open, onOpenChange, pilgrimData, onSubmi
                                         <FormLabel>{t({ en: "Mother Name (Bangla)", bn: "মাতার নাম (বাংলা)" })}</FormLabel>
                                         <FormControl>
                                             <Input placeholder="মাতার নাম বাংলায়" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="occupation"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t({ en: "Occupation", bn: "পেশা" })}</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder={t({ en: "Enter occupation", bn: "পেশা লিখুন" })} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="spouse_name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t({ en: "Spouse Name", bn: "স্বামী/স্ত্রীর নাম" })}</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder={t({ en: "Enter spouse name", bn: "স্বামী/স্ত্রীর নাম লিখুন" })} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
