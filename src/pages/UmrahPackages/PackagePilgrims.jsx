@@ -190,6 +190,7 @@ export default function PackagePilgrims() {
                             umrahs={pilgrims}
                             onView={handleView}
                             onDelete={handleDelete}
+                            showPackageColumn={false}
                         />
                     ) : (
                         <EmptyComponent

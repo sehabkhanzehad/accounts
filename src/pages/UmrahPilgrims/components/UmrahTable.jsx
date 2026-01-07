@@ -46,7 +46,7 @@ const getAvatarColor = (name) => {
     return colors[Math.abs(hash) % colors.length]
 }
 
-export function UmrahTable({ umrahs, onDelete, onView }) {
+export function UmrahTable({ umrahs, onDelete, onView, showPackageColumn = true }) {
     const { t, language } = useI18n();
     return (
         <Table>
@@ -56,7 +56,7 @@ export function UmrahTable({ umrahs, onDelete, onView }) {
                     <TableHead>{t({ en: "NID & DOB", bn: "এনআইডি ও জন্ম তারিখ" })}</TableHead>
                     <TableHead>{t({ en: "Passport", bn: "পাসপোর্ট" })}</TableHead>
                     <TableHead>{t({ en: "Group Leader", bn: "গ্রুপ লিডার" })}</TableHead>
-                    <TableHead>{t({ en: "Package", bn: "প্যাকেজ" })}</TableHead>
+                    {showPackageColumn && <TableHead>{t({ en: "Package", bn: "প্যাকেজ" })}</TableHead>}
                     <TableHead className="text-right">{t({ en: "Financial Info", bn: "আর্থিক তথ্য" })}</TableHead>
                     <TableHead>{t({ en: "Address", bn: "ঠিকানা" })}</TableHead>
                     <TableHead>{t({ en: "Status", bn: "স্ট্যাটাস" })}</TableHead>
@@ -134,18 +134,20 @@ export function UmrahTable({ umrahs, onDelete, onView }) {
                                     </div>
                                 </div>
                             </TableCell>
-                            <TableCell>
-                                <div className="space-y-1">
-                                    <div className="font-medium text-sm">
-                                        {packageData?.name}
-                                    </div>
-                                    {packageData?.price && (
-                                        <div className="text-xs font-semibold text-green-600">
-                                            ৳{parseFloat(packageData.price).toLocaleString()}
+                            {showPackageColumn && (
+                                <TableCell>
+                                    <div className="space-y-1">
+                                        <div className="font-medium text-sm">
+                                            {packageData?.name}
                                         </div>
-                                    )}
-                                </div>
-                            </TableCell>
+                                        {packageData?.price && (
+                                            <div className="text-xs font-semibold text-green-600">
+                                                ৳{parseFloat(packageData.price).toLocaleString()}
+                                            </div>
+                                        )}
+                                    </div>
+                                </TableCell>
+                            )}
                             <TableCell className="text-right">
                                 <div className="space-y-1">
                                     <div className="text-xs">
