@@ -501,6 +501,12 @@ export default function ViewUmrahPilgrim() {
                                         <p className="text-[10px] text-muted-foreground">{t({ en: "Marital Status", bn: "বৈবাহিক অবস্থা" })}</p>
                                         <p className="text-sm font-medium">{user?.isMarried ? t({ en: "Married", bn: "বিবাহিত" }) : t({ en: "Single", bn: "অবিবাহিত" })}</p>
                                     </div>
+                                    {user?.occupation && (
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Occupation", bn: "পেশা" })}</p>
+                                            <p className="text-sm font-medium">{user.occupation}</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -511,7 +517,7 @@ export default function ViewUmrahPilgrim() {
                                 <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                                     {t({ en: "Family Details", bn: "পারিবারিক তথ্য" })}
                                 </h4>
-                                {!user?.fatherName && !user?.motherName ? (
+                                {!user?.fatherName && !user?.motherName && !user?.spouseName ? (
                                     <div className="text-center py-3 text-muted-foreground">
                                         <p className="text-xs">{t({ en: "No family information available", bn: "কোন পারিবারিক তথ্য নেই" })}</p>
                                     </div>
@@ -533,6 +539,12 @@ export default function ViewUmrahPilgrim() {
                                                 {user?.motherNameBangla && (
                                                     <p className="text-xs text-muted-foreground">{user.motherNameBangla}</p>
                                                 )}
+                                            </div>
+                                        )}
+                                        {user?.spouseName && (
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Spouse Name", bn: "স্বামী/স্ত্রীর নাম" })}</p>
+                                                <p className="text-sm font-medium">{user.spouseName}</p>
                                             </div>
                                         )}
                                     </div>

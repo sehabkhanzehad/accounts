@@ -728,32 +728,6 @@ export default function CreateUmrahPilgrim() {
                                                         </FormItem>
                                                     )}
                                                 />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_pilgrim.occupation"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>{t({ en: 'Occupation', bn: 'পেশা' })}</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder={t({ en: 'Enter occupation', bn: 'পেশা লিখুন' })} {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_pilgrim.spouse_name"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>{t({ en: 'Spouse Name', bn: 'স্বামী/স্ত্রীর নাম' })}</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder={t({ en: 'Enter spouse name', bn: 'স্বামী/স্ত্রীর নাম লিখুন' })} {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
                                             </div>
                                         </div>
 
@@ -859,6 +833,32 @@ export default function CreateUmrahPilgrim() {
                                                         </FormItem>
                                                     )}
                                                 />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.occupation"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Occupation', bn: 'পেশা' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter occupation', bn: 'পেশা লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.spouse_name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Spouse Name', bn: 'স্বামী/স্ত্রীর নাম' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter spouse name', bn: 'স্বামী/স্ত্রীর নাম লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
                                             </div>
                                         </div>
 
@@ -902,7 +902,8 @@ export default function CreateUmrahPilgrim() {
                             </CardContent>
                         </Card>
 
-                        {/* Address Information */}
+                         {/* Address Information - Only show for new pilgrims */}
+                        {pilgrimType === 'new' && (
                         <Card>
                             <CardHeader>
                                 <CardTitle>{t({ en: 'Address', bn: 'ঠিকানা' })}</CardTitle>
@@ -1192,6 +1193,7 @@ export default function CreateUmrahPilgrim() {
                                 )}
                             </CardContent>
                         </Card>
+                        )}
 
                         {/* Passport Information */}
                         <Card>
