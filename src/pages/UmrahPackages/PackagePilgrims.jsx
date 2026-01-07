@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import api from '@/lib/api'
 import { UmrahTable } from '../UmrahPilgrims/components/UmrahTable'
+import { CollectionModal } from './components/CollectionModal'
 import AppPagination from '@/components/app/AppPagination'
 import { EmptyComponent } from '@/components/app/EmptyComponent'
 import TableSkeletons from '@/components/skeletons/TableSkeletons'
@@ -24,6 +25,7 @@ export default function PackagePilgrims() {
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [umrahToDelete, setUmrahToDelete] = useState(null)
+    const [showCollectionModal, setShowCollectionModal] = useState(false)
 
     // Fetch package details
     const { data: packageData, isLoading: isPackageLoading } = useQuery({
@@ -97,10 +99,16 @@ export default function PackagePilgrims() {
                         <h2 className="text-lg font-semibold">Pilgrims in this Package</h2>
                         <p className="text-sm text-muted-foreground">Manage pilgrims registered for this Umrah package</p>
                     </div>
-                    {/* <Button variant="outline" onClick={openCreatePage} className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        {t({ en: "Add Pilgrim", bn: "অ্যাড পিলগ্রিম" })}
-                    </Button> */}
+                    <div className="flex items-center gap-2">
+                        <Button variant="default" onClick={() => setShowCollectionModal(true)} className="gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            {t({ en: "Collect", bn: "কালেক্ট" })}
+                        </Button>
+                        <Button variant="outline" onClick={openCreatePage} className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            {t({ en: "Add Pilgrim", bn: "অ্যাড পিলগ্রিম" })}
+                        </Button>
+                    </div>
                 </div>
              
                 {/* Package Info */}
@@ -216,6 +224,12 @@ export default function PackagePilgrims() {
                     mutate={deleteMutation.mutate}
                     title="Remove Pilgrim"
                     description="Are you sure you want to remove this pilgrim from the package?"
+                />
+
+                <CollectionModal
+                    open={showCollectionModal}
+                    onOpenChange={setShowCollectionModal}
+                    packageId={id}
                 />
             </div>
         </DashboardLayout>
