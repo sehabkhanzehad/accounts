@@ -27,8 +27,8 @@ const billSchema = z.object({
     code: z.string().min(1, "Code is required"),
     name: z.string().min(1, "Name is required"),
     description: z.string().optional(),
-    number: z.string().min(1, "Bill number is required"),
-    biller_name: z.string().min(1, "Biller name is required"),
+    number: z.string().optional(),
+    biller_name: z.string().optional(),
 })
 
 export function BillForm({ open, onOpenChange, editingBill, onSubmit, isSubmitting }) {
@@ -153,7 +153,7 @@ export function BillForm({ open, onOpenChange, editingBill, onSubmit, isSubmitti
                                     name="number"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Bill Number *</FormLabel>
+                                            <FormLabel>Bill Number</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Enter bill number" {...field} />
                                             </FormControl>
@@ -166,7 +166,7 @@ export function BillForm({ open, onOpenChange, editingBill, onSubmit, isSubmitti
                                     name="biller_name"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Biller Name *</FormLabel>
+                                            <FormLabel>Biller Name</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Enter biller name" {...field} />
                                             </FormControl>

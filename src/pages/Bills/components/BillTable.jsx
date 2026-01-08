@@ -32,8 +32,8 @@ export function BillTable({ bills, onEdit, onDelete, onSeeTransactions }) {
                     <TableRow key={bill.id}>
                         <TableCell>{bill.attributes.code}</TableCell>
                         <TableCell>{bill.attributes.name}</TableCell>
-                        <TableCell className="text-center">{bill.relationships?.bill?.attributes?.number}</TableCell>
-                        <TableCell className="text-center">{bill.relationships?.bill?.attributes?.billerName}</TableCell>
+                        <TableCell className="text-center">{bill.relationships?.bill?.attributes?.number ?? 'N/A'}</TableCell>
+                        <TableCell className="text-center">{bill.relationships?.bill?.attributes?.billerName ?? 'N/A'}</TableCell>
                         <TableCell>
                             <div className="flex items-center justify-end">
                                 <DropdownMenu>
