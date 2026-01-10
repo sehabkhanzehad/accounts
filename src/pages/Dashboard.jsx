@@ -91,7 +91,7 @@ export default function Dashboard() {
         );
     }
 
-    const { overview, financial, registrations, loans, sections, trends } = dashboardData || {};
+    const { overview, financial, loans, trends } = dashboardData || {};
 
     return (
         <DashboardLayout
@@ -107,7 +107,7 @@ export default function Dashboard() {
                     <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <Select
-                            value={selectedYear?.toString()}
+                            value={selectedYear?.toString() || ''}
                             onValueChange={(value) => setSelectedYear(parseInt(value))}
                         >
                             <SelectTrigger className="w-50">

@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
         };
     }, []);
 
-    const login = (token, userData, remember) => {
+    const login = (token, userData) => {
         // Always use localStorage to persist across tabs and sessions
         localStorage.setItem('accessToken', token);
         localStorage.setItem('user', JSON.stringify(userData));

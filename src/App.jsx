@@ -23,6 +23,7 @@ import BorrowingTransactions from '@/pages/Borrowings/BorrowingTransactions'
 import BankTransactions from '@/pages/Banks/BankTransactions'
 import PreRegistrations from '@/pages/PreRegistrations/PreRegistrations'
 import CreatePreRegistration from '@/pages/PreRegistrations/CreatePreRegistration'
+import ViewPreRegistration from '@/pages/PreRegistrations/ViewPreRegistration'
 import Registrations from '@/pages/Registrations/Registrations'
 import UmrahPilgrims from '@/pages/UmrahPilgrims/UmrahPilgrims'
 import CreateUmrahPilgrim from '@/pages/UmrahPilgrims/CreateUmrahPilgrim'
@@ -65,6 +66,7 @@ function App() {
           <Route path="/sections/borrowings/:id/transactions" element={isAuthenticated ? <BorrowingTransactions /> : <Navigate to="/" replace />} />
           <Route path="/pre-registrations" element={isAuthenticated ? <PreRegistrations /> : <Navigate to="/" replace />} />
           <Route path="/pre-registrations/create" element={isAuthenticated ? <CreatePreRegistration /> : <Navigate to="/" replace />} />
+          <Route path="/pre-registrations/view/:id" element={isAuthenticated ? <ViewPreRegistration /> : <Navigate to="/" replace />} />
           <Route path="/registrations" element={isAuthenticated ? <Registrations /> : <Navigate to="/" replace />} />
           <Route path="/umrah" element={isAuthenticated ? <UmrahPilgrims /> : <Navigate to="/" replace />} />
           <Route path="/umrah/create" element={isAuthenticated ? <CreateUmrahPilgrim /> : <Navigate to="/" replace />} />

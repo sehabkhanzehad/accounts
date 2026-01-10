@@ -68,7 +68,6 @@ export default function GroupLeaderTransactions() {
 
     const groupLeader = groupLeaderData
     const user = groupLeader?.relationships?.groupLeader?.relationships?.user?.attributes
-    const groupLeaderDataInfo = groupLeader?.relationships?.groupLeader?.attributes
     const userName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : ''
     const displayName = userName || groupLeader?.attributes?.name || '-'
     const email = user?.email || '-'

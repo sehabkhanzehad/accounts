@@ -7,15 +7,11 @@ export default function PieChart({ data, title, description, height = 300 }) {
     }, [data]);
 
     const segments = useMemo(() => {
-        let currentAngle = -90; // Start from top
-
-        return data.map((item, index) => {
+        return data.reduce((acc, item) => {
             const percentage = total > 0 ? (item.value / total) * 100 : 0;
             const angle = (percentage / 100) * 360;
-            const startAngle = currentAngle;
-            const endAngle = currentAngle + angle;
-
-            currentAngle = endAngle;
+            const startAngle = acc.currentAngle;
+            const endAngle = startAngle + angle;
 
             // Calculate path for donut segment
             const radius = 40;
@@ -45,14 +41,17 @@ export default function PieChart({ data, title, description, height = 300 }) {
                 'Z'
             ].join(' ');
 
-            return {
+            acc.segments.push({
                 ...item,
                 path,
                 percentage,
                 startAngle,
                 endAngle,
-            };
-        });
+            });
+
+            acc.currentAngle = endAngle;
+            return acc;
+        }, { segments: [], currentAngle: -90 }).segments;
     }, [data, total]);
 
     const colors = [

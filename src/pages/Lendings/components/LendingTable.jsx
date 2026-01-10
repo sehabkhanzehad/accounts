@@ -33,8 +33,8 @@ export function LendingTable({ lendings }) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {lendings?.map((lending) => (
-                    <TableRow key={lending?.id || Math.random()}>
+                {lendings?.map((lending, index) => (
+                    <TableRow key={lending?.id || `lending-${index}`}>
                         <TableCell>
                             {lending?.relationships?.loanable?.attributes?.firstName || 'Unknown'} {lending?.relationships?.loanable?.attributes?.lastName || ''}
                         </TableCell>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -225,7 +225,7 @@ const umrahSchema = z.object({
 
 export default function CreateUmrahPilgrim() {
     const navigate = useNavigate()
-    const { t, language } = useI18n()
+    const { t } = useI18n()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [pilgrimType, setPilgrimType] = useState('new')
     const [passportType, setPassportType] = useState('new')
@@ -479,9 +479,7 @@ export default function CreateUmrahPilgrim() {
                 </div>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
-                        // console.error('Form validation failed:', errors)
-                    })} className="space-y-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         {/* Basic Information */}
                         <Card>
                             <CardHeader>

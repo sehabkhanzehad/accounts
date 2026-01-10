@@ -88,6 +88,14 @@ export default function ViewUmrahPilgrim() {
     const [showConfirmRestore, setShowConfirmRestore] = useState(false)
     const [showDiscountModal, setShowDiscountModal] = useState(false)
 
+    // Timestamp for cache busting
+    const [passportTimestamp, setPassportTimestamp] = useState(0)
+
+    const handleOpenPassportDialog = () => {
+        setPassportTimestamp(Date.now())
+        setShowPassportDialog(true)
+    }
+
     // Transaction details modal
     const [showTransactionModal, setShowTransactionModal] = useState(false)
     const [selectedTransaction, setSelectedTransaction] = useState(null)
@@ -430,7 +438,7 @@ export default function ViewUmrahPilgrim() {
 
                                     {/* Always available: View Passports (if any) */}
                                     {passport && (
-                                        <DropdownMenuItem onClick={() => setShowPassportDialog(true)} className="gap-2">
+                                        <DropdownMenuItem onClick={handleOpenPassportDialog} className="gap-2">
                                             <Image className="h-4 w-4" />
                                             <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'View Passport', bn: 'পাসপোর্ট দেখুন' })}</span>
                                         </DropdownMenuItem>
@@ -741,7 +749,7 @@ export default function ViewUmrahPilgrim() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => setShowPassportDialog(true)}
+                                                    onClick={handleOpenPassportDialog}
                                                     className="w-full"
                                                 >
                                                     <Image className="h-4 w-4" /> View Passport
@@ -1085,7 +1093,7 @@ export default function ViewUmrahPilgrim() {
                     <div className="flex justify-center items-center p-4">
                         {passport?.filePath ? (
                             <img
-                                src={`${passport.filePath}?t=${Date.now()}`}
+                                src={`${passport.filePath}?t=${passportTimestamp}`}
                                 alt="Passport"
                                 className="max-w-full h-auto rounded-lg shadow-lg"
                                 onError={(e) => {

@@ -13,55 +13,191 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { EllipsisVertical } from "lucide-react"
+import { useI18n } from "@/contexts/I18nContext"
 
-export function PreRegistrationTable({ preRegistrations, onEdit, onDelete }) {
+// Generate consistent random color based on name
+const getAvatarColor = (name) => {
+    const colors = [
+        'bg-red-500',
+        'bg-orange-500',
+        'bg-amber-500',
+        'bg-yellow-500',
+        'bg-lime-500',
+        'bg-green-500',
+        'bg-emerald-500',
+        'bg-teal-500',
+        'bg-cyan-500',
+        'bg-sky-500',
+        'bg-blue-500',
+        'bg-indigo-500',
+        'bg-violet-500',
+        'bg-purple-500',
+        'bg-fuchsia-500',
+        'bg-pink-500',
+        'bg-rose-500',
+    ]
+
+    const str = name || 'default'
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    return colors[Math.abs(hash) % colors.length]
+}
+
+export function PreRegistrationTable({ preRegistrations, onDelete, onView }) {
+    const { t } = useI18n();
     return (
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Serial No</TableHead>
-                    <TableHead>Pilgrim Name</TableHead>
-                    <TableHead>Group Leader</TableHead>
-                    <TableHead>Bank</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
+                    <TableHead className="w-37.5">{t({ en: "Serial & Tracking", bn: "সিরিয়াল ও ট্র্যাকিং" })}</TableHead>
+                    <TableHead className="w-50">{t({ en: "Pilgrim", bn: "পিলগ্রিম" })}</TableHead>
+                    <TableHead className="w-37.5">{t({ en: "NID & DOB", bn: "এনআইডি ও জন্ম তারিখ" })}</TableHead>
+                    <TableHead className="w-37.5">{t({ en: "Passport", bn: "পাসপোর্ট" })}</TableHead>
+                    <TableHead className="w-37.5">{t({ en: "Group Leader", bn: "গ্রুপ লিডার" })}</TableHead>
+                    <TableHead className="w-50">{t({ en: "Address", bn: "ঠিকানা" })}</TableHead>
+                    <TableHead className="w-25">{t({ en: "Status", bn: "স্ট্যাটাস" })}</TableHead>
+                    <TableHead className="w-12.5">{t({ en: "Action", bn: "অ্যাকশন" })}</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {preRegistrations?.map((preRegistration) => (
-                    <TableRow key={preRegistration.id}>
-                        <TableCell>{preRegistration.attributes.serialNo}</TableCell>
-                        <TableCell>
-                            {preRegistration.relationships?.pilgrim?.relationships?.user?.attributes?.firstName} {preRegistration.relationships?.pilgrim?.relationships?.user?.attributes?.lastName}
-                        </TableCell>
-                        <TableCell>{preRegistration.relationships?.groupLeader?.attributes?.groupName}</TableCell>
-                        <TableCell>{preRegistration.relationships?.bank?.attributes?.name}</TableCell>
-                        <TableCell>{new Date(preRegistration.attributes.date).toLocaleDateString('en-GB')}</TableCell>
-                        <TableCell>{preRegistration.attributes.status}</TableCell>
-                        <TableCell>
-                            <div className="flex items-center justify-end">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <button className="data-[state=open]:bg-accent bg-background hover:bg-accent ml-auto cursor-pointer rounded-md border p-1">
-                                            <EllipsisVertical size={15} />
-                                        </button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => onEdit(preRegistration)}>
-                                            Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={() => onDelete(preRegistration)} className="text-destructive">
+                {preRegistrations?.map((preRegistration) => {
+                    const pilgrim = preRegistration.relationships?.pilgrim;
+                    const user = pilgrim?.relationships?.user?.attributes;
+                    const pilgrimName = user ? `${user.firstName} ${user.lastName ?? ""}` : 'N/A';
+                    const avatarColor = getAvatarColor(pilgrimName);
+                    const passport = preRegistration.relationships?.passport;
+
+                    return (
+                        <TableRow key={preRegistration.id}>
+                            <TableCell>
+                                <div className="text-sm">
+                                    {preRegistration.attributes.serialNo || preRegistration.attributes.trackingNumber ? (
+                                        <>
+                                            {preRegistration.attributes.serialNo && (
+                                                <div>NG-{preRegistration.attributes.serialNo}</div>
+                                            )}
+                                            {preRegistration.attributes.trackingNo && (
+                                                <div>{preRegistration.attributes.trackingNo}</div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <span className="text-muted-foreground font-medium">
+                                            Draft
+                                        </span>
+                                    )}
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="flex items-center gap-3">
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage src={user?.avatar} alt={pilgrimName} />
+                                        <AvatarFallback className={`${avatarColor} text-white text-xs`}>
+                                            {pilgrimName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <div className="font-medium">{pilgrimName}</div>
+                                        <div className="text-sm text-muted-foreground">
+                                            {user?.phone || 'N/A'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="text-xs text-muted-foreground space-y-1">
+                                    {user?.nid ? <div>NID: {user?.nid}</div> : <div>NID: N/A</div>}
+                                    {user?.dateOfBirth ? (
+                                        <div>DOB: {new Date(user?.dateOfBirth).toLocaleDateString('en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            year: 'numeric'
+                                        })}</div>
+                                    ) : (<div>DOB: N/A</div>)}
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                {passport ? (
+                                    <div className="text-xs space-y-1">
+                                        <div className="font-medium">{passport?.attributes?.passportNumber}</div>
+                                        {passport?.attributes?.expiryDate && (
+                                            <div className="text-muted-foreground">
+                                                Exp: {new Date(passport?.attributes?.expiryDate).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="text-xs text-muted-foreground">N/A</div>
+                                )}
+                            </TableCell>
+                            <TableCell>{preRegistration.relationships?.groupLeader?.attributes?.groupName || 'N/A'}</TableCell>
+                            <TableCell>
+                                <div className="text-sm text-muted-foreground">
+                                    <div className="font-medium text-sm truncate max-w-55">
+                                        {pilgrim?.relationships?.user?.relationships?.presentAddress?.attributes?.district || 'N/A'}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {pilgrim?.relationships?.user?.relationships?.presentAddress?.attributes?.postal_code || ''}
+                                    </div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="space-y-1.5">
+                                    <span className={`inline-block px-2 capitalize py-0.5 rounded text-[10px] font-medium ${preRegistration.attributes.status === 'pending'
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : preRegistration.attributes.status === 'active'
+                                            ? 'bg-green-100 text-green-800'
+                                            : preRegistration.attributes.status === 'registered'
+                                                ? 'bg-blue-100 text-blue-800'
+                                                : preRegistration.attributes.status === 'archived'
+                                                    ? 'bg-gray-100 text-gray-800'
+                                                    : preRegistration.attributes.status === 'transferred'
+                                                        ? 'bg-purple-100 text-purple-800'
+                                                        : preRegistration.attributes.status === 'cancelled'
+                                                            ? 'bg-red-100 text-red-800'
+                                                            : 'bg-gray-100 text-gray-800'
+                                        }`}>
+                                        {preRegistration.attributes.status}
+                                    </span>
+                                    <div className="text-[10px] text-muted-foreground">
+                                        Reg At: {new Date(preRegistration.attributes.date).toLocaleDateString('en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            year: 'numeric'
+                                        })}
+                                    </div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="flex items-center justify-end">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <button className="data-[state=open]:bg-accent bg-background hover:bg-accent ml-auto cursor-pointer rounded-md border p-1">
+                                                <EllipsisVertical size={15} />
+                                            </button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => onView(preRegistration)}>
+                                              View Details
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem onClick={() => onDelete(preRegistration)} className="text-destructive">
                                             Delete
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                ))}
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    )
+                })}
             </TableBody>
         </Table>
     )

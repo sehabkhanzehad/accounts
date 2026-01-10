@@ -50,7 +50,7 @@ const bankSchema = z.object({
 })
 
 export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitting }) {
-    const { t, i18n } = useTranslation()
+    const { i18n } = useTranslation()
     const language = i18n.language
     const form = useForm({
         resolver: zodResolver(bankSchema),

@@ -157,7 +157,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Group Leader *</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value || ''}>
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
                                                         <SelectValue placeholder="Select group leader" />
@@ -181,7 +181,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Status *</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value || ''}>
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
                                                         <SelectValue placeholder="Select status" />
@@ -203,7 +203,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Bank{form.watch('status') === 'active' ? ' *' : ''}</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value || ''}>
                                             <FormControl>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select bank" />
@@ -287,7 +287,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Gender *</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value || ''}>
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
                                                         <SelectValue />

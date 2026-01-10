@@ -32,8 +32,8 @@ export function BorrowingTable({ borrowings }) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {borrowings?.map((borrowing) => (
-                    <TableRow key={borrowing?.id || Math.random()}>
+                {borrowings?.map((borrowing, index) => (
+                    <TableRow key={borrowing?.id || `borrowing-${index}`}>
                         <TableCell>
                             {borrowing?.relationships?.loanable?.attributes?.firstName || 'Unknown'} {borrowing?.relationships?.loanable?.attributes?.lastName || ''}
                         </TableCell>

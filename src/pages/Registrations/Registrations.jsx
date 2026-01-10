@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -15,7 +14,6 @@ import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Plus, FileText } from 'lucide-react'
 
 export default function Registrations() {
-    const { t } = useTranslation();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingRegistration, setEditingRegistration] = useState(null)
@@ -119,12 +117,6 @@ export default function Registrations() {
     const handleDelete = (registration) => {
         setRegistrationToDelete(registration)
         setOpenDeleteDialog(true)
-    }
-
-    const confirmDelete = () => {
-        if (registrationToDelete) {
-            deleteMutation.mutate(registrationToDelete.id)
-        }
     }
 
     const openCreateDialog = () => {

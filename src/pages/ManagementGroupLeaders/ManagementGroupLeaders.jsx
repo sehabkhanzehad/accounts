@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -15,7 +14,6 @@ import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Plus, Users } from 'lucide-react'
 
 export default function ManagementGroupLeaders() {
-    const { t } = useTranslation();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingGroupLeader, setEditingGroupLeader] = useState(null)
@@ -95,12 +93,6 @@ export default function ManagementGroupLeaders() {
     const handleDelete = (groupLeader) => {
         setGroupLeaderToDelete(groupLeader)
         setOpenDeleteDialog(true)
-    }
-
-    const confirmDelete = () => {
-        if (groupLeaderToDelete) {
-            deleteMutation.mutate(groupLeaderToDelete.id)
-        }
     }
 
     const openCreateDialog = () => {

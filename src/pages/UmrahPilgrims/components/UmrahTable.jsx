@@ -47,7 +47,7 @@ const getAvatarColor = (name) => {
 }
 
 export function UmrahTable({ umrahs, onDelete, onView, showPackageColumn = true }) {
-    const { t, language } = useI18n();
+    const { t } = useI18n();
     return (
         <Table>
             <TableHeader>

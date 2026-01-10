@@ -18,7 +18,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { toast } from 'sonner'
 
 export default function Transactions() {
     const { t } = useTranslation()
@@ -26,7 +25,7 @@ export default function Transactions() {
     const [rowsPerPage, setRowsPerPage] = useState(15)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
-    const { data, isLoading, refetch } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['transactions', currentPage, rowsPerPage],
         queryFn: async () => {
             const response = await api.get('/transactions', {

@@ -276,7 +276,7 @@ export default function CreatePreRegistration() {
     const [loadingPassports, setLoadingPassports] = useState(false)
     const queryClient = useQueryClient()
 
-    const { data: groupLeaders, isLoading: groupLeadersLoading, error: groupLeadersError } = useQuery({
+    const { data: groupLeaders } = useQuery({
         queryKey: ['pre-registrations-group-leaders'],
         queryFn: async () => {
             const response = await api.get('/pre-registrations/group-leaders')
@@ -285,7 +285,7 @@ export default function CreatePreRegistration() {
         enabled: true
     })
 
-    const { data: banks, isLoading: banksLoading, error: banksError } = useQuery({
+    const { data: banks } = useQuery({
         queryKey: ['pre-registrations-banks'],
         queryFn: async () => {
             const response = await api.get('/pre-registrations/banks')
@@ -531,10 +531,6 @@ export default function CreatePreRegistration() {
         } finally {
             setIsSubmitting(false)
         }
-    }
-
-    const isRequired = (field) => {
-        return watchedStatus === 'active' && ['bank_id', 'serial_no', 'tracking_no', 'bank_voucher_no', 'voucher_name', 'date'].includes(field)
     }
 
     return (

@@ -44,7 +44,7 @@ export default function Home() {
         onSuccess: (response) => {
             console.log('Sign in success:', response);
             const { accessToken, user } = response.data;
-            login(accessToken, user, formData.remember);
+            login(accessToken, user);
             toast.success(response.message || t('app.signInSuccess'));
             navigate("/dashboard");
         },

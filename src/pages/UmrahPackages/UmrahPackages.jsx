@@ -99,12 +99,6 @@ export default function UmrahPackages() {
         setOpenDeleteDialog(true)
     }
 
-    const confirmDelete = () => {
-        if (packageToDelete) {
-            deleteMutation.mutate(packageToDelete.id)
-        }
-    }
-
     const openCreateDialog = () => {
         setEditingPackage(null)
         setDialogOpen(true)

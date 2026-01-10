@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -58,24 +58,24 @@ export function PassportModal({ open, onOpenChange, editingPassport, onSubmit, i
         }
     })
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (open) {
             if (editingPassport) {
                 // Convert ISO date format to YYYY-MM-DD for date inputs
-                const issueDate = editingPassport.issueDate
-                    ? editingPassport.issueDate.split('T')[0]
+                const issueDate = editingPassport.attributes?.issueDate
+                    ? editingPassport.attributes.issueDate.split('T')[0]
                     : ''
-                const expiryDate = editingPassport.expiryDate
-                    ? editingPassport.expiryDate.split('T')[0]
+                const expiryDate = editingPassport.attributes?.expiryDate
+                    ? editingPassport.attributes.expiryDate.split('T')[0]
                     : ''
 
                 form.reset({
-                    passport_number: editingPassport.passportNumber || '',
+                    passport_number: editingPassport.attributes?.passportNumber || '',
                     issue_date: issueDate,
                     expiry_date: expiryDate,
-                    passport_type: editingPassport.passportType || 'ordinary',
-                    file: editingPassport.filePath ? `${editingPassport.filePath}?t=${Date.now()}` : null,
-                    notes: editingPassport.notes || '',
+                    passport_type: editingPassport.attributes?.passportType || 'ordinary',
+                    file: editingPassport.attributes?.filePath ? `${editingPassport.attributes.filePath}?t=${Date.now()}` : null,
+                    notes: editingPassport.attributes?.notes || '',
                 })
                 setFileAction('keep') // Default to keep existing file
             } else {

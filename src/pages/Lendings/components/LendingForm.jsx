@@ -29,7 +29,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import api from '@/lib/api'
 
 const lendingSchema = z.object({
     selectedUser: z.string().min(1, "Please select a user"),

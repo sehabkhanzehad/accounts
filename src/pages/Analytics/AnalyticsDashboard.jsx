@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import DashboardLayout from '@/Layouts/DashboardLayout';
@@ -26,18 +25,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AnalyticsDashboard() {
     const { t } = useTranslation();
-    const [selectedYear, setSelectedYear] = useState(null);
+    const selectedYear = null;
 
     // Fetch dashboard analytics
     const { data: dashboardData, isLoading: isDashboardLoading } = useQuery({
         queryKey: ['analytics', 'dashboard', selectedYear],
         queryFn: () => analyticsApi.getDashboard(selectedYear).then(res => res.data),
-    });
-
-    // Fetch income/expense data
-    const { data: incomeExpenseData, isLoading: isIncomeExpenseLoading } = useQuery({
-        queryKey: ['analytics', 'income-expense', selectedYear],
-        queryFn: () => analyticsApi.getIncomeExpense(selectedYear, 'monthly').then(res => res.data),
     });
 
     // Fetch top performers
@@ -73,7 +66,7 @@ export default function AnalyticsDashboard() {
         );
     }
 
-    const { overview, financial, registrations, loans, sections, trends } = dashboardData || {};
+    const { overview, financial, loans, trends } = dashboardData || {};
 
     return (
         <DashboardLayout

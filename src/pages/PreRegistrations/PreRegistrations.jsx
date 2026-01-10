@@ -52,19 +52,14 @@ export default function PreRegistrations() {
         }
     })
 
-    const handleEdit = (preRegistration) => {
-        navigate(`/pre-registrations/edit/${preRegistration.id}`)
-    }
-
     const handleDelete = (preRegistration) => {
         setPreRegistrationToDelete(preRegistration)
         setOpenDeleteDialog(true)
     }
 
-    const confirmDelete = () => {
-        if (preRegistrationToDelete) {
-            deleteMutation.mutate(preRegistrationToDelete.id)
-        }
+    const handleView = (preRegistration) => {
+        console.log('handleView called with:', preRegistration);
+        navigate(`/pre-registrations/view/${preRegistration.id}`)
     }
 
     const openCreateDialog = () => {
@@ -91,8 +86,8 @@ export default function PreRegistrations() {
                     ) : preRegistrations?.length > 0 ? (
                         <PreRegistrationTable
                             preRegistrations={preRegistrations}
-                            onEdit={handleEdit}
                             onDelete={handleDelete}
+                            onView={handleView}
                         />
                     ) : (
                         <EmptyComponent

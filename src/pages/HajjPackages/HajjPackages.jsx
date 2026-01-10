@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -15,7 +14,6 @@ import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Plus, Package } from 'lucide-react'
 
 export default function HajjPackages() {
-    const { t } = useTranslation();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingPackage, setEditingPackage] = useState(null)
@@ -95,12 +93,6 @@ export default function HajjPackages() {
     const handleDelete = (pkg) => {
         setPackageToDelete(pkg)
         setOpenDeleteDialog(true)
-    }
-
-    const confirmDelete = () => {
-        if (packageToDelete) {
-            deleteMutation.mutate(packageToDelete.id)
-        }
     }
 
     const openCreateDialog = () => {
