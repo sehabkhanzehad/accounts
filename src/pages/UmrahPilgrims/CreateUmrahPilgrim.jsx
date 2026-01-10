@@ -55,7 +55,7 @@ const umrahSchema = z.object({
             invalid_type_error: "Please select a gender",
         }),
         is_married: z.boolean(),
-        nid: z.string().optional(),
+        nid: z.string().min(1, "NID is required"),
         birth_certificate_number: z.string().optional(),
         date_of_birth: z.string().optional(),
         present_address: z.object({
@@ -163,6 +163,15 @@ const umrahSchema = z.object({
         }
     }
     // If passport_type is 'none', no validation needed
+
+    // Validate passport type based on pilgrim type
+    if (data.pilgrim_type === 'new' && data.passport_type === 'existing') {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Existing passport option is not available for new pilgrims",
+            path: ["passport_type"]
+        })
+    }
 
     // Address validation - when addresses are different, permanent address is required
     if (data.pilgrim_type === 'new' && !data.same_as_present_address) {
@@ -345,6 +354,12 @@ export default function CreateUmrahPilgrim() {
             form.clearErrors(['new_pilgrim'])
         } else if (value === 'new') {
             form.clearErrors('pilgrim_id')
+            // When switching to new pilgrim, if passport_type is 'existing', switch to 'none'
+            const currentPassportType = form.getValues('passport_type')
+            if (currentPassportType === 'existing') {
+                form.setValue('passport_type', 'none')
+                setPassportType('none')
+            }
         }
 
         setPassportType('none')
@@ -874,7 +889,7 @@ export default function CreateUmrahPilgrim() {
                                                     name="new_pilgrim.nid"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>{t({ en: 'NID Number', bn: 'এনআইডি নম্বর' })}</FormLabel>
+                                                            <FormLabel>{t({ en: 'NID Number *', bn: 'এনআইডি নম্বর *' })}</FormLabel>
                                                             <FormControl>
                                                                 <Input placeholder={t({ en: 'Enter NID number', bn: 'এনআইডি নম্বর লিখুন' })} {...field} />
                                                             </FormControl>

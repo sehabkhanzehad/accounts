@@ -164,14 +164,10 @@ export function UmrahTable({ umrahs, onDelete, onView, showPackageColumn = true 
                             <TableCell>
                                 <div className="text-sm text-muted-foreground">
                                     <div className="font-medium text-sm truncate max-w-55">
-                                        {umrah.relationships?.pilgrim?.relationships?.user?.relationships?.presentAddress?.attributes?.district
-                                            || umrah.relationships?.pilgrim?.relationships?.user?.relationships?.permanentAddress?.attributes?.district
-                                            || 'N/A'}
+                                        {umrah.relationships?.pilgrim?.relationships?.user?.relationships?.presentAddress?.attributes?.district || 'N/A'}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
-                                        {umrah.relationships?.pilgrim?.relationships?.user?.relationships?.presentAddress?.attributes?.postal_code
-                                            || umrah.relationships?.pilgrim?.relationships?.user?.relationships?.permanentAddress?.attributes?.postal_code
-                                            || ''}
+                                        {umrah.relationships?.pilgrim?.relationships?.user?.relationships?.presentAddress?.attributes?.postal_code || ''}
                                     </div>
                                 </div>
                             </TableCell>
