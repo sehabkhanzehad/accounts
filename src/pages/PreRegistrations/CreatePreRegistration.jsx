@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -19,7 +19,8 @@ import api from '@/lib/api'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import PageHeading from '@/components/PageHeading'
 import { ImageUpload } from "@/components/ui/image-upload"
-import { ChevronLeft, Upload } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ChevronLeft, Upload, ChevronDown } from 'lucide-react'
 
 const preRegistrationSchema = z.object({
     group_leader_id: z.string().min(1, "Group leader is required"),
@@ -268,6 +269,22 @@ export default function CreatePreRegistration() {
     const [loadingPassports, setLoadingPassports] = useState(false)
     const queryClient = useQueryClient()
 
+    const [selectedPilgrim, setSelectedPilgrim] = useState(null)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [isSelectOpen, setIsSelectOpen] = useState(false)
+    const dropdownRef = useRef(null)
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsSelectOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
     const { data: groupLeaders } = useQuery({
         queryKey: ['pre-registrations-group-leaders'],
         queryFn: async () => {
@@ -284,6 +301,22 @@ export default function CreatePreRegistration() {
             return response.data.data
         }
     })
+
+    // Filter pilgrims based on search query
+    const filteredPilgrims = pilgrims?.filter((pilgrim) => {
+        const fullName = pilgrim.attributes?.fullName || ''
+        const pilgrimId = pilgrim.id?.toString() || ''
+        const phone = pilgrim.attributes?.phone || ''
+        return fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            pilgrimId.includes(searchQuery) ||
+            phone.includes(searchQuery)
+    })
+
+    const getInitials = (firstName, lastName) => {
+        const first = firstName?.charAt(0)?.toUpperCase() || ''
+        const last = lastName?.charAt(0)?.toUpperCase() || ''
+        return first + last || 'N/A'
+    }
 
     const form = useForm({
         resolver: zodResolver(preRegistrationSchema),
@@ -477,6 +510,8 @@ export default function CreatePreRegistration() {
 
     const handlePilgrimChange = (pilgrimId) => {
         form.setValue('pilgrim_id', pilgrimId)
+        const pilgrim = pilgrims?.find(p => p.id.toString() === pilgrimId)
+        setSelectedPilgrim(pilgrim || null)
         if (pilgrimId) {
             fetchPilgrimPassports(pilgrimId)
         } else {
@@ -489,6 +524,7 @@ export default function CreatePreRegistration() {
         form.setValue('pilgrim_type', value)
         if (value === 'existing') {
             form.setValue('pilgrim_id', '')
+            setSelectedPilgrim(null)
             setAvailablePassports([])
         } else if (value === 'new') {
             // When switching to new pilgrim, if passport_type is 'existing', switch to 'new'
@@ -619,7 +655,7 @@ export default function CreatePreRegistration() {
                                                     </FormItem>
                                                 )}
                                             />
-                                             <FormField
+                                            <FormField
                                                 control={form.control}
                                                 name="date"
                                                 render={({ field }) => (
@@ -661,7 +697,7 @@ export default function CreatePreRegistration() {
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
-                                            />                                          
+                                            />
                                         </div>
                                     </>
                                 )}
@@ -709,20 +745,76 @@ export default function CreatePreRegistration() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>{t({ en: 'Pilgrim *', bn: 'পিলগ্রিম *' })}</FormLabel>
-                                                <Select onValueChange={handlePilgrimChange} value={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder={t({ en: 'Select pilgrim', bn: 'পিলগ্রিম নির্বাচন করুন' })} />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {pilgrims?.map((pilgrim) => (
-                                                            <SelectItem key={pilgrim.id} value={pilgrim.id.toString()}>
-                                                                {pilgrim.attributes.fullName}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <div className="relative" ref={dropdownRef}>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        className="w-full justify-between"
+                                                        onClick={() => setIsSelectOpen(!isSelectOpen)}
+                                                    >
+                                                        {selectedPilgrim ? (
+                                                            <div className="flex items-center gap-2">
+                                                                <Avatar className="w-8 h-8">
+                                                                    <AvatarImage src={selectedPilgrim.attributes?.avatar} alt={selectedPilgrim.attributes?.fullName} />
+                                                                    <AvatarFallback>
+                                                                        {getInitials(selectedPilgrim.attributes?.firstName, selectedPilgrim.attributes?.lastName)}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <div className="text-left">
+                                                                    <div className="font-medium">{selectedPilgrim.attributes?.fullName}</div>
+                                                                    <div className="text-sm text-muted-foreground">{selectedPilgrim.attributes?.phone}</div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            t({ en: 'Select pilgrim', bn: 'পিলগ্রিম নির্বাচন করুন' })
+                                                        )}
+                                                        <ChevronDown className="h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                    {isSelectOpen && (
+                                                        <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
+                                                            <div className="p-2">
+                                                                <Input
+                                                                    placeholder={t({ en: 'Search pilgrims...', bn: 'পিলগ্রিম অনুসন্ধান...' })}
+                                                                    value={searchQuery}
+                                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                                    className="w-full"
+                                                                />
+                                                            </div>
+                                                            <div className="max-h-60 overflow-y-auto">
+                                                                {filteredPilgrims?.length > 0 ? (
+                                                                    filteredPilgrims.map((pilgrim) => (
+                                                                        <div
+                                                                            key={pilgrim.id}
+                                                                            className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer"
+                                                                            onClick={() => {
+                                                                                setSelectedPilgrim(pilgrim)
+                                                                                field.onChange(pilgrim.id.toString())
+                                                                                handlePilgrimChange(pilgrim.id.toString())
+                                                                                setIsSelectOpen(false)
+                                                                                setSearchQuery('')
+                                                                            }}
+                                                                        >
+                                                                            <Avatar className="w-8 h-8">
+                                                                                <AvatarImage src={pilgrim.attributes?.avatar} alt={pilgrim.attributes?.fullName} />
+                                                                                <AvatarFallback>
+                                                                                    {getInitials(pilgrim.attributes?.firstName, pilgrim.attributes?.lastName)}
+                                                                                </AvatarFallback>
+                                                                            </Avatar>
+                                                                            <div className="flex-1">
+                                                                                <div className="font-medium">{pilgrim.attributes?.fullName}</div>
+                                                                                <div className="text-sm text-muted-foreground">{pilgrim.attributes?.phone}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))
+                                                                ) : (
+                                                                    <div className="p-2 text-center text-muted-foreground">
+                                                                        {t({ en: 'No pilgrims found', bn: 'কোন পিলগ্রিম পাওয়া যায়নি' })}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -1326,7 +1418,7 @@ export default function CreatePreRegistration() {
                             <CardHeader>
                                 <CardTitle>{t({ en: 'Passport Information', bn: 'পাসপোর্ট তথ্য' })}</CardTitle>
                                 <CardDescription>
-                                    {watchedPilgrimType === 'existing' 
+                                    {watchedPilgrimType === 'existing'
                                         ? t({ en: 'Select existing passport or create new', bn: 'এক্সিস্টিং পাসপোর্ট সিলেক্ট অথবা নতুন তৈরি করুন' })
                                         : t({ en: 'Create new passport or select none', bn: 'নতুন পাসপোর্ট তৈরি করুন অথবা কোনটিই নয় সিলেক্ট করুন' })
                                     }
