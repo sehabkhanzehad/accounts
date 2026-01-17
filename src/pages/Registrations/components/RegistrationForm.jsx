@@ -11,6 +11,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import api from '@/lib/api'
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import {
@@ -38,6 +39,7 @@ export function RegistrationForm({ open, onOpenChange, editingRegistration, onSu
     const [searchQuery, setSearchQuery] = useState('')
     const [isSelectOpen, setIsSelectOpen] = useState(false)
     const dropdownRef = useRef(null)
+    const [loadingPreRegDetails, setLoadingPreRegDetails] = useState(false)
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -112,15 +114,114 @@ export function RegistrationForm({ open, onOpenChange, editingRegistration, onSu
     })
 
     useEffect(() => {
+        // Helper to build a compatible pre-registration object from different shapes
+        const buildPreRegistration = (reg) => {
+            if (!reg) return null
+
+            const preRel = reg.relationships?.preRegistration || reg.relationships?.pre_registration || null
+            const preId = preRel?.id || preRel?.id?.toString() || null
+
+            // Try to find in preRegistrations list first
+            let found = null
+            if (preId && preRegistrations) {
+                found = preRegistrations.find(p => p.id.toString() === preId.toString())
+                if (found) return found
+            }
+
+            // Construct a lightweight object compatible with the selector
+            const attributes = preRel?.attributes || { serialNo: preRel?.serialNo || preRel?.serial_no || '' }
+
+            // normalize user attributes from multiple possible shapes
+            const possibleUser = (
+                reg.relationships?.pilgrim?.relationships?.user?.attributes ||
+                reg.relationships?.pilgrim?.attributes?.user?.attributes ||
+                reg.relationships?.pilgrim?.attributes?.user ||
+                reg.relationships?.pilgrim?.attributes ||
+                preRel?.relationships?.pilgrim?.relationships?.user?.attributes ||
+                preRel?.relationships?.pilgrim?.attributes?.user?.attributes ||
+                preRel?.relationships?.pilgrim?.attributes?.user ||
+                preRel?.relationships?.pilgrim?.attributes ||
+                null
+            )
+
+            const pilgrim = {
+                relationships: {
+                    user: {
+                        attributes: possibleUser
+                    }
+                }
+            }
+
+            const groupLeader = reg.relationships?.groupLeader || preRel?.relationships?.groupLeader || null
+            const passport = reg.relationships?.passport || preRel?.relationships?.passport || null
+
+            return {
+                id: preRel?.id || preId,
+                attributes,
+                relationships: {
+                    pilgrim,
+                    groupLeader,
+                    passport,
+                }
+            }
+        }
+
         if (editingRegistration && open) {
-            const preReg = preRegistrations?.find(p => p.id.toString() === editingRegistration.relationships?.preRegistration?.id?.toString())
-            setSelectedPreRegistration(preReg || null)
+            const preRegObj = buildPreRegistration(editingRegistration)
+            setSelectedPreRegistration(preRegObj || null)
+
+            // If the built object lacks pilgrim user details, fetch full pre-registration from API
+            const preRegId = editingRegistration.relationships?.preRegistration?.id || (preRegObj && preRegObj.id)
+            const hasUser = preRegObj?.relationships?.pilgrim?.relationships?.user?.attributes
+            if (preRegId && !hasUser) {
+                (async () => {
+                    try {
+                        const res = await api.get(`/pre-registrations/${preRegId}`)
+                        // API returns { data: { ... } }
+                        const data = res.data?.data || res.data
+                        if (data) {
+                            // The API returns a single PreRegistrationResource
+                            setSelectedPreRegistration(data)
+
+                            // If passport exists, fill into form too (do not overwrite other fields)
+                            const passport = data.relationships?.passport?.attributes
+                            const currentValues = form.getValues()
+                            form.reset({
+                                ...currentValues,
+                                pre_registration_id: (data.id || preRegId).toString(),
+                                passport_number: passport?.passportNumber || '',
+                                passport_type: passport?.passportType || 'ordinary',
+                                issue_date: passport?.issueDate ? passport.issueDate.split('T')[0] : '',
+                                expiry_date: passport?.expiryDate ? passport.expiryDate.split('T')[0] : '',
+                                passport_file: passport?.filePath || null,
+                                passport_notes: passport?.notes || '',
+                            })
+                        }
+                    } catch (err) {
+                        // Ignore errors — keep original fallback object
+                        console.error('Failed to fetch pre-registration details', err)
+                    }
+                })()
+            }
+
+            // Ensure we set the form's field values (use setValue for single fields to avoid overriding other values)
+            const preRegIdString = editingRegistration.relationships?.preRegistration?.id?.toString() || editingRegistration.relationships?.preRegistration?.id || ''
             form.reset({
-                pre_registration_id: editingRegistration.relationships?.preRegistration?.id?.toString() || '',
+                pre_registration_id: preRegIdString,
                 package_id: editingRegistration.relationships?.package?.id?.toString() || '',
                 bank_id: editingRegistration.relationships?.bank?.id?.toString() || '',
                 date: editingRegistration.attributes?.date ? editingRegistration.attributes.date.split('T')[0] : new Date().toISOString().split('T')[0],
+                passport_number: editingRegistration.relationships?.passport?.attributes?.passportNumber || '',
+                passport_type: editingRegistration.relationships?.passport?.attributes?.passportType || 'ordinary',
+                issue_date: editingRegistration.relationships?.passport?.attributes?.issueDate ? editingRegistration.relationships.passport.attributes.issueDate.split('T')[0] : '',
+                expiry_date: editingRegistration.relationships?.passport?.attributes?.expiryDate ? editingRegistration.relationships.passport.attributes.expiryDate.split('T')[0] : '',
+                passport_file: editingRegistration.relationships?.passport?.attributes?.filePath || null,
+                passport_notes: editingRegistration.relationships?.passport?.attributes?.notes || '',
             })
+
+            // Close dropdown & clear any search when opening edit modal
+            setIsSelectOpen(false)
+            setSearchQuery('')
         } else if (!editingRegistration && open) {
             setSelectedPreRegistration(null)
             form.reset({
@@ -138,8 +239,74 @@ export function RegistrationForm({ open, onOpenChange, editingRegistration, onSu
         }
     }, [editingRegistration, form, preRegistrations, open])
 
+    // Keep selectedPreRegistration in sync when the form field changes or when the preRegistrations list updates
+    useEffect(() => {
+        // Subscribe to changes of the pre_registration_id field and prefer the final preRegistrations object when available
+        const subscription = form.watch((value, { name }) => {
+            if (name === 'pre_registration_id') {
+                const preRegId = value.pre_registration_id
+                if (preRegId && preRegistrations) {
+                    const preReg = preRegistrations.find(p => p.id.toString() === preRegId.toString())
+                    if (preReg) {
+                        setSelectedPreRegistration(preReg)
+                        return
+                    }
+                }
+
+                // Construct from editingRegistration if available
+                if (preRegId && editingRegistration && editingRegistration.relationships?.preRegistration?.id?.toString() === preRegId.toString()) {
+                    const pr = editingRegistration.relationships?.preRegistration
+                    const attributes = pr?.attributes || { serialNo: pr?.serialNo || pr?.serial_no || '' }
+                    const preReg = {
+                        id: pr?.id,
+                        attributes,
+                        relationships: {
+                            pilgrim: editingRegistration.relationships?.pilgrim || pr?.relationships?.pilgrim || null,
+                            groupLeader: editingRegistration.relationships?.groupLeader || pr?.relationships?.groupLeader || null,
+                            passport: editingRegistration.relationships?.passport || pr?.relationships?.passport || null,
+                        }
+                    }
+
+                    setSelectedPreRegistration(preReg)
+                } else {
+                    setSelectedPreRegistration(null)
+                }
+            }
+        })
+
+        return () => subscription.unsubscribe()
+    }, [form, preRegistrations, editingRegistration])
+
     const getInitials = (firstName, lastName) => {
         return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase() || 'N/A'
+    }
+
+    // Normalize pre-registration user data for display (avatar, names, serial)
+    const getPreRegDisplay = (preReg) => {
+        if (!preReg) return { firstName: '', lastName: '', avatar: null, serialNo: '' }
+
+        const serialNo = preReg?.attributes?.serialNo ?? preReg?.attributes?.serial_no ?? preReg?.serialNo ?? preReg?.serial_no ?? ''
+
+        // Try common locations for user attributes
+        let userAttrs = preReg?.relationships?.pilgrim?.relationships?.user?.attributes
+        if (!userAttrs) {
+            userAttrs = preReg?.relationships?.pilgrim?.attributes?.user?.attributes || preReg?.relationships?.pilgrim?.attributes?.user || preReg?.relationships?.pilgrim?.attributes || null
+        }
+
+        // Derive name parts from available fields
+        const fullName = userAttrs?.fullName ?? userAttrs?.full_name ?? userAttrs?.name ?? ''
+        let firstName = userAttrs?.firstName ?? userAttrs?.first_name ?? ''
+        let lastName = userAttrs?.lastName ?? userAttrs?.last_name ?? ''
+
+        if (!firstName && fullName) {
+            const parts = fullName.split(' ')
+            firstName = parts.shift() || ''
+            lastName = parts.join(' ') || lastName
+        }
+
+        const avatar = userAttrs?.avatar ?? null
+
+        return { firstName, lastName, avatar, serialNo }
     }
 
     const handleClose = () => {
@@ -201,27 +368,27 @@ export function RegistrationForm({ open, onOpenChange, editingRegistration, onSu
                                                 className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                                                 onClick={() => setIsSelectOpen(!isSelectOpen)}
                                             >
-                                                {selectedPreRegistration ? (
-                                                    <div className="flex items-center gap-2 flex-1">
-                                                        <Avatar className="h-6 w-6">
-                                                            <AvatarImage src={selectedPreRegistration.relationships?.pilgrim?.relationships?.user?.attributes?.avatar} />
-                                                            <AvatarFallback className="text-xs">
-                                                                {getInitials(
-                                                                    selectedPreRegistration.relationships?.pilgrim?.relationships?.user?.attributes?.firstName,
-                                                                    selectedPreRegistration.relationships?.pilgrim?.relationships?.user?.attributes?.lastName
-                                                                )}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                        <div className="flex flex-col">
-                                                            <span className="font-medium text-sm">
-                                                                {selectedPreRegistration.relationships?.pilgrim?.relationships?.user?.attributes?.firstName} {selectedPreRegistration.relationships?.pilgrim?.relationships?.user?.attributes?.lastName}
-                                                            </span>
-                                                            <span className="text-xs text-muted-foreground">
-                                                                NG-{selectedPreRegistration.attributes.serialNo}
-                                                            </span>
+                                                {selectedPreRegistration ? (() => {
+                                                    const d = getPreRegDisplay(selectedPreRegistration)
+                                                    return (
+                                                        <div className="flex items-center gap-2 flex-1">
+                                                            <Avatar className="h-6 w-6">
+                                                                <AvatarImage src={d.avatar} />
+                                                                <AvatarFallback className="text-xs">
+                                                                    {getInitials(d.firstName, d.lastName)}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-medium text-sm">
+                                                                    {d.firstName} {d.lastName}
+                                                                </span>
+                                                                <span className="text-xs text-muted-foreground">
+                                                                    NG-{d.serialNo}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ) : (
+                                                    )
+                                                })() : (
                                                     <span className="text-muted-foreground">
                                                         Select pre-registration
                                                     </span>
@@ -292,12 +459,19 @@ export function RegistrationForm({ open, onOpenChange, editingRegistration, onSu
                                                                             </AvatarFallback>
                                                                         </Avatar>
                                                                         <div className="flex-1 min-w-0">
-                                                                            <div className="font-medium text-sm truncate">
-                                                                                {user?.firstName} {user?.lastName}
-                                                                            </div>
-                                                                            <div className="text-xs text-muted-foreground truncate">
-                                                                                NG-{preReg.attributes.serialNo}
-                                                                            </div>
+                                                                            {(() => {
+                                                                const d = getPreRegDisplay(preReg)
+                                                                return (
+                                                                    <>
+                                                                        <div className="font-medium text-sm truncate">
+                                                                            {d.firstName} {d.lastName}
+                                                                        </div>
+                                                                        <div className="text-xs text-muted-foreground truncate">
+                                                                            NG-{d.serialNo}
+                                                                        </div>
+                                                                    </>
+                                                                )
+                                                            })()}
                                                                         </div>
                                                                     </div>
                                                                 )
