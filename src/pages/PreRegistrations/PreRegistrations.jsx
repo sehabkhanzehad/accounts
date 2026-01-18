@@ -100,7 +100,7 @@ export default function PreRegistrations() {
                             placeholder="Search by serial no, tracking no, full name, bangla name, phone, nid"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-10 max-w-sm"
+                            className="pl-10 max-w-lg"
                         />
                     </div>
                     <div className="flex items-center gap-2">
