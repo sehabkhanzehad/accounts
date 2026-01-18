@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,12 +25,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import api from '@/lib/api';
+import { ChevronsUpDown } from 'lucide-react';
 
 const createTransactionSchema = (selectedSection) => {
     const baseSchema = {
         section_id: z.string().min(1, 'Section is required'),
         type: z.enum(['income', 'expense']),
-        voucher_no: z.string().optional(),
+        voucher_no: z.string().min(1, 'Voucher number is required'),
         title: z.string().min(1, 'Title is required'),
         description: z.string().optional(),
         amount: z.union([z.string(), z.number()]).refine((val) => {
@@ -49,6 +50,9 @@ const createTransactionSchema = (selectedSection) => {
 export default function TransactionForm({ onSuccess }) {
     const queryClient = useQueryClient();
     const [selectedSection, setSelectedSection] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isSelectOpen, setIsSelectOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
     const form = useForm({
         resolver: zodResolver(createTransactionSchema(selectedSection)),
@@ -124,13 +128,43 @@ export default function TransactionForm({ onSuccess }) {
         }
     }, [watchedSectionId, sections, form]);
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsSelectOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const filteredSections = sections.filter(section =>
+        section.attributes.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    useEffect(() => {
+        // Reset voucher number when type changes to update prefix
+        form.setValue('voucher_no', '')
+    }, [form.watch('type'), form])
+
     const onSubmit = (data) => {
-        data.amount = parseFloat(data.amount) || 0;
-        if (!data.loan_id) delete data.loan_id;
-        if (!data.pre_registration_id) delete data.pre_registration_id;
-        if (data.pre_registration_ids && data.pre_registration_ids.length === 0) delete data.pre_registration_ids;
-        if (data.registration_ids && data.registration_ids.length === 0) delete data.registration_ids;
-        createMutation.mutate(data);
+        // Add prefix to voucher number before sending to backend
+        const prefix = data.type === 'income' ? 'I' : 'E'
+        const processedData = {
+            ...data,
+            voucher_no: `${prefix}${data.voucher_no}`
+        }
+
+        processedData.amount = parseFloat(processedData.amount) || 0;
+        if (!processedData.loan_id) delete processedData.loan_id;
+        if (!processedData.pre_registration_id) delete processedData.pre_registration_id;
+        if (processedData.pre_registration_ids && processedData.pre_registration_ids.length === 0) delete processedData.pre_registration_ids;
+        if (processedData.registration_ids && processedData.registration_ids.length === 0) delete processedData.registration_ids;
+        createMutation.mutate(processedData);
     };
 
     return (
@@ -143,20 +177,71 @@ export default function TransactionForm({ onSuccess }) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Section *</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select section" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {sections?.map((section) => (
-                                            <SelectItem key={section.id} value={section.id.toString()}>
-                                                {section.attributes.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <input type="hidden" {...field} />
+                                <div className="relative">
+                                    <div
+                                        className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                                        onClick={() => setIsSelectOpen(!isSelectOpen)}
+                                    >
+                                        {selectedSection ? (
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <span className="font-medium text-sm">
+                                                    {selectedSection.attributes.name}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-muted-foreground">
+                                                Select section
+                                            </span>
+                                        )}
+                                        <ChevronsUpDown className={`h-5 w-5 transition-transform ${isSelectOpen ? 'rotate-180 text-primary opacity-100' : 'text-muted-foreground opacity-60'}`} strokeWidth={2.5} />
+                                    </div>
+
+                                    {isSelectOpen && (
+                                        <div ref={dropdownRef} className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-md">
+                                            {/* Search Input */}
+                                            <div className="p-2 border-b">
+                                                <div className="relative">
+                                                    <Input
+                                                        placeholder="Search sections..."
+                                                        value={searchTerm}
+                                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                                        className="h-8"
+                                                        autoFocus
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Sections List */}
+                                            <div className="max-h-60 overflow-y-auto">
+                                                {filteredSections?.length === 0 ? (
+                                                    <div className="p-4 text-center text-sm text-muted-foreground">
+                                                        {searchTerm
+                                                            ? 'No sections found'
+                                                            : 'No sections available'}
+                                                    </div>
+                                                ) : (
+                                                    filteredSections?.map((section) => (
+                                                        <div
+                                                            key={section.id}
+                                                            className="flex items-center px-3 py-2 hover:bg-accent cursor-pointer"
+                                                            onClick={() => {
+                                                                field.onChange(section.id.toString());
+                                                                setSelectedSection(section);
+                                                                setIsSelectOpen(false);
+                                                                setSearchTerm('');
+                                                            }}
+                                                        >
+                                                            <span className="font-medium text-sm">
+                                                                {section.attributes.name}
+                                                            </span>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -242,15 +327,32 @@ export default function TransactionForm({ onSuccess }) {
                     <FormField
                         control={form.control}
                         name="voucher_no"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Voucher Number</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Optional" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                        render={({ field }) => {
+                            const type = form.watch('type')
+                            const prefix = type === 'income' ? 'I' : 'E'
+
+                            return (
+                                <FormItem>
+                                    <FormLabel>Voucher Number *</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Enter voucher number"
+                                            value={field.value ? `${prefix}${field.value}` : prefix}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                if (value.startsWith(prefix)) {
+                                                    field.onChange(value.slice(1));
+                                                } else {
+                                                    // If user tries to remove prefix, keep it
+                                                    field.onChange(field.value || '');
+                                                }
+                                            }}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )
+                        }}
                     />
                 </div>
 
