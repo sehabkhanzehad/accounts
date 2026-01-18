@@ -39,18 +39,9 @@ const createTransactionSchema = (selectedSection) => {
         }, 'Amount must be a valid positive number'),
         date: z.string().min(1, 'Date is required'),
         loan_id: z.string().optional(),
-        pre_registration_id: z.string().optional(),
         pre_registration_ids: z.array(z.string()).optional(),
         registration_ids: z.array(z.string()).optional(),
     };
-
-    // Add conditional validation for group leader sections
-    if (selectedSection?.attributes?.type === 'group_leader') {
-        const pilgrimRequired = selectedSection.relationships?.groupLeader?.attributes?.pilgrimRequired;
-        if (pilgrimRequired) {
-            baseSchema.pre_registration_id = z.string().min(1, 'Pre-registration is required for this group leader section');
-        }
-    }
 
     return z.object(baseSchema);
 };
@@ -70,7 +61,6 @@ export default function TransactionForm({ onSuccess }) {
             amount: '',
             date: new Date().toISOString().split('T')[0],
             loan_id: '',
-            pre_registration_id: '',
             pre_registration_ids: [],
             registration_ids: [],
         },
@@ -135,18 +125,6 @@ export default function TransactionForm({ onSuccess }) {
     }, [watchedSectionId, sections, form]);
 
     const onSubmit = (data) => {
-        // Custom validation for group leader sections
-        if (selectedSection?.attributes?.type === 'group_leader') {
-            const pilgrimRequired = selectedSection.relationships?.groupLeader?.attributes?.pilgrimRequired;
-            if (pilgrimRequired && !data.pre_registration_id) {
-                form.setError('pre_registration_id', {
-                    type: 'manual',
-                    message: 'Pre-registration is required for this group leader section'
-                });
-                return;
-            }
-        }
-
         data.amount = parseFloat(data.amount) || 0;
         if (!data.loan_id) delete data.loan_id;
         if (!data.pre_registration_id) delete data.pre_registration_id;
@@ -398,37 +376,6 @@ export default function TransactionForm({ onSuccess }) {
                                                 ))}
                                             </div>
                                         </ScrollArea>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        )}
-
-                        {selectedSection.attributes.type === 'group_leader' && (
-                            <FormField
-                                control={form.control}
-                                name="pre_registration_id"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Pre Registration{selectedSection?.relationships?.groupLeader?.attributes?.pilgrimRequired ? ' *' : ''}
-                                        </FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select a Pre Registration" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {preRegistrations && preRegistrations.length > 0 ? (
-                                                    preRegistrations.map((pr) => (
-                                                        <SelectItem key={pr.id} value={pr.id.toString()}>
-                                                            {pr.attributes.serialNo ?? 'N/A'} - {pr.relationships?.pilgrim?.relationships?.user?.attributes?.firstName} {pr.relationships?.pilgrim?.relationships?.user?.attributes?.lastName}
-                                                        </SelectItem>
-                                                    ))
-                                                ) : null}
-                                            </SelectContent>
-                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
