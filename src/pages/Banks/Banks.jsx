@@ -140,11 +140,13 @@ export default function Banks() {
 
     const handleDepositSubmit = (data) => {
         const { bank_id, ...formData } = data
+        formData.voucher_no = `E${formData.voucher_no}`
         depositMutation.mutate({ id: bank_id, data: formData })
     }
 
     const handleWithdrawSubmit = (data) => {
         const { bank_id, ...formData } = data
+        formData.voucher_no = `I${formData.voucher_no}`
         withdrawMutation.mutate({ id: bank_id, data: formData })
     }
 

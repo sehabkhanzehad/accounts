@@ -31,7 +31,7 @@ import { ChevronsUpDown } from 'lucide-react'
 
 const collectionSchema = z.object({
     umrah_id: z.string().min(1, "Pilgrim selection is required"),
-    voucher_no: z.string().optional(),
+    voucher_no: z.string().min(1, "Voucher number is required"),
     title: z.string().min(1, "Title is required"),
     description: z.string().optional(),
     amount: z.string().min(1, "Amount is required").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Amount must be a positive number"),
@@ -44,6 +44,7 @@ export function CollectionModal({ open, onOpenChange, packageId }) {
     const [selectedPilgrim, setSelectedPilgrim] = useState(null)
     const [searchQuery, setSearchQuery] = useState('')
     const [isSelectOpen, setIsSelectOpen] = useState(false)
+    const [voucherNo, setVoucherNo] = useState('H')
     const dropdownRef = useRef(null)
 
     // Close dropdown when clicking outside
@@ -63,7 +64,7 @@ export function CollectionModal({ open, onOpenChange, packageId }) {
         resolver: zodResolver(collectionSchema),
         defaultValues: {
             umrah_id: '',
-            voucher_no: '',
+            voucher_no: 'H',
             title: '',
             description: '',
             amount: '',
@@ -117,6 +118,7 @@ export function CollectionModal({ open, onOpenChange, packageId }) {
         setSelectedPilgrim(null)
         setSearchQuery('')
         setIsSelectOpen(false)
+        setVoucherNo('H')
         form.reset()
     }
 
@@ -136,10 +138,10 @@ export function CollectionModal({ open, onOpenChange, packageId }) {
                         <div className="flex items-center gap-3">
                             <div>
                                 <DialogTitle className="text-xl">
-                                    {t({ en: "Record Collection", bn: "কালেকশন রেকর্ড করুন" })}
+                                    {t({ en: "Collection", bn: "কালেকশন" })}
                                 </DialogTitle>
                                 <DialogDescription className="text-base">
-                                    {t({ en: "Record payment collection from pilgrim", bn: "পিলগ্রিম থেকে পেমেন্ট কালেকশন রেকর্ড করুন" })}
+                                    {t({ en: "Collection from pilgrim", bn: "পিলগ্রিম থেকে পেমেন্ট কালেকশন" })}
                                 </DialogDescription>
                             </div>
                         </div>
@@ -147,127 +149,156 @@ export function CollectionModal({ open, onOpenChange, packageId }) {
 
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        {/* Pilgrim Selection & Date */}
+                        {/* Pilgrim Selection */}
+                        <FormField
+                            control={form.control}
+                            name="umrah_id"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        {t({ en: "Select Pilgrim", bn: "পিলগ্রিম নির্বাচন করুন" })} *
+                                    </FormLabel>
+                                    <div className="relative">
+                                        <div
+                                            className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                                            onClick={() => setIsSelectOpen(!isSelectOpen)}
+                                        >
+                                            {selectedPilgrim ? (
+                                                <div className="flex items-center gap-2 flex-1">
+                                                    <Avatar className="h-6 w-6">
+                                                        <AvatarImage src={selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.avatar} />
+                                                        <AvatarFallback className="text-xs">
+                                                            {getInitials(
+                                                                selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.firstName,
+                                                                selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.lastName
+                                                            )}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium text-sm">
+                                                            {selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.fullName || 'N/A'}
+                                                        </span>
+                                                        <span className="text-xs text-muted-foreground">
+                                                            {selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.phone}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <span className="text-muted-foreground">
+                                                    {t({ en: "Select a pilgrim", bn: "একটি পিলগ্রিম নির্বাচন করুন" })}
+                                                </span>
+                                            )}
+                                            <ChevronsUpDown className={`h-5 w-5 transition-transform ${isSelectOpen ? 'rotate-180 text-primary opacity-100' : 'text-muted-foreground opacity-60'}`} strokeWidth={2.5} />
+                                        </div>
+
+                                        {isSelectOpen && (
+                                            <div ref={dropdownRef} className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-md">
+                                                {/* Search Input */}
+                                                <div className="p-2 border-b">
+                                                    <div className="relative">
+                                                        <Input
+                                                            placeholder={t({ en: "Search pilgrims...", bn: "পিলগ্রিম খুঁজুন..." })}
+                                                            value={searchQuery}
+                                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                                            className="h-8"
+                                                            autoFocus
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Pilgrims List */}
+                                                <div className="max-h-60 overflow-y-auto">
+                                                    {isPilgrimsLoading ? (
+                                                        <div className="p-4 text-center text-sm text-muted-foreground">
+                                                            {t({ en: "Loading pilgrims...", bn: "পিলগ্রিম লোড হচ্ছে..." })}
+                                                        </div>
+                                                    ) : filteredPilgrims?.length === 0 ? (
+                                                        <div className="p-4 text-center text-sm text-muted-foreground">
+                                                            {searchQuery
+                                                                ? t({ en: "No pilgrims found", bn: "কোন পিলগ্রিম পাওয়া যায়নি" })
+                                                                : t({ en: "No pilgrims available", bn: "কোন পিলগ্রিম উপলব্ধ নেই" })
+                                                            }
+                                                        </div>
+                                                    ) : (
+                                                        filteredPilgrims?.map((pilgrim) => {
+                                                            const user = pilgrim.relationships?.pilgrim?.relationships?.user?.attributes
+                                                            const groupLeader = pilgrim.relationships?.groupLeader?.attributes
+                                                            const isSelected = field.value === pilgrim.id.toString()
+
+                                                            return (
+                                                                <div
+                                                                    key={pilgrim.id}
+                                                                    className={`flex items-center gap-3 p-3 hover:bg-accent cursor-pointer border-b last:border-b-0 ${
+                                                                        isSelected ? 'bg-accent' : ''
+                                                                    }`}
+                                                                    onClick={() => {
+                                                                        setSelectedPilgrim(pilgrim)
+                                                                        field.onChange(pilgrim.id.toString())
+                                                                        setIsSelectOpen(false)
+                                                                        setSearchQuery('')
+                                                                    }}
+                                                                >
+                                                                    
+                                                                    <Avatar className="h-8 w-8">
+                                                                        <AvatarImage src={user?.avatar} />
+                                                                        <AvatarFallback className="text-xs">
+                                                                            {getInitials(user?.firstName, user?.lastName)}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="font-medium text-sm truncate">
+                                                                            {user?.fullName || 'N/A'}
+                                                                        </div>
+                                                                        <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                                                            <span>{user?.phone}</span>
+                                                                            {groupLeader?.groupName && (
+                                                                                <>
+                                                                                    <span>•</span>
+                                                                                    <Badge variant="secondary" className="text-xs px-1 py-0">
+                                                                                        {groupLeader.groupName}
+                                                                                    </Badge>
+                                                                                </>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Voucher & Date */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
-                                name="umrah_id"
+                                name="voucher_no"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>
-                                            {t({ en: "Select Pilgrim", bn: "পিলগ্রিম নির্বাচন করুন" })} *
-                                        </FormLabel>
-                                        <div className="relative">
-                                            <div
-                                                className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
-                                                onClick={() => setIsSelectOpen(!isSelectOpen)}
-                                            >
-                                                {selectedPilgrim ? (
-                                                    <div className="flex items-center gap-2 flex-1">
-                                                        <Avatar className="h-6 w-6">
-                                                            <AvatarImage src={selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.avatar} />
-                                                            <AvatarFallback className="text-xs">
-                                                                {getInitials(
-                                                                    selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.firstName,
-                                                                    selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.lastName
-                                                                )}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                        <div className="flex flex-col">
-                                                            <span className="font-medium text-sm">
-                                                                {selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.fullName || 'N/A'}
-                                                            </span>
-                                                            <span className="text-xs text-muted-foreground">
-                                                                {selectedPilgrim.relationships?.pilgrim?.relationships?.user?.attributes?.phone}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-muted-foreground">
-                                                        {t({ en: "Select a pilgrim", bn: "একটি পিলগ্রিম নির্বাচন করুন" })}
-                                                    </span>
-                                                )}
-                                                <ChevronsUpDown className={`h-5 w-5 transition-transform ${isSelectOpen ? 'rotate-180 text-primary opacity-100' : 'text-muted-foreground opacity-60'}`} strokeWidth={2.5} />
-                                            </div>
-
-                                            {isSelectOpen && (
-                                                <div ref={dropdownRef} className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-md">
-                                                    {/* Search Input */}
-                                                    <div className="p-2 border-b">
-                                                        <div className="relative">
-                                                            <Input
-                                                                placeholder={t({ en: "Search pilgrims...", bn: "পিলগ্রিম খুঁজুন..." })}
-                                                                value={searchQuery}
-                                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                                className="h-8"
-                                                                autoFocus
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Pilgrims List */}
-                                                    <div className="max-h-60 overflow-y-auto">
-                                                        {isPilgrimsLoading ? (
-                                                            <div className="p-4 text-center text-sm text-muted-foreground">
-                                                                {t({ en: "Loading pilgrims...", bn: "পিলগ্রিম লোড হচ্ছে..." })}
-                                                            </div>
-                                                        ) : filteredPilgrims?.length === 0 ? (
-                                                            <div className="p-4 text-center text-sm text-muted-foreground">
-                                                                {searchQuery
-                                                                    ? t({ en: "No pilgrims found", bn: "কোন পিলগ্রিম পাওয়া যায়নি" })
-                                                                    : t({ en: "No pilgrims available", bn: "কোন পিলগ্রিম উপলব্ধ নেই" })
-                                                                }
-                                                            </div>
-                                                        ) : (
-                                                            filteredPilgrims?.map((pilgrim) => {
-                                                                const user = pilgrim.relationships?.pilgrim?.relationships?.user?.attributes
-                                                                const groupLeader = pilgrim.relationships?.groupLeader?.attributes
-                                                                const isSelected = field.value === pilgrim.id.toString()
-
-                                                                return (
-                                                                    <div
-                                                                        key={pilgrim.id}
-                                                                        className={`flex items-center gap-3 p-3 hover:bg-accent cursor-pointer border-b last:border-b-0 ${
-                                                                            isSelected ? 'bg-accent' : ''
-                                                                        }`}
-                                                                        onClick={() => {
-                                                                            setSelectedPilgrim(pilgrim)
-                                                                            field.onChange(pilgrim.id.toString())
-                                                                            setIsSelectOpen(false)
-                                                                            setSearchQuery('')
-                                                                        }}
-                                                                    >
-                                                                        
-                                                                        <Avatar className="h-8 w-8">
-                                                                            <AvatarImage src={user?.avatar} />
-                                                                            <AvatarFallback className="text-xs">
-                                                                                {getInitials(user?.firstName, user?.lastName)}
-                                                                            </AvatarFallback>
-                                                                        </Avatar>
-                                                                        <div className="flex-1 min-w-0">
-                                                                            <div className="font-medium text-sm truncate">
-                                                                                {user?.fullName || 'N/A'}
-                                                                            </div>
-                                                                            <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                                                                <span>{user?.phone}</span>
-                                                                                {groupLeader?.groupName && (
-                                                                                    <>
-                                                                                        <span>•</span>
-                                                                                        <Badge variant="secondary" className="text-xs px-1 py-0">
-                                                                                            {groupLeader.groupName}
-                                                                                        </Badge>
-                                                                                    </>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                )
-                                                            })
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
+                                        <FormLabel>{t({ en: "Voucher No", bn: "ভাউচার নং" })} *</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder={t({ en: "Enter voucher number", bn: "ভাউচার নম্বর লিখুন" })}
+                                                value={voucherNo}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    let newValue;
+                                                    if (value.startsWith('H')) {
+                                                        newValue = value;
+                                                    } else {
+                                                        newValue = 'H' + value;
+                                                    }
+                                                    setVoucherNo(newValue);
+                                                    form.setValue('voucher_no', newValue);
+                                                }}
+                                            />
+                                        </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -288,9 +319,8 @@ export function CollectionModal({ open, onOpenChange, packageId }) {
                             />
                         </div>
 
-                        {/* Collection & Payment (minimal) */}
-                        <div className="space-y-4">
-                            {/* Title - full width */}
+                        {/* Title & Amount */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -305,41 +335,24 @@ export function CollectionModal({ open, onOpenChange, packageId }) {
                                 )}
                             />
 
-                            {/* Voucher No and Amount in one row */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="voucher_no"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t({ en: "Voucher No", bn: "ভাউচার নং" })}</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder={t({ en: "Enter voucher number", bn: "ভাউচার নম্বর লিখুন" })} {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="amount"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t({ en: "Amount", bn: "পরিমাণ" })} *</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    step="0.01"
-                                                    placeholder={t({ en: "Enter amount", bn: "পরিমাণ লিখুন" })}
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                            <FormField
+                                control={form.control}
+                                name="amount"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t({ en: "Amount", bn: "পরিমাণ" })} *</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder={t({ en: "Enter amount", bn: "পরিমাণ লিখুন" })}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
 
                         {/* Additional Information */}

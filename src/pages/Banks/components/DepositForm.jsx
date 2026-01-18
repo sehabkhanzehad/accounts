@@ -33,7 +33,7 @@ import { useI18n } from '@/contexts/I18nContext'
 
 const depositSchema = z.object({
     bank_id: z.string().min(1, "Bank is required"),
-    voucher_no: z.string().optional(),
+    voucher_no: z.string().min(1, "Voucher number is required"),
     title: z.string().min(1, "Title is required"),
     description: z.string().optional(),
     amount: z.string().min(1, "Amount is required").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Amount must be a positive number"),
@@ -94,11 +94,11 @@ export function DepositForm({ open, onOpenChange, onSubmit, isSubmitting, allBan
                             name="bank_id"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t('app.selectBank')} *</FormLabel>
+                                    <FormLabel>{t({ en: "Select Bank", bn: "ব্যাংক নির্বাচন করুন" })} *</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder={allBanks?.length > 0 ? t('app.selectBank') : t('app.noBanksAvailable')} />
+                                                <SelectValue placeholder={allBanks?.length > 0 ? t({ en: "Select a bank", bn: "একটি ব্যাংক নির্বাচন করুন" }) : t('app.noBanksAvailable')} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -113,32 +113,74 @@ export function DepositForm({ open, onOpenChange, onSubmit, isSubmitting, allBan
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="voucher_no"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('app.voucherNo')}</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={t({ en: "Enter voucher number", bn: "ভাউচার নাম্বার লিখুন" })} {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('app.title')} *</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={t({ en: "Enter title", bn: "শিরোনাম লিখুন" })} {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="voucher_no"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('app.voucherNo')} *</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder={t({ en: "Enter voucher number", bn: "ভাউচার নাম্বার লিখুন" })}
+                                                value={field.value ? `E${field.value}` : 'E'}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (value.startsWith('E')) {
+                                                        field.onChange(value.slice(1));
+                                                    } else {
+                                                        // If user tries to remove E, keep it
+                                                        field.onChange(field.value || '');
+                                                    }
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="date"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('app.date')} *</FormLabel>
+                                        <FormControl>
+                                            <Input type="date" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('app.title')} *</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder={t({ en: "Enter title", bn: "শিরোনাম লিখুন" })} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="amount"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('app.amount')} *</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" step="0.01" placeholder={t({ en: "Enter amount", bn: "এমাউন্ট লিখুন" })} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <FormField
                             control={form.control}
                             name="description"
@@ -147,32 +189,6 @@ export function DepositForm({ open, onOpenChange, onSubmit, isSubmitting, allBan
                                     <FormLabel>{t({ en: "Description", bn: "ডেসক্রিপশন" })}</FormLabel>
                                     <FormControl>
                                         <Textarea placeholder={t({ en: "Enter description", bn: "ডেসক্রিপশন লিখুন" })} {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="amount"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('app.amount')} *</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" step="0.01" placeholder={t({ en: "Enter amount", bn: "এমাউন্ট লিখুন" })} {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="date"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('app.date')} *</FormLabel>
-                                    <FormControl>
-                                        <Input type="date" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

@@ -7,11 +7,14 @@ import { EmptyComponent } from '@/components/app/EmptyComponent'
 import TableSkeletons from '@/components/skeletons/TableSkeletons'
 import PageHeading from '@/components/PageHeading'
 import DashboardLayout from '@/Layouts/DashboardLayout'
-import { Users } from 'lucide-react'
+import { Users, Receipt } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import GroupLeaderCollectionModal from './components/GroupLeaderCollectionModal'
 
 export default function ManagementGroupLeaders() {
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(25)
+    const [collectionModalOpen, setCollectionModalOpen] = useState(false)
 
     const { data, isLoading } = useQuery({
         queryKey: ['management-group-leaders', currentPage, rowsPerPage],
@@ -29,14 +32,25 @@ export default function ManagementGroupLeaders() {
     const groupLeaders = data?.data
     const meta = data?.meta
 
+    const handleCollection = () => {
+        setCollectionModalOpen(true)
+    }
+
     return (
         <DashboardLayout>
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
                     <PageHeading
-                        title="Group Leaders"
+                        title={`Group Leaders (${meta?.total || 0})`}
                         description="Group leaders for pilgrim management"
                     />
+                    <Button
+                        onClick={handleCollection}
+                        className="flex items-center gap-2"
+                    >
+                        <Receipt className="h-4 w-4" />
+                        Collection
+                    </Button>
                 </div>
 
                 <div className="flex-1">
@@ -65,6 +79,13 @@ export default function ManagementGroupLeaders() {
                     />
                 )}
             </div>
+
+            {collectionModalOpen && (
+                <GroupLeaderCollectionModal
+                    open={collectionModalOpen}
+                    onOpenChange={setCollectionModalOpen}
+                />
+            )}
         </DashboardLayout>
     )
 }

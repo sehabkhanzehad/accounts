@@ -997,52 +997,76 @@ export default function ViewPreRegistration() {
                                         <Skeleton className="h-12 w-full" />
                                     </div>
                                 ) : transactions.length > 0 ? (
-                                    <div className="space-y-4">
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>{t({ en: 'Date', bn: 'তারিখ' })}</TableHead>
-                                                    <TableHead>{t({ en: 'Type', bn: 'ধরন' })}</TableHead>
-                                                    <TableHead>{t({ en: 'Amount', bn: 'পরিমাণ' })}</TableHead>
-                                                    <TableHead>{t({ en: 'Description', bn: 'বিবরণ' })}</TableHead>
-                                                    <TableHead>{t({ en: 'Actions', bn: 'ক্রিয়া' })}</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {transactions.map((transaction) => (
-                                                    <TableRow key={transaction.id}>
-                                                        <TableCell>
-                                                            {new Date(transaction.attributes.date).toLocaleDateString('en-US', {
-                                                                month: 'short',
-                                                                day: 'numeric',
-                                                                year: 'numeric'
-                                                            })}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Badge variant={transaction.attributes.type === 'income' ? 'default' : 'secondary'}>
-                                                                {transaction.attributes.type}
-                                                            </Badge>
-                                                        </TableCell>
-                                                        <TableCell className={transaction.attributes.type === 'income' ? 'text-green-600' : 'text-red-600'}>
-                                                            ৳{parseFloat(transaction.attributes.amount).toLocaleString()}
-                                                        </TableCell>
-                                                        <TableCell>{transaction.attributes.description || 'N/A'}</TableCell>
-                                                        <TableCell>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => {
-                                                                    setSelectedTransaction(transaction)
-                                                                    setShowTransactionModal(true)
-                                                                }}
-                                                            >
-                                                                <Eye className="h-4 w-4" />
-                                                            </Button>
-                                                        </TableCell>
+                                    <>
+                                        <div className="rounded-lg border bg-card overflow-hidden shadow-sm">
+                                            <Table>
+                                                <TableHeader className="bg-muted/50">
+                                                    <TableRow className="hover:bg-transparent border-b">
+                                                        <TableHead className="font-semibold">{t({ en: 'Date', bn: 'তারিখ' })}</TableHead>
+                                                        <TableHead className="font-semibold">{t({ en: 'Title', bn: 'শিরোনাম' })}</TableHead>
+                                                        <TableHead className="font-semibold">{t({ en: 'Type', bn: 'ধরন' })}</TableHead>
+                                                        <TableHead className="font-semibold">{t({ en: 'Voucher', bn: 'ভাউচার' })}</TableHead>
+                                                        <TableHead className="text-right font-semibold">{t({ en: 'Amount', bn: 'পরিমাণ' })}</TableHead>
+                                                        <TableHead className="text-right font-semibold w-24">{t({ en: 'Actions', bn: 'ক্রিয়া' })}</TableHead>
                                                     </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {transactions.map((transaction) => (
+                                                        <TableRow key={transaction.id} className="hover:bg-muted/30 transition-colors">
+                                                            <TableCell className="font-medium text-sm">
+                                                                {new Date(transaction.attributes.date).toLocaleDateString('en-GB')}
+                                                            </TableCell>
+                                                            <TableCell className="font-medium text-sm">{transaction.attributes.title}</TableCell>
+                                                            <TableCell>
+                                                                <Badge
+                                                                    variant="outline"
+                                                                    className={`capitalize font-medium ${transaction.attributes.type === 'income'
+                                                                        ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                                                                        : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+                                                                        }`}
+                                                                >
+                                                                    {transaction.attributes.type === 'expense' ? t({ en: 'Refund', bn: 'রিফান্ড' }) : t({ en: 'Income', bn: 'আয়' })}
+                                                                </Badge>
+                                                            </TableCell>
+                                                            <TableCell className="text-sm text-muted-foreground">
+                                                                {transaction.attributes.voucherNo || '-'}
+                                                            </TableCell>
+                                                            <TableCell className="text-right">
+                                                                <span className={`font-semibold text-sm ${transaction.attributes.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                                                    {transaction.attributes.type === 'income' ? '+' : '-'}৳{parseFloat(transaction.attributes.amount).toFixed(2)}
+                                                                </span>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="flex items-center justify-end gap-1.5">
+                                                                    <Button
+                                                                        variant="secondary"
+                                                                        size="sm"
+                                                                        className="h-8 px-3 rounded-sm"
+                                                                        onClick={() => {
+                                                                            setSelectedTransaction(transaction)
+                                                                            setShowTransactionModal(true)
+                                                                        }}
+                                                                        title={t({ en: 'View Details', bn: 'বিস্তারিত দেখুন' })}
+                                                                    >
+                                                                        <Eye className="h-3.5 w-3.5" />
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="secondary"
+                                                                        size="sm"
+                                                                        className="h-8 px-3 rounded-sm"
+                                                                        onClick={() => toast.info('Print feature coming soon!')}
+                                                                        title="Print Receipt"
+                                                                    >
+                                                                        <Printer className="h-3.5 w-3.5" />
+                                                                    </Button>
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+
                                         {transactionsMeta && transactionsMeta.last_page > 1 && (
                                             <div className="flex justify-center mt-4">
                                                 <AppPagination
@@ -1052,7 +1076,7 @@ export default function ViewPreRegistration() {
                                                 />
                                             </div>
                                         )}
-                                    </div>
+                                    </>
                                 ) : (
                                     <div className="text-center py-8">
                                         <Receipt className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -1069,37 +1093,39 @@ export default function ViewPreRegistration() {
                 
                 {/* Transaction Details Modal */}
                 <Dialog open={showTransactionModal} onOpenChange={setShowTransactionModal}>
-                    <DialogContent className="max-w-2xl">
+                    <DialogContent className="max-w-md">
                         <DialogHeader>
-                            <DialogTitle>{t({ en: 'Transaction Details', bn: 'লেনদেন বিস্তারিত' })}</DialogTitle>
+                            <DialogTitle>Transaction Details</DialogTitle>
                         </DialogHeader>
                         {selectedTransaction && (
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <Label>{t({ en: 'Date', bn: 'তারিখ' })}</Label>
-                                        <p>{new Date(selectedTransaction.attributes.date).toLocaleDateString('en-US')}</p>
+                                        <label className="text-sm font-medium text-muted-foreground">Date</label>
+                                        <p className="text-sm">{new Date(selectedTransaction.attributes.date || selectedTransaction.attributes.createdAt).toLocaleDateString('en-GB')}</p>
                                     </div>
                                     <div>
-                                        <Label>{t({ en: 'Type', bn: 'ধরন' })}</Label>
-                                        <Badge variant={selectedTransaction.attributes.type === 'income' ? 'default' : 'secondary'}>
-                                            {selectedTransaction.attributes.type}
-                                        </Badge>
-                                    </div>
-                                    <div>
-                                        <Label>{t({ en: 'Amount', bn: 'পরিমাণ' })}</Label>
-                                        <p className={selectedTransaction.attributes.type === 'income' ? 'text-green-600' : 'text-red-600'}>
-                                            ৳{parseFloat(selectedTransaction.attributes.amount).toLocaleString()}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <Label>{t({ en: 'Category', bn: 'ক্যাটাগরি' })}</Label>
-                                        <p>{selectedTransaction.attributes.category || 'N/A'}</p>
+                                        <label className="text-sm font-medium text-muted-foreground">Type</label>
+                                        <p className="text-sm capitalize">{selectedTransaction.attributes.type}</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <Label>{t({ en: 'Description', bn: 'বিবরণ' })}</Label>
-                                    <p>{selectedTransaction.attributes.description || 'N/A'}</p>
+                                    <label className="text-sm font-medium text-muted-foreground">Title</label>
+                                    <p className="text-sm">{selectedTransaction.attributes.title}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Description</label>
+                                    <p className="text-sm">{selectedTransaction.attributes.description || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Voucher No</label>
+                                    <p className="text-sm">{selectedTransaction.attributes.voucherNo || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Amount</label>
+                                    <p className={`text-lg font-semibold ${selectedTransaction.attributes.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                        {selectedTransaction.attributes.type === 'income' ? '+' : '-'}৳{parseFloat(selectedTransaction.attributes.amount).toFixed(2)}
+                                    </p>
                                 </div>
                             </div>
                         )}
