@@ -1090,7 +1090,7 @@ export default function ViewPreRegistration() {
                     </TabsContent>
                 </Tabs>
 
-                
+
                 {/* Transaction Details Modal */}
                 <Dialog open={showTransactionModal} onOpenChange={setShowTransactionModal}>
                     <DialogContent className="max-w-md">
