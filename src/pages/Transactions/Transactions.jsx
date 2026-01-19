@@ -96,8 +96,10 @@ export default function Transactions() {
                                         <TableHead>Date</TableHead>
                                         <TableHead>Section</TableHead>
                                         <TableHead>Title</TableHead>
+                                        <TableHead>Voucher No</TableHead>
                                         <TableHead>Type</TableHead>
-                                        <TableHead>Amount</TableHead>
+                                        <TableHead className="text-right">Amount</TableHead>
+                                        <TableHead className="text-right">Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -110,15 +112,16 @@ export default function Transactions() {
                                             <TableCell className="font-medium">
                                                 {transaction.attributes.title}
                                             </TableCell>
+                                            <TableCell>{transaction.attributes.voucherNo ?? '-'}</TableCell>
                                             <TableCell>
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction.attributes.type === 'income'
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium capitalize ${transaction.attributes.type === 'income'
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-red-100 text-red-800'
                                                     }`}>
                                                     {transaction.attributes.type}
                                                 </span>
                                             </TableCell>
-                                            <TableCell>{transaction.attributes.amount}</TableCell>
+                                            <TableCell className="text-right">{transaction.attributes.amount}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
