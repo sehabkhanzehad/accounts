@@ -339,6 +339,7 @@ export default function CreateUmrahPilgrim() {
     }
 
     const handlePilgrimChange = (pilgrimId) => {
+        console.log('handlePilgrimChange called with pilgrimId:', pilgrimId)
         form.setValue('pilgrim_id', pilgrimId)
         fetchPilgrimPassports(pilgrimId)
         setPassportType('none')
@@ -351,6 +352,7 @@ export default function CreateUmrahPilgrim() {
         form.setValue('pilgrim_type', value)
 
         if (value === 'existing') {
+            form.setValue('new_pilgrim', undefined)
             form.clearErrors(['new_pilgrim'])
         } else if (value === 'new') {
             form.clearErrors('pilgrim_id')
@@ -373,14 +375,22 @@ export default function CreateUmrahPilgrim() {
         form.setValue('passport_type', value)
 
         if (value === 'existing') {
+            form.setValue('new_passport', undefined)
             form.clearErrors(['new_passport'])
         } else if (value === 'new' || value === 'none') {
+            form.setValue('passport_id', '')
             form.clearErrors('passport_id')
+            if (value === 'none') {
+                form.setValue('new_passport', undefined)
+                form.clearErrors(['new_passport'])
+            }
         }
     }
 
     const onSubmit = async (data) => {
-        // console.log('Form submitted with data:', data)
+        console.log('onSubmit called with data:', data)
+        console.log('Form is valid:', form.formState.isValid)
+        console.log('Form errors:', form.formState.errors)
         setIsSubmitting(true)
         try {
             const formData = new FormData()
@@ -409,13 +419,15 @@ export default function CreateUmrahPilgrim() {
             }
 
             formData.append('group_leader_id', data.group_leader_id)
+            formData.append('pilgrim_type', data.pilgrim_type)
             formData.append('package_id', data.package_id)
+            formData.append('passport_type', data.passport_type)
             formData.append('same_as_present_address', data.same_as_present_address ? '1' : '0')
 
             const pilgrimType = data.pilgrim_type
             if (pilgrimType === 'existing') {
                 formData.append('pilgrim_id', data.pilgrim_id)
-            } else {
+            } else if (data.new_pilgrim) {
                 appendNestedData(data.new_pilgrim, 'new_pilgrim')
             }
 
@@ -915,178 +927,26 @@ export default function CreateUmrahPilgrim() {
                             </CardContent>
                         </Card>
 
-                         {/* Address Information - Only show for new pilgrims */}
+                        {/* Address Information - Only show for new pilgrims */}
                         {pilgrimType === 'new' && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>{t({ en: 'Address', bn: 'ঠিকানা' })}</CardTitle>
-                                <CardDescription>
-                                    {t({ en: 'Enter present and permanent address details', bn: 'বর্তমান এবং স্থায়ী ঠিকানা লিখুন' })}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                {/* Present Address */}
-                                <div className="border rounded-lg p-4 bg-muted/50">
-                                    <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
-                                        <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">6</span>
-                                        {t({ en: 'Present Address', bn: 'বর্তমান ঠিকানা' })}
-                                    </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.house_no"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'House No', bn: 'বাড়ি নং' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'e.g. 123/A', bn: 'যেমনঃ ১২৩/ক' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.road_no"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'Road No', bn: 'রোড নং' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'e.g. 5', bn: 'যেমনঃ ৫' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.village"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'Village *', bn: 'গ্রাম *' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'Enter village name', bn: 'গ্রামের নাম লিখুন' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.post_office"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'Post Office *', bn: 'পোস্ট অফিস *' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'Enter post office', bn: 'পোস্ট অফিস লিখুন' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.police_station"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'Police Station *', bn: 'থানা *' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'Enter police station', bn: 'থানা লিখুন' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.district"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'District *', bn: 'জেলা *' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'Enter district', bn: 'জেলা লিখুন' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.division"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'Division *', bn: 'বিভাগ *' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'Enter division', bn: 'বিভাগ লিখুন' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.postal_code"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'Postal Code *', bn: 'পোস্টাল কোড *' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'e.g. 1200', bn: 'যেমনঃ ১২০০' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_pilgrim.present_address.country"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>{t({ en: 'Country', bn: 'দেশ' })}</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder={t({ en: 'Enter country', bn: 'দেশ লিখুন' })} {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Same as Present Address Toggle */}
-                                <FormField
-                                    control={form.control}
-                                    name="same_as_present_address"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                            <div className="space-y-0.5">
-                                                <FormLabel className="text-base">
-                                                    {t({ en: 'Same as Present Address', bn: 'বর্তমান ঠিকানার মতোই' })}
-                                                </FormLabel>
-                                                <div className="text-sm text-muted-foreground">
-                                                    {t({ en: 'Check if permanent address is same as present address', bn: 'চেক করুন যদি স্থায়ী ঠিকানা বর্তমান ঠিকানার মতোই হয়' })}
-                                                </div>
-                                            </div>
-                                            <FormControl>
-                                                <Switch
-                                                    checked={field.value}
-                                                    onCheckedChange={field.onChange}
-                                                />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                {/* Permanent Address - Only show if not same as present */}
-                                {!form.watch('same_as_present_address') && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>{t({ en: 'Address', bn: 'ঠিকানা' })}</CardTitle>
+                                    <CardDescription>
+                                        {t({ en: 'Enter present and permanent address details', bn: 'বর্তমান এবং স্থায়ী ঠিকানা লিখুন' })}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    {/* Present Address */}
                                     <div className="border rounded-lg p-4 bg-muted/50">
                                         <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
-                                            <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">7</span>
-                                            {t({ en: 'Permanent Address', bn: 'স্থায়ী ঠিকানা' })}
+                                            <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">6</span>
+                                            {t({ en: 'Present Address', bn: 'বর্তমান ঠিকানা' })}
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.house_no"
+                                                name="new_pilgrim.present_address.house_no"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'House No', bn: 'বাড়ি নং' })}</FormLabel>
@@ -1099,7 +959,7 @@ export default function CreateUmrahPilgrim() {
                                             />
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.road_no"
+                                                name="new_pilgrim.present_address.road_no"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'Road No', bn: 'রোড নং' })}</FormLabel>
@@ -1112,7 +972,7 @@ export default function CreateUmrahPilgrim() {
                                             />
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.village"
+                                                name="new_pilgrim.present_address.village"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'Village *', bn: 'গ্রাম *' })}</FormLabel>
@@ -1125,7 +985,7 @@ export default function CreateUmrahPilgrim() {
                                             />
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.post_office"
+                                                name="new_pilgrim.present_address.post_office"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'Post Office *', bn: 'পোস্ট অফিস *' })}</FormLabel>
@@ -1138,7 +998,7 @@ export default function CreateUmrahPilgrim() {
                                             />
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.police_station"
+                                                name="new_pilgrim.present_address.police_station"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'Police Station *', bn: 'থানা *' })}</FormLabel>
@@ -1151,7 +1011,7 @@ export default function CreateUmrahPilgrim() {
                                             />
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.district"
+                                                name="new_pilgrim.present_address.district"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'District *', bn: 'জেলা *' })}</FormLabel>
@@ -1164,7 +1024,7 @@ export default function CreateUmrahPilgrim() {
                                             />
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.division"
+                                                name="new_pilgrim.present_address.division"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'Division *', bn: 'বিভাগ *' })}</FormLabel>
@@ -1177,7 +1037,7 @@ export default function CreateUmrahPilgrim() {
                                             />
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.postal_code"
+                                                name="new_pilgrim.present_address.postal_code"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'Postal Code *', bn: 'পোস্টাল কোড *' })}</FormLabel>
@@ -1190,7 +1050,7 @@ export default function CreateUmrahPilgrim() {
                                             />
                                             <FormField
                                                 control={form.control}
-                                                name="new_pilgrim.permanent_address.country"
+                                                name="new_pilgrim.present_address.country"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>{t({ en: 'Country', bn: 'দেশ' })}</FormLabel>
@@ -1203,9 +1063,161 @@ export default function CreateUmrahPilgrim() {
                                             />
                                         </div>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
+
+                                    {/* Same as Present Address Toggle */}
+                                    <FormField
+                                        control={form.control}
+                                        name="same_as_present_address"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                                <div className="space-y-0.5">
+                                                    <FormLabel className="text-base">
+                                                        {t({ en: 'Same as Present Address', bn: 'বর্তমান ঠিকানার মতোই' })}
+                                                    </FormLabel>
+                                                    <div className="text-sm text-muted-foreground">
+                                                        {t({ en: 'Check if permanent address is same as present address', bn: 'চেক করুন যদি স্থায়ী ঠিকানা বর্তমান ঠিকানার মতোই হয়' })}
+                                                    </div>
+                                                </div>
+                                                <FormControl>
+                                                    <Switch
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    {/* Permanent Address - Only show if not same as present */}
+                                    {!form.watch('same_as_present_address') && (
+                                        <div className="border rounded-lg p-4 bg-muted/50">
+                                            <h4 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+                                                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">7</span>
+                                                {t({ en: 'Permanent Address', bn: 'স্থায়ী ঠিকানা' })}
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.house_no"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'House No', bn: 'বাড়ি নং' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'e.g. 123/A', bn: 'যেমনঃ ১২৩/ক' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.road_no"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Road No', bn: 'রোড নং' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'e.g. 5', bn: 'যেমনঃ ৫' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.village"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Village *', bn: 'গ্রাম *' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter village name', bn: 'গ্রামের নাম লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.post_office"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Post Office *', bn: 'পোস্ট অফিস *' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter post office', bn: 'পোস্ট অফিস লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.police_station"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Police Station *', bn: 'থানা *' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter police station', bn: 'থানা লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.district"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'District *', bn: 'জেলা *' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter district', bn: 'জেলা লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.division"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Division *', bn: 'বিভাগ *' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter division', bn: 'বিভাগ লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.postal_code"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Postal Code *', bn: 'পোস্টাল কোড *' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'e.g. 1200', bn: 'যেমনঃ ১২০০' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_pilgrim.permanent_address.country"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>{t({ en: 'Country', bn: 'দেশ' })}</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder={t({ en: 'Enter country', bn: 'দেশ লিখুন' })} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
                         )}
 
                         {/* Passport Information */}
@@ -1401,9 +1413,10 @@ export default function CreateUmrahPilgrim() {
                                 {t({ en: 'Cancel', bn: 'বাতিল' })}
                             </Button>
                             <Button type="submit" disabled={isSubmitting} onClick={() => {
-                                // console.log('Submit button clicked')
-                                // console.log('Form errors:', form.formState.errors)
-                                // console.log('Form values:', form.getValues())
+                                console.log('Submit button clicked')
+                                console.log('Form errors:', form.formState.errors)
+                                console.log('Form values:', form.getValues())
+                                console.log('Form is valid:', form.formState.isValid)
                             }}>
                                 {isSubmitting ? t({ en: 'Creating...', bn: 'তৈরি করা হচ্ছে...' }) : t({ en: 'Create Umrah', bn: 'উমরাহ তৈরি করুন' })}
                             </Button>
