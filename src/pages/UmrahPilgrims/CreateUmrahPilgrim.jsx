@@ -339,7 +339,6 @@ export default function CreateUmrahPilgrim() {
     }
 
     const handlePilgrimChange = (pilgrimId) => {
-        console.log('handlePilgrimChange called with pilgrimId:', pilgrimId)
         form.setValue('pilgrim_id', pilgrimId)
         fetchPilgrimPassports(pilgrimId)
         setPassportType('none')
@@ -388,9 +387,6 @@ export default function CreateUmrahPilgrim() {
     }
 
     const onSubmit = async (data) => {
-        console.log('onSubmit called with data:', data)
-        console.log('Form is valid:', form.formState.isValid)
-        console.log('Form errors:', form.formState.errors)
         setIsSubmitting(true)
         try {
             const formData = new FormData()
@@ -1413,10 +1409,10 @@ export default function CreateUmrahPilgrim() {
                                 {t({ en: 'Cancel', bn: 'বাতিল' })}
                             </Button>
                             <Button type="submit" disabled={isSubmitting} onClick={() => {
-                                console.log('Submit button clicked')
-                                console.log('Form errors:', form.formState.errors)
-                                console.log('Form values:', form.getValues())
-                                console.log('Form is valid:', form.formState.isValid)
+                                // console.log('Submit button clicked')
+                                // console.log('Form errors:', form.formState.errors)
+                                // console.log('Form values:', form.getValues())
+                                // console.log('Form is valid:', form.formState.isValid)
                             }}>
                                 {isSubmitting ? t({ en: 'Creating...', bn: 'তৈরি করা হচ্ছে...' }) : t({ en: 'Create Umrah', bn: 'উমরাহ তৈরি করুন' })}
                             </Button>
