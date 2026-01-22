@@ -48,24 +48,40 @@ function App() {
         <Routes>
           <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
           <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />} />
-          <Route path="/sections/banks" element={isAuthenticated ? <Banks /> : <Navigate to="/" replace />} />
-          <Route path="/sections/banks/:id/transactions" element={isAuthenticated ? <BankTransactions /> : <Navigate to="/" replace />} />
-          <Route path="/sections/group-leaders" element={isAuthenticated ? <GroupLeaders /> : <Navigate to="/" replace />} />
-          <Route path="/sections/group-leaders/:id/transactions" element={isAuthenticated ? <GroupLeaderTransactions /> : <Navigate to="/" replace />} />
+
           <Route path="/group-leaders" element={isAuthenticated ? <ManagementGroupLeaders /> : <Navigate to="/" replace />} />
           <Route path="/hajj-packages" element={isAuthenticated ? <HajjPackages /> : <Navigate to="/" replace />} />
           <Route path="/umrah-packages" element={isAuthenticated ? <UmrahPackages /> : <Navigate to="/" replace />} />
           <Route path="/umrah-packages/:id/pilgrims" element={isAuthenticated ? <PackagePilgrims /> : <Navigate to="/" replace />} />
-          <Route path="/sections/employees" element={isAuthenticated ? <Employees /> : <Navigate to="/" replace />} />
-          <Route path="/sections/employees/:id/transactions" element={isAuthenticated ? <EmployeeTransactions /> : <Navigate to="/" replace />} />
-          <Route path="/sections/bills" element={isAuthenticated ? <Bills /> : <Navigate to="/" replace />} />
-          <Route path="/sections/bills/:id/transactions" element={isAuthenticated ? <BillTransactions /> : <Navigate to="/" replace />} />
-          <Route path="/sections/others" element={isAuthenticated ? <Others /> : <Navigate to="/" replace />} />
-          <Route path="/sections/others/:id/transactions" element={isAuthenticated ? <OtherTransactions /> : <Navigate to="/" replace />} />
-          <Route path="/sections/lendings" element={isAuthenticated ? <Lendings /> : <Navigate to="/" replace />} />
-          <Route path="/sections/lendings/:id/transactions" element={isAuthenticated ? <LoanTransactions /> : <Navigate to="/" replace />} />
-          <Route path="/sections/borrowings" element={isAuthenticated ? <Borrowings /> : <Navigate to="/" replace />} />
-          <Route path="/sections/borrowings/:id/transactions" element={isAuthenticated ? <BorrowingTransactions /> : <Navigate to="/" replace />} />
+
+          {/* Accounts */}
+          <Route path="/accounts/overview" element={isAuthenticated ? <TransactionOverview /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/sections/banks" element={isAuthenticated ? <Banks /> : <Navigate to="/" replace />} />
+          <Route path="/accounts/sections/banks/:id/transactions" element={isAuthenticated ? <BankTransactions /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/sections/group-leaders" element={isAuthenticated ? <GroupLeaders /> : <Navigate to="/" replace />} />
+          <Route path="/accounts/sections/group-leaders/:id/transactions" element={isAuthenticated ? <GroupLeaderTransactions /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/sections/employees" element={isAuthenticated ? <Employees /> : <Navigate to="/" replace />} />
+          <Route path="/accounts/sections/employees/:id/transactions" element={isAuthenticated ? <EmployeeTransactions /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/sections/bills" element={isAuthenticated ? <Bills /> : <Navigate to="/" replace />} />
+          <Route path="/accounts/sections/bills/:id/transactions" element={isAuthenticated ? <BillTransactions /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/sections/others" element={isAuthenticated ? <Others /> : <Navigate to="/" replace />} />
+          <Route path="/accounts/sections/others/:id/transactions" element={isAuthenticated ? <OtherTransactions /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/sections/lendings" element={isAuthenticated ? <Lendings /> : <Navigate to="/" replace />} />
+          <Route path="/accounts/sections/lendings/:id/transactions" element={isAuthenticated ? <LoanTransactions /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/sections/borrowings" element={isAuthenticated ? <Borrowings /> : <Navigate to="/" replace />} />
+          <Route path="/accounts/sections/borrowings/:id/transactions" element={isAuthenticated ? <BorrowingTransactions /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/transactions" element={isAuthenticated ? <Transactions /> : <Navigate to="/" replace />} />
+
+
+          {/*  */}
           <Route path="/pre-registrations" element={isAuthenticated ? <PreRegistrations /> : <Navigate to="/" replace />} />
           <Route path="/pre-registrations/create" element={isAuthenticated ? <CreatePreRegistration /> : <Navigate to="/" replace />} />
           <Route path="/pre-registrations/view/:id" element={isAuthenticated ? <ViewPreRegistration /> : <Navigate to="/" replace />} />
@@ -74,8 +90,6 @@ function App() {
           <Route path="/umrah/create" element={isAuthenticated ? <CreateUmrahPilgrim /> : <Navigate to="/" replace />} />
           <Route path="/umrah/view/:id" element={isAuthenticated ? <ViewUmrahPilgrim /> : <Navigate to="/" replace />} />
           {/* <Route path="/pilgrims/:type/:id" element={isAuthenticated ? <ViewPilgrim /> : <Navigate to="/" replace />} /> */}
-          <Route path="/accounts/overview" element={isAuthenticated ? <TransactionOverview /> : <Navigate to="/" replace />} />
-          <Route path="/transactions/all" element={isAuthenticated ? <Transactions /> : <Navigate to="/" replace />} />
           <Route path="/settings/*" element={isAuthenticated ? <Settings /> : <Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

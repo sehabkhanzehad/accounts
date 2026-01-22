@@ -100,56 +100,52 @@ export function AppSidebar({ ...props }) {
     },
     {
       title: t('app.sidebar.menu.sections'),
-      url: "/sections",
+      url: "/accounts/sections/banks",
       icon: CreditCard,
       items: [
         {
           title: t('app.sidebar.options.banks'),
-          url: "/sections/banks",
+          url: "/accounts/sections/banks",
         },
         {
           title: t('app.sidebar.options.groupLeaders'),
-          url: "/sections/group-leaders",
+          url: "/accounts/sections/group-leaders",
+        },
+        {
+          title: 'Pre Registrations',
+          url: "/accounts/sections/pre-registrations",
+        },
+        {
+          title: 'Registrations',
+          url: "/accounts/sections/registrations",
         },
         {
           title: t('app.sidebar.options.employees'),
-          url: "/sections/employees",
+          url: "/accounts/sections/employees",
         },
-        {
-          title: t('app.sidebar.options.bills'),
-          url: "/sections/bills",
-        },
-        {
-          title: t('app.sidebar.options.others'),
-          url: "/sections/others",
-        },
-      ],
-    },
-    {
-      title: t('app.sidebar.options.loans'),
-      url: "/sections/lendings",
-      icon: Wallet,
-      items: [
         {
           title: t('app.sidebar.options.lendings'),
-          url: "/sections/lendings",
+          url: "/accounts/sections/lendings",
         },
         {
           title: t('app.sidebar.options.borrowings'),
-          url: "/sections/borrowings",
-        }
+          url: "/accounts/sections/borrowings",
+        },
+        {
+          title: t('app.sidebar.options.bills'),
+          url: "/accounts/sections/bills",
+        },
+        {
+          title: t('app.sidebar.options.others'),
+          url: "/accounts/sections/others",
+        },
       ],
     },
     {
       title: t('app.sidebar.options.transactions'),
-      url: "/transactions/overview",
+      url: "/accounts/transactions",
       icon: Receipt,
-      items: [
-        {
-          title: "All Transactions",
-          url: "/transactions/all",
-        }
-      ],
+      items: [],
     },
   ];
 
