@@ -31,7 +31,7 @@ import ViewUmrahPilgrim from '@/pages/UmrahPilgrims/ViewUmrahPilgrim'
 import ViewPilgrim from '@/pages/Pilgrims/ViewPilgrim'
 import ManagementGroupLeaders from './pages/ManagementGroupLeaders/ManagementGroupLeaders'
 import Transactions from '@/pages/Transactions/Transactions'
-import TransactionOverview from './pages/Accounts/TransactionOverview'
+import Overview from './pages/Accounts/Overview'
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -55,7 +55,7 @@ function App() {
           <Route path="/umrah-packages/:id/pilgrims" element={isAuthenticated ? <PackagePilgrims /> : <Navigate to="/" replace />} />
 
           {/* Accounts */}
-          <Route path="/accounts/overview" element={isAuthenticated ? <TransactionOverview /> : <Navigate to="/" replace />} />
+          <Route path="/accounts/overview" element={isAuthenticated ? <Overview /> : <Navigate to="/" replace />} />
 
           <Route path="/accounts/sections/banks" element={isAuthenticated ? <Banks /> : <Navigate to="/" replace />} />
           <Route path="/accounts/sections/banks/:id/transactions" element={isAuthenticated ? <BankTransactions /> : <Navigate to="/" replace />} />

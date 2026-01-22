@@ -35,6 +35,7 @@ export default function Banks() {
         queryFn: async () => {
             const response = await api.get('/sections/banks', {
                 params: {
+                    paginate: true,
                     page: currentPage,
                     per_page: rowsPerPage,
                 }
@@ -46,9 +47,14 @@ export default function Banks() {
     const { data: allBanksData } = useQuery({
         queryKey: ['all-banks'],
         queryFn: async () => {
-            const response = await api.get('/sections/banks/bank-sections')
+            const response = await api.get('/sections/banks', {
+                params: {
+                    paginate: false,
+                }
+            })
             return response.data
-        }
+        },
+        enabled: depositDialogOpen || withdrawDialogOpen
     })
 
     const banks = data?.data
@@ -135,7 +141,7 @@ export default function Banks() {
     }
 
     const handleViewTransactions = (bank) => {
-        navigate(`/sections/banks/${bank.id}/transactions`)
+        navigate(`/accounts/sections/banks/${bank.id}/transactions`)
     }
 
     const handleDepositSubmit = (data) => {

@@ -9,7 +9,7 @@ import { TrendingUp, TrendingDown, DollarSign, Activity, Calendar, BarChart3, Pi
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, LineChart, Line, Legend, ReferenceLine } from 'recharts'
 import { useState, useEffect } from 'react'
 
-export default function TransactionOverview() {
+export default function Overview() {
     const { t } = useI18n()
     const [isDarkMode, setIsDarkMode] = useState(false)
 
@@ -40,9 +40,9 @@ export default function TransactionOverview() {
     }
 
     const { data, isLoading } = useQuery({
-        queryKey: ['transaction-overview'],
+        queryKey: ['accounts-overview'],
         queryFn: async () => {
-            const response = await api.get('/transactions/overview')
+            const response = await api.get('/accounts/overview')
             return response.data
         }
     })

@@ -257,7 +257,7 @@ export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitti
                                             <FormLabel>Account Type *</FormLabel>
                                             <Select onValueChange={field.onChange} value={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger>
+                                                    <SelectTrigger className={'w-full'}>
                                                         <SelectValue placeholder="Select account type" />
                                                     </SelectTrigger>
                                                 </FormControl>
