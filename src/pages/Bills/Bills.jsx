@@ -103,7 +103,7 @@ export default function Bills() {
     }
 
     const handleSeeTransactions = (bill) => {
-        navigate(`/sections/bills/${bill.id}/transactions`)
+        navigate(`/acounts/sections/bills/${bill.id}/transactions`)
     }
 
     const resetForm = () => {
