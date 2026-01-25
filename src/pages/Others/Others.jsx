@@ -103,7 +103,7 @@ export default function Others() {
     }
 
     const handleSeeTransactions = (other) => {
-        navigate(`/sections/others/${other.id}/transactions`)
+        navigate(`/accounts/sections/others/${other.id}/transactions`)
     }
 
     const resetForm = () => {

@@ -46,7 +46,7 @@ const groupLeaderSchema = z.object({
         required_error: "Please select a gender",
     }),
     date_of_birth: z.string().optional(),
-    pilgrim_required: z.boolean(),
+    track_payment: z.boolean(),
     status: z.boolean(),
 })
 
@@ -65,7 +65,7 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
             phone: '',
             gender: '',
             date_of_birth: '',
-            pilgrim_required: false,
+            track_payment: false,
             status: true,
         },
     })
@@ -87,7 +87,7 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                 phone: user?.phone || '',
                 gender: user?.gender || '',
                 date_of_birth: user?.dateOfBirth || '',
-                pilgrim_required: editingGroupLeader.relationships?.groupLeader?.attributes?.pilgrimRequired || false,
+                track_payment: editingGroupLeader.relationships?.groupLeader?.attributes?.trackPayment || false,
                 status: editingGroupLeader.relationships?.groupLeader?.attributes?.status ?? true,
             })
         } else if (open) {
@@ -122,7 +122,7 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
             phone: data.phone && data.phone.length ? data.phone : null,
             gender: data.gender,
             date_of_birth: data.date_of_birth && data.date_of_birth.length ? data.date_of_birth : null,
-            pilgrim_required: typeof data.pilgrim_required === 'boolean' ? data.pilgrim_required : Boolean(data.pilgrim_required),
+            track_payment: typeof data.track_payment === 'boolean' ? data.track_payment : Boolean(data.track_payment),
             status: typeof data.status === 'boolean' ? data.status : Boolean(data.status),
         }
 
@@ -146,7 +146,7 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                 phone: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.phone || '',
                 gender: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.gender || '',
                 date_of_birth: editingGroupLeader.relationships?.groupLeader?.relationships?.user?.attributes?.dateOfBirth || '',
-                pilgrim_required: editingGroupLeader.relationships?.groupLeader?.attributes?.pilgrimRequired || false,
+                track_payment: editingGroupLeader.relationships?.groupLeader?.attributes?.trackPayment || false,
             })
         }
         onOpenChange(newOpen)
@@ -369,13 +369,13 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubm
                                 <div className="col-span-2">
                                     <FormField
                                         control={form.control}
-                                        name="pilgrim_required"
+                                        name="track_payment"
                                         render={({ field }) => (
                                             <FormItem className="rounded-lg border p-4">
                                                 <div className="flex items-center justify-between">
                                                     <div className="space-y-0.5">
-                                                        <FormLabel className="text-base">Pilgrim Required</FormLabel>
-                                                        <div className="text-sm text-muted-foreground">Require pilgrim reference for transactions</div>
+                                                        <FormLabel className="text-base">Track Payment?</FormLabel>
+                                                        <div className="text-sm text-muted-foreground">Enable to track pilgrim payments</div>
                                                     </div>
                                                     <FormControl>
                                                         <Switch

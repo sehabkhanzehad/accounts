@@ -48,8 +48,8 @@ export function BankTable({ banks, onEdit, onDelete, onViewTransactions }) {
                         </TableCell>
                         <TableCell className="text-right">
                             <div>
-                                Deposit: <span className="text-green-600">৳{bank.attributes?.total_deposit ? parseFloat(bank.attributes.total_deposit).toFixed(2) : '0.00'}</span><br />
-                                Withdraw: <span className="text-red-600">৳{bank.attributes?.total_withdraw ? parseFloat(bank.attributes.total_withdraw).toFixed(2) : '0.00'}</span>
+                                Deposit: <span className="text-green-600">৳{bank.attributes?.totalExpense ? parseFloat(bank.attributes.totalExpense).toFixed(2) : '0.00'}</span><br />
+                                Withdraw: <span className="text-red-600">৳{bank.attributes?.totalIncome ? parseFloat(bank.attributes.totalIncome).toFixed(2) : '0.00'}</span>
                             </div>
                         </TableCell>
                         <TableCell className="text-right">

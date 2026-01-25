@@ -70,7 +70,7 @@ export default function GroupLeaderTransactions() {
     const user = groupLeader?.relationships?.groupLeader?.relationships?.user?.attributes
     const userName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : ''
     const displayName = userName || groupLeader?.attributes?.name || '-'
-    const email = user?.email || '-'
+    const phone = user?.phone || '-'
     const avatarUrl = user?.avatar
 
     const handleViewDetails = (transaction) => {
@@ -120,15 +120,9 @@ export default function GroupLeaderTransactions() {
                                             <span className="text-sm font-medium text-foreground">
                                                 {displayName}
                                             </span>
-                                            <Badge variant="outline" className="text-xs">
-                                                Group Leader
-                                            </Badge>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
-                                            {email}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">
-                                            Group: {groupLeader.attributes.name}
+                                            {phone}
                                         </p>
                                     </div>
                                 </div>
