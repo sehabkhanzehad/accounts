@@ -7,6 +7,7 @@ import { EditContactInfoModal } from './components/EditContactInfoModal'
 import { EditAvatarModal } from './components/EditAvatarModal'
 import { EditAddressModal } from './components/EditAddressModal'
 import { EditRegistrationModal } from './components/EditRegistrationModal'
+import { MarkAsRegisteredModal } from './components/MarkAsRegisteredModal'
 import { toast } from 'sonner'
 import { useI18n } from '@/contexts/I18nContext'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -111,6 +112,7 @@ export default function ViewPreRegistration() {
     const [showAvatarModal, setShowAvatarModal] = useState(false)
     const [showAddressModal, setShowAddressModal] = useState(false)
     const [showRegistrationModal, setShowRegistrationModal] = useState(false)
+    const [showMarkAsRegisteredModal, setShowMarkAsRegisteredModal] = useState(false)
 
     // Transaction details modal
     const [showTransactionModal, setShowTransactionModal] = useState(false)
@@ -256,10 +258,21 @@ export default function ViewPreRegistration() {
         }
     })
 
-    useEffect(() => {
-        if (error) {
-            toast.error(t({ en: 'Failed to load pre-registration details', bn: 'প্রি-রেজিস্ট্রেশন বিস্তারিত লোড করতে ব্যর্থ' }))
+    // Mark as registered mutation
+    const markAsRegisteredMutation = useMutation({
+        mutationFn: (data) => api.put(`/pre-registrations/${id}/mark-as-registered`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['preRegistration', id] })
+            setShowMarkAsRegisteredModal(false)
+            toast.success(t({ en: 'Marked as registered successfully', bn: 'সফলভাবে রেজিস্টার্ড হিসেবে চিহ্নিত করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to mark as registered', bn: 'রেজিস্টার্ড হিসেবে চিহ্নিত করতে ব্যর্থ' }))
         }
+    })
+
+    useEffect(() => {
+        if (error) toast.error(t({ en: 'Failed to load pre-registration details', bn: 'প্রি-রেজিস্ট্রেশন বিস্তারিত লোড করতে ব্যর্থ' }))
     }, [error, t])
 
     // Fetch transactions for this pre-registration
@@ -428,22 +441,30 @@ export default function ViewPreRegistration() {
                         </CardTitle>
 
                         {/* Status action menu */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                                    <EllipsisVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                {/* Always available: View Passports (if any) */}
-                                {passport && (
-                                    <DropdownMenuItem onClick={handleOpenPassportDialog} className="gap-2">
-                                        <Image className="h-4 w-4" />
-                                        <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'View Passport', bn: 'পাসপোর্ট দেখুন' })}</span>
-                                    </DropdownMenuItem>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        {passport || preRegistration?.attributes?.status === "pending" && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                                        <EllipsisVertical className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {/* Always available: View Passports (if any) */}
+                                    {passport && (
+                                        <DropdownMenuItem onClick={handleOpenPassportDialog} className="gap-2">
+                                            <Image className="h-4 w-4" />
+                                            <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'View Passport', bn: 'পাসপোর্ট দেখুন' })}</span>
+                                        </DropdownMenuItem>
+                                    )}
+                                    {preRegistration?.attributes?.status === "pending" && (
+                                        <DropdownMenuItem onClick={() => setShowMarkAsRegisteredModal(true)} className="gap-2">
+                                            <Plus className="h-4 w-4" />
+                                            <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Mark as Registered', bn: 'রেজিস্টার্ড হিসেবে চিহ্নিত করুন' })}</span>
+                                        </DropdownMenuItem>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
                     </CardHeader>
 
                     <CardContent>
@@ -898,64 +919,77 @@ export default function ViewPreRegistration() {
                                             <FileText className="h-4 w-4 text-primary" />
                                             {t({ en: "Pre-registration Details", bn: "প্রি-রেজিস্ট্রেশন বিস্তারিত" })}
                                         </CardTitle>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setShowRegistrationModal(true)}
-                                            className="h-8 gap-1"
-                                        >
-                                            <Edit className="h-3.5 w-3.5" />
-                                            {t({ en: "Edit", bn: "এডিট" })}
-                                        </Button>
+                                        {preRegistration?.attributes?.status !== 'pending' && (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setShowRegistrationModal(true)}
+                                                className="h-8 gap-1"
+                                            >
+                                                <Edit className="h-3.5 w-3.5" />
+                                                {t({ en: "Edit", bn: "এডিট" })}
+                                            </Button>
+                                        )}
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                                {t({ en: "Serial No", bn: "সিরিয়াল নং" })}
-                                            </Label>
-                                            <p className="text-sm font-medium">
-                                                {preRegistration?.attributes?.serialNo || '-'}
-                                            </p>
+                                    {preRegistration?.attributes?.status === 'pending' ? (
+                                        <div className="flex items-center justify-center h-32 text-muted-foreground">
+                                            <div className="text-center">
+                                                <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                                <p className="text-sm">
+                                                    {t({ en: "Registration details will be available here", bn: "রেজিস্ট্রেশন বিস্তারিত এখানে উপলব্ধ হবে" })}
+                                                </p>
+                                            </div>
                                         </div>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                    {t({ en: "Serial No", bn: "সিরিয়াল নং" })}
+                                                </Label>
+                                                <p className="text-sm font-medium">
+                                                    {preRegistration?.attributes?.serialNo || '-'}
+                                                </p>
+                                            </div>
 
-                                        <div className="space-y-1">
-                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                                {t({ en: "Tracking No", bn: "ট্র্যাকিং নং" })}
-                                            </Label>
-                                            <p className="text-sm font-medium">
-                                                {preRegistration?.attributes?.trackingNo || '-'}
-                                            </p>
-                                        </div>
+                                            <div className="space-y-1">
+                                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                    {t({ en: "Tracking No", bn: "ট্র্যাকিং নং" })}
+                                                </Label>
+                                                <p className="text-sm font-medium">
+                                                    {preRegistration?.attributes?.trackingNo || '-'}
+                                                </p>
+                                            </div>
 
-                                        <div className="space-y-1">
-                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                                {t({ en: "Voucher No", bn: "ভাউচার নং" })}
-                                            </Label>
-                                            <p className="text-sm font-medium">
-                                                {preRegistration?.attributes?.bankVoucherNo || '-'}
-                                            </p>
-                                        </div>
+                                            <div className="space-y-1">
+                                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                    {t({ en: "Voucher No", bn: "ভাউচার নং" })}
+                                                </Label>
+                                                <p className="text-sm font-medium">
+                                                    {preRegistration?.attributes?.bankVoucherNo || '-'}
+                                                </p>
+                                            </div>
 
-                                        <div className="space-y-1">
-                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                                {t({ en: "Voucher Name", bn: "ভাউচার নাম" })}
-                                            </Label>
-                                            <p className="text-sm font-medium">
-                                                {preRegistration?.attributes?.voucherName || '-'}
-                                            </p>
-                                        </div>
+                                            <div className="space-y-1">
+                                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                    {t({ en: "Voucher Name", bn: "ভাউচার নাম" })}
+                                                </Label>
+                                                <p className="text-sm font-medium">
+                                                    {preRegistration?.attributes?.voucherName || '-'}
+                                                </p>
+                                            </div>
 
-                                        <div className="space-y-1">
-                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                                {t({ en: "Date", bn: "তারিখ" })}
-                                            </Label>
-                                            <p className="text-sm font-medium">
-                                                {preRegistration?.attributes?.date ? new Date(preRegistration.attributes.date).toLocaleDateString() : '-'}
-                                            </p>
+                                            <div className="space-y-1">
+                                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                    {t({ en: "Date", bn: "তারিখ" })}
+                                                </Label>
+                                                <p className="text-sm font-medium">
+                                                    {preRegistration?.attributes?.date ? new Date(preRegistration.attributes.date).toLocaleDateString() : '-'}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </CardContent>
                             </Card>
 
@@ -1207,6 +1241,14 @@ export default function ViewPreRegistration() {
                     registrationData={preRegistration}
                     onSubmit={(data) => updatePreRegDetailsMutation.mutate(data)}
                     isSubmitting={updatePreRegDetailsMutation.isPending}
+                />
+
+                {/* Mark as Registered Modal */}
+                <MarkAsRegisteredModal
+                    open={showMarkAsRegisteredModal}
+                    onOpenChange={setShowMarkAsRegisteredModal}
+                    onSubmit={(data) => markAsRegisteredMutation.mutate(data)}
+                    isSubmitting={markAsRegisteredMutation.isPending}
                 />
             </div>
         </DashboardLayout>
