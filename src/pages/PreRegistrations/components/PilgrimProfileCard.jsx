@@ -90,7 +90,7 @@ export function PilgrimProfileCard({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             {/* Always available: View Passports (if any) */}
-                            {passport && (
+                            {passport?.attributes?.filePath && (
                                 <DropdownMenuItem onClick={onShowPassportDialog} className="gap-2">
                                     <Image className="h-4 w-4" />
                                     <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'View Passport', bn: 'পাসপোর্ট দেখুন' })}</span>
