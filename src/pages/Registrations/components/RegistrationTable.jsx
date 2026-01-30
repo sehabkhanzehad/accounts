@@ -46,7 +46,7 @@ const getAvatarColor = (name) => {
     return colors[Math.abs(hash) % colors.length]
 }
 
-export function RegistrationTable({ registrations, onEdit, onDelete, onView }) {
+export function RegistrationTable({ registrations, onEdit, onDelete, onView, onReplace }) {
     const { t } = useI18n();
 
     return (
@@ -72,6 +72,9 @@ export function RegistrationTable({ registrations, onEdit, onDelete, onView }) {
                     const passport = registration.relationships?.passport;
 
                     const mainReg = registration?.relationships?.registration;
+
+                    const hasReplace = mainReg?.attributes?.hasReplace;
+
 
                     return (
                         <TableRow key={registration.id}>
@@ -102,7 +105,11 @@ export function RegistrationTable({ registrations, onEdit, onDelete, onView }) {
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <div className="font-medium">{pilgrimName}</div>
+                                        <div className="font-medium">{pilgrimName}{user?.gender && (
+                                                <span className="ml-1 uppercase">
+                                                    ({user.gender === 'male' ? 'M' : user.gender === 'female' ? 'F' : 'O'})
+                                                </span>
+                                            )}</div>
                                         <div className="text-sm text-muted-foreground">
                                             {user?.phone || 'N/A'}
                                         </div>
@@ -152,18 +159,25 @@ export function RegistrationTable({ registrations, onEdit, onDelete, onView }) {
                             </TableCell>
                             <TableCell>
                                 <div className="space-y-1.5">
-                                    <span className={`inline-block px-2 capitalize py-0.5 rounded text-[10px] font-medium ${ mainReg?.attributes.status === 'active'
-                                            ? 'bg-green-100 text-green-800'
-                                            : mainReg?.attributes.status === 'completed'
-                                                ? 'bg-blue-100 text-blue-800'
-                                                    : mainReg?.attributes.status === 'transferred'
-                                                        ? 'bg-purple-100 text-purple-800'
-                                                        : mainReg?.attributes.status === 'cancelled'
-                                                            ? 'bg-red-100 text-red-800'
-                                                            : 'bg-gray-100 text-gray-800'
-                                        }`}>
-                                        {mainReg?.attributes.status}
-                                    </span>
+                                    <div className="flex gap-1 items-center">
+                                        <span className={`inline-block px-2 capitalize py-0.5 rounded text-[10px] font-medium ${ mainReg?.attributes.status === 'active'
+                                                ? 'bg-green-100 text-green-800'
+                                                : mainReg?.attributes.status === 'completed'
+                                                    ? 'bg-blue-100 text-blue-800'
+                                                        : mainReg?.attributes.status === 'transferred'
+                                                            ? 'bg-purple-100 text-purple-800'
+                                                            : mainReg?.attributes.status === 'cancelled'
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-gray-100 text-gray-800'
+                                            }`}>
+                                            {mainReg?.attributes.status}
+                                        </span>
+                                        {hasReplace && (
+                                            <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-orange-100 text-orange-800">
+                                                Replaced
+                                            </span>
+                                        )}
+                                    </div>
                                     <div className="text-[10px] text-muted-foreground">
                                         Reg At: {new Date(mainReg?.attributes.date).toLocaleDateString('en-US', {
                                             month: 'short',
@@ -187,6 +201,9 @@ export function RegistrationTable({ registrations, onEdit, onDelete, onView }) {
                                             </DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => onEdit(mainReg)}>
                                               Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onReplace(mainReg)}>
+                                              Replace
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem onClick={() => onDelete(mainReg)} className="text-destructive">

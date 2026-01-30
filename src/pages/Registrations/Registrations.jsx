@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import api from '@/lib/api'
 import { RegistrationTable } from './components/RegistrationTable'
 import { RegistrationForm } from './components/RegistrationForm'
+import { ReplaceForm } from './components/ReplaceForm'
 import AppPagination from '@/components/app/AppPagination'
 import { EmptyComponent } from '@/components/app/EmptyComponent'
 import TableSkeletons from '@/components/skeletons/TableSkeletons'
@@ -24,6 +25,8 @@ export default function Registrations() {
     const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [registrationToDelete, setRegistrationToDelete] = useState(null)
+    const [replaceDialogOpen, setReplaceDialogOpen] = useState(false)
+    const [replacingRegistration, setReplacingRegistration] = useState(null)
     const navigate = useNavigate()
 
     const { data: preRegistrations } = useQuery({
@@ -106,6 +109,26 @@ export default function Registrations() {
         }
     })
 
+    const replaceMutation = useMutation({
+        mutationFn: ({ id, data }) => api.post(`/registrations/${id}/replace`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['registrations'] })
+            queryClient.invalidateQueries({ queryKey: ['registration-pre-registrations'] })
+            toast.success('Registration replaced successfully')
+            setReplaceDialogOpen(false)
+            setReplacingRegistration(null)
+        },
+        onError: (error) => {
+            toast.error(error.response?.data?.message || 'Failed to replace registration')
+        }
+    })
+
+    const handleReplaceSubmit = (data) => {
+        if (replacingRegistration) {
+            replaceMutation.mutate({ id: replacingRegistration.id, data })
+        }
+    }
+
     const handleSubmit = (data) => {
         if (editingRegistration) {
             updateMutation.mutate({ id: editingRegistration.id, data })
@@ -122,6 +145,11 @@ export default function Registrations() {
     const handleDelete = (registration) => {
         setRegistrationToDelete(registration)
         setOpenDeleteDialog(true)
+    }
+
+    const handleReplace = (registration) => {
+        setReplacingRegistration(registration)
+        setReplaceDialogOpen(true)
     }
 
     const confirmDelete = () => {
@@ -141,7 +169,7 @@ export default function Registrations() {
         navigate(`/pre-registrations/view/${id}`)
     }
 
-    const isSubmitting = createMutation.isPending || updateMutation.isPending
+    const isSubmitting = createMutation.isPending || updateMutation.isPending || replaceMutation.isPending
 
     return (
         <DashboardLayout>
@@ -166,6 +194,7 @@ export default function Registrations() {
                             onEdit={handleEdit}
                             onDelete={handleDelete}
                             onView={handleView}
+                            onReplace={handleReplace}
                         />
                     ) : (
                         <EmptyComponent
@@ -201,6 +230,15 @@ export default function Registrations() {
                     preRegistrations={preRegistrations}
                     packages={packages}
                     banks={banks}
+                />
+
+                <ReplaceForm
+                    open={replaceDialogOpen}
+                    onOpenChange={setReplaceDialogOpen}
+                    replacingRegistration={replacingRegistration}
+                    onSubmit={handleReplaceSubmit}
+                    isSubmitting={replaceMutation.isPending}
+                    preRegistrations={preRegistrations}
                 />
 
                 <AppDeleteAlert

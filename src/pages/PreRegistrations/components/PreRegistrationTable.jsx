@@ -71,6 +71,8 @@ export function PreRegistrationTable({ preRegistrations, onDelete, onView, showA
                     const avatarColor = getAvatarColor(pilgrimName);
                     const passport = preRegistration.relationships?.passport;
 
+                    const hasReplace = preRegistration.attributes?.hasReplacement;
+
                     return (
                         <TableRow key={preRegistration.id}>
                             <TableCell>
@@ -100,7 +102,10 @@ export function PreRegistrationTable({ preRegistrations, onDelete, onView, showA
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <div className="font-medium">{pilgrimName}</div>
+                                        <div className="font-medium">{pilgrimName}{user?.gender && (
+                                                <span className="ml-1 uppercase">({user.gender === 'male' ? 'M' : user.gender === 'female' ? 'F' : 'O'})
+                                                </span>
+                                            )}</div>
                                         <div className="text-sm text-muted-foreground">
                                             {user?.phone || 'N/A'}
                                         </div>
@@ -150,6 +155,8 @@ export function PreRegistrationTable({ preRegistrations, onDelete, onView, showA
                             </TableCell>
                             <TableCell>
                                 <div className="space-y-1.5">
+                                    <div className="flex gap-1 items-center">
+
                                     <span className={`inline-block px-2 capitalize py-0.5 rounded text-[10px] font-medium ${preRegistration.attributes.status === 'pending'
                                         ? 'bg-yellow-100 text-yellow-800'
                                         : preRegistration.attributes.status === 'active'
@@ -166,6 +173,12 @@ export function PreRegistrationTable({ preRegistrations, onDelete, onView, showA
                                         }`}>
                                         {preRegistration.attributes.status}
                                     </span>
+                                      {hasReplace && (
+                                            <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-orange-100 text-orange-800">
+                                                Replaced
+                                            </span>
+                                        )}
+                                    </div>
                                     <div className="text-[10px] text-muted-foreground">
                                         Reg At: {new Date(preRegistration.attributes.date).toLocaleDateString('en-US', {
                                             month: 'short',
