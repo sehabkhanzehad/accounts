@@ -46,7 +46,7 @@ const getAvatarColor = (name) => {
     return colors[Math.abs(hash) % colors.length]
 }
 
-export function UmrahTable({ umrahs, onDelete, onView, showPackageColumn = true }) {
+export function UmrahTable({ umrahs, onDelete, onView, showPackageColumn = true, showGroupLeaderColumn = true, showFinancialColumn = true }) {
     const { t } = useI18n();
     return (
         <Table>
@@ -55,9 +55,9 @@ export function UmrahTable({ umrahs, onDelete, onView, showPackageColumn = true 
                     <TableHead>{t({ en: "Pilgrim", bn: "পিলগ্রিম" })}</TableHead>
                     <TableHead>{t({ en: "NID & DOB", bn: "এনআইডি ও জন্ম তারিখ" })}</TableHead>
                     <TableHead>{t({ en: "Passport", bn: "পাসপোর্ট" })}</TableHead>
-                    <TableHead>{t({ en: "Group Leader", bn: "গ্রুপ লিডার" })}</TableHead>
+                    {showGroupLeaderColumn && <TableHead>{t({ en: "Group Leader", bn: "গ্রুপ লিডার" })}</TableHead>}
                     {showPackageColumn && <TableHead>{t({ en: "Package", bn: "প্যাকেজ" })}</TableHead>}
-                    <TableHead className="text-right">{t({ en: "Financial Info", bn: "আর্থিক তথ্য" })}</TableHead>
+                    {showFinancialColumn && <TableHead className="text-right">{t({ en: "Financial Info", bn: "আর্থিক তথ্য" })}</TableHead>}
                     <TableHead>{t({ en: "Address", bn: "ঠিকানা" })}</TableHead>
                     <TableHead>{t({ en: "Status", bn: "স্ট্যাটাস" })}</TableHead>
                     <TableHead className="text-right">{t({ en: "Action", bn: "অ্যাকশন" })}</TableHead>
@@ -127,13 +127,15 @@ export function UmrahTable({ umrahs, onDelete, onView, showPackageColumn = true 
                                     <div className="text-xs text-muted-foreground">N/A</div>
                                 )}
                             </TableCell>
-                            <TableCell>
+
+                          {showGroupLeaderColumn && (<TableCell>
                                 <div className="space-y-1">
                                     <div className="font-medium text-sm">
                                         {groupLeader?.groupName}
                                     </div>
                                 </div>
-                            </TableCell>
+                            </TableCell>)}
+                            
                             {showPackageColumn && (
                                 <TableCell>
                                     <div className="space-y-1">
@@ -148,18 +150,20 @@ export function UmrahTable({ umrahs, onDelete, onView, showPackageColumn = true 
                                     </div>
                                 </TableCell>
                             )}
-                            <TableCell className="text-right">
-                                <div className="space-y-1">
-                                    <div className="text-xs">
-                                        <span className="text-muted-foreground">{t({ en: 'Paid:', bn: 'পরিশোধ:' })}</span>
-                                        <span className="font-semibold text-green-600 ml-1">৳{parseFloat(umrah.attributes.totalPaid || 0).toLocaleString()}</span>
+                            {showFinancialColumn && (
+                                <TableCell className="text-right">
+                                    <div className="space-y-1">
+                                        <div className="text-xs">
+                                            <span className="text-muted-foreground">{t({ en: 'Paid:', bn: 'পরিশোধ:' })}</span>
+                                            <span className="font-semibold text-green-600 ml-1">৳{parseFloat(umrah.attributes.totalPaid || 0).toLocaleString()}</span>
+                                        </div>
+                                        <div className="text-xs">
+                                            <span className="text-muted-foreground">{t({ en: 'Discount:', bn: 'ডিসকাউন্ট:' })}</span>
+                                            <span className="font-semibold text-blue-600 ml-1">৳{parseFloat(umrah.attributes.discount || 0).toLocaleString()}</span>
+                                        </div>
                                     </div>
-                                    <div className="text-xs">
-                                        <span className="text-muted-foreground">{t({ en: 'Discount:', bn: 'ডিসকাউন্ট:' })}</span>
-                                        <span className="font-semibold text-blue-600 ml-1">৳{parseFloat(umrah.attributes.discount || 0).toLocaleString()}</span>
-                                    </div>
-                                </div>
-                            </TableCell>
+                                </TableCell>
+                            )}
 
                             <TableCell>
                                 <div className="text-sm text-muted-foreground">
