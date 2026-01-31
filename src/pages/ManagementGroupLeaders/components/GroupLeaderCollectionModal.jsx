@@ -182,15 +182,9 @@ export default function GroupLeaderCollectionModal({ open, onOpenChange }) {
     })
 
     useEffect(() => {
-        // Reset pre_registration_id when section changes
-        if (selectedSection?.relationships?.groupLeader?.attributes?.pilgrimRequired) {
-            // Keep it as is, but check if selected pre-reg belongs to new group leader
-            if (selectedPreRegistration && 
-                selectedPreRegistration.relationships?.groupLeader?.id !== selectedSection.relationships.groupLeader.id) {
-                form.setValue('pre_registration_id', '')
-                setSelectedPreRegistration(null)
-            }
-        } else {
+        // Reset pre_registration_id when section changes if pre-reg doesn't belong to new group leader
+        if (selectedPreRegistration && selectedSection && 
+            selectedPreRegistration.relationships?.groupLeader?.id !== selectedSection.relationships.groupLeader.id) {
             form.setValue('pre_registration_id', '')
             setSelectedPreRegistration(null)
         }
@@ -203,6 +197,27 @@ export default function GroupLeaderCollectionModal({ open, onOpenChange }) {
         // Reset voucher number when type changes to update prefix
         form.setValue('voucher_no', '')
     }, [form.watch('type'), form])
+
+    useEffect(() => {
+        // Sync selectedPreRegistration with form value
+        const preRegId = form.watch('pre_registration_id')
+        if (preRegId) {
+            const preReg = preRegistrations.find(p => p.id.toString() === preRegId)
+            setSelectedPreRegistration(preReg || null)
+        } else {
+            setSelectedPreRegistration(null)
+        }
+    }, [form.watch('pre_registration_id'), preRegistrations])
+
+    useEffect(() => {
+        // Set form value when selectedPreRegistration changes
+        if (selectedPreRegistration) {
+            form.setValue('pre_registration_id', selectedPreRegistration.id.toString())
+            form.clearErrors('pre_registration_id')
+        } else {
+            form.setValue('pre_registration_id', '')
+        }
+    }, [selectedPreRegistration, form])
 
     const onSubmit = (data) => {
         // Custom validation for pre_registration_id when required
@@ -435,9 +450,9 @@ export default function GroupLeaderCollectionModal({ open, onOpenChange }) {
                                                                     <div
                                                                         key={preReg.id}
                                                                         className={`flex items-center gap-3 p-3 hover:bg-accent cursor-pointer border-b last:border-b-0 ${isSelected ? 'bg-accent' : ''}`}
-                                                                        onClick={() => {
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation()
                                                                             setSelectedPreRegistration(preReg)
-                                                                            field.onChange(preReg.id.toString())
                                                                             setIsPreRegSelectOpen(false)
                                                                             setPreRegSearchTerm('')
                                                                         }}

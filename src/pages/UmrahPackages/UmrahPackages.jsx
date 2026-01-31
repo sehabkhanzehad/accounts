@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
 import { PackageTable } from './components/PackageTable'
+import { PackageGrid } from './components/PackageGrid'
 import { PackageForm } from './components/PackageForm'
 import AppPagination from '@/components/app/AppPagination'
 import { EmptyComponent } from '@/components/app/EmptyComponent'
@@ -13,7 +14,7 @@ import TableSkeletons from '@/components/skeletons/TableSkeletons'
 import AppDeleteAlert from '@/components/app/AppDeleteAlert'
 import PageHeading from '@/components/PageHeading'
 import DashboardLayout from '@/Layouts/DashboardLayout'
-import { Plus, Package } from 'lucide-react'
+import { Plus, Package, LayoutGrid, List } from 'lucide-react'
 
 export default function UmrahPackages() {
     const { t } = useTranslation();
@@ -25,6 +26,11 @@ export default function UmrahPackages() {
     const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [packageToDelete, setPackageToDelete] = useState(null)
+    const [view, setView] = useState(localStorage.getItem('umrah-packages-view') || 'grid')
+
+    useEffect(() => {
+        localStorage.setItem('umrah-packages-view', view)
+    }, [view])
 
     const { data, isLoading } = useQuery({
         queryKey: ['umrah-packages', currentPage, rowsPerPage],
@@ -126,35 +132,77 @@ export default function UmrahPackages() {
                         title="Umrah Packages"
                         description="Manage Umrah packages for pilgrims"
                     />
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={openCreatePilgrimPage} className="gap-2">
+                   <div className="flex items-center gap-2">
+                        {/* Toggle */}
+                        <div className="flex items-center gap-2 h-10 rounded-md border border-border/30 bg-background/50 px-1">
+                            <Button
+                            variant={view === "grid" ? "default" : "ghost"}
+                            size="icon"
+                            onClick={() => setView("grid")}
+                            className={`h-8 w-8 rounded-md transition-all duration-150 ${
+                                view === "grid"
+                                ? "bg-primary text-primary-foreground shadow"
+                                : "bg-transparent text-muted-foreground hover:bg-muted/80"
+                            }`}
+                            >
+                            <LayoutGrid className="h-4 w-4" />
+                            </Button>
+                            
+                            <Button
+                            variant={view === "list" ? "default" : "ghost"}
+                            size="icon"
+                            onClick={() => setView("list")}
+                            className={`h-8 w-8 rounded-md transition-all duration-150 ${
+                                view === "list"
+                                ? "bg-primary text-primary-foreground shadow"
+                                : "bg-transparent text-muted-foreground hover:bg-muted/80"
+                            }`}
+                            >
+                            <List className="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" onClick={openCreatePilgrimPage} className="h-10 gap-2">
                             <Plus className="h-4 w-4" />
                             Add Pilgrim
-                        </Button>
-                        <Button variant="outline" onClick={openCreateDialog} className="gap-2">
+                            </Button>
+
+                            <Button variant="outline" onClick={openCreateDialog} className="h-10 gap-2">
                             <Plus className="h-4 w-4" />
                             Add Package
-                        </Button>
-                    </div>
+                            </Button>
+                        </div>
+                   </div>
                 </div>
 
                 <div className="flex-1">
                     {isLoading ? (
                         <TableSkeletons />
                     ) : packages?.length > 0 ? (
-                        <PackageTable
-                            packages={packages}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                            onViewPilgrims={handleViewPilgrims}
-                        />
+                        view === 'list' ? (
+                            <PackageTable
+                                packages={packages}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                                onViewPilgrims={handleViewPilgrims}
+                            />
+                        ) : (
+                            <PackageGrid
+                                packages={packages}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                                onViewPilgrims={handleViewPilgrims}
+                            />
+                        )
                     ) : (
                         <EmptyComponent
                             icon={<Package />}
                             title="No umrah packages found"
                             description="Create your first umrah package to get started"
                             action={
-                                <Button variant="outline" onClick={openCreateDialog} className="gap-2">
+                                <Button onClick={openCreateDialog} className="gap-2">
                                     <Plus className="h-4 w-4" />
                                     Add Umrah Package
                                 </Button>
