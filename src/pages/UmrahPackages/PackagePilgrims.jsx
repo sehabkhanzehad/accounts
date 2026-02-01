@@ -25,7 +25,8 @@ import { EmptyComponent } from '@/components/app/EmptyComponent'
 import TableSkeletons from '@/components/skeletons/TableSkeletons'
 import AppDeleteAlert from '@/components/app/AppDeleteAlert'
 import DashboardLayout from '@/Layouts/DashboardLayout'
-import { Plus, FileText, Users, UserCheck, UserX, CheckCircle, Users as UsersIcon, Printer, Search, X, Loader2 } from 'lucide-react'
+import { Plus, FileText, Users, UserCheck, UserX, CheckCircle, Users as UsersIcon, Printer, Search, X, Loader2, CreditCard } from 'lucide-react'
+import { IDCardPrintModal } from '@/components/id-card/IDCardPrintModal'
 
 const PrintableTable = ({ pilgrims, selectedColumns, packageInfo, selectedGroupLeader, showFinancialColumn, showGroupLeaderColumn }) => {
     return (
@@ -131,6 +132,7 @@ export default function PackagePilgrims() {
     const [umrahToDelete, setUmrahToDelete] = useState(null)
     const [showCollectionModal, setShowCollectionModal] = useState(false)
     const [showPrintModal, setShowPrintModal] = useState(false)
+    const [showIDCardModal, setShowIDCardModal] = useState(false)
     const [selectedColumns, setSelectedColumns] = useState(['pilgrim', 'nid', 'passport', 'groupLeader', 'financial', 'address'])
     const [search, setSearch] = useState('')
     const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -328,6 +330,10 @@ export default function PackagePilgrims() {
                         <Button variant="default" onClick={() => setShowCollectionModal(true)} className="gap-2">
                             <CheckCircle className="h-4 w-4" />
                             {t({ en: "Collect", bn: "কালেক্ট" })}
+                        </Button>
+                        <Button variant="secondary" onClick={() => setShowIDCardModal(true)} className="gap-2">
+                            <CreditCard className="h-4 w-4" />
+                            {t({ en: "ID Cards", bn: "আইডি কার্ড" })}
                         </Button>
                         <Button variant="outline" onClick={openCreatePage} className="gap-2">
                             <Plus className="h-4 w-4" />
@@ -587,6 +593,19 @@ export default function PackagePilgrims() {
                     open={showCollectionModal}
                     onOpenChange={setShowCollectionModal}
                     packageId={id}
+                />
+
+                <IDCardPrintModal
+                    open={showIDCardModal}
+                    onOpenChange={setShowIDCardModal}
+                    pilgrims={pilgrims || []}
+                    packageInfo={packageInfo}
+                    companyInfo={{
+                        name: 'M/S Raj Travel',
+                        phone: '+880 1234-567890',
+                        email: 'info@rajtravels.com',
+                        address: 'Dhaka, Bangladesh',
+                    }}
                 />
 
                 <PrintableTable
