@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth } from './contexts/AuthContext'
 import { useTranslation } from 'react-i18next'
 import Home from '@/pages/Home'
+import SignIn from '@/pages/SignIn'
 import Dashboard from '@/pages/Dashboard'
 import Settings from '@/pages/Settings'
 import Banks from '@/pages/Banks/Banks'
@@ -48,6 +49,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
+          <Route path="/sign-in" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <SignIn />} />
 
 
 

@@ -36,37 +36,11 @@ const AuthLayout = ({ children }) => {
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
+      {/* Right Side */}
       <div className="flex flex-1 items-center justify-center p-6 bg-background relative">
-        <div className="absolute top-4 right-4">
-          <LanguageToggle />
-        </div>
-        <div className="w-full max-w-md">
-          {children}
-        </div>
+        <div className="absolute top-4 right-4"><LanguageToggle /></div>
+        <div className="w-full max-w-md">{children}</div>
       </div>
-
-      {/* Footer */}
-      <footer className="absolute bottom-0 left-0 right-0 border-t bg-background px-4 py-4">
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center">
-            <p>© All rights reserved M/S Raj Travels</p>
-          </div>
-          <div className="flex items-center">
-            <p>
-              Developed by{' '}
-              <a
-                href="https://zehad.me"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline text-primary"
-              >
-                Zehad
-              </a>
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

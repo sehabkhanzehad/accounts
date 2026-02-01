@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -10,10 +10,36 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Logo } from "@/components/Logo";
 import AuthLayout from "@/Layouts/AuthLayout/AuthLayout";
+import { Loader2 } from "lucide-react";
+
+// Simple Google logo used in the signin card
+const GoogleLogo = () => (
+    <svg
+        className="inline-block h-5 w-5 shrink-0 text-inherit"
+        fill="none"
+        height="1.2em"
+        id="icon-google"
+        viewBox="0 0 16 16"
+        width="1.2em"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <g clipPath="url(#clip0)">
+            <path d="M15.6823 8.18368C15.6823 7.63986 15.6382 7.0931 15.5442 6.55811H7.99829V9.63876H12.3194C12.1401 10.6323 11.564 11.5113 10.7203 12.0698V14.0687H13.2983C14.8122 12.6753 15.6823 10.6176 15.6823 8.18368Z" fill="#4285F4" />
+            <path d="M7.99812 16C10.1558 16 11.9753 15.2915 13.3011 14.0687L10.7231 12.0698C10.0058 12.5578 9.07988 12.8341 8.00106 12.8341C5.91398 12.8341 4.14436 11.426 3.50942 9.53296H0.849121V11.5936C2.2072 14.295 4.97332 16 7.99812 16Z" fill="#34A853" />
+            <path d="M3.50665 9.53295C3.17154 8.53938 3.17154 7.4635 3.50665 6.46993V4.4093H0.849292C-0.285376 6.66982 -0.285376 9.33306 0.849292 11.5936L3.50665 9.53295Z" fill="#FBBC04" />
+            <path d="M7.99812 3.16589C9.13867 3.14825 10.241 3.57743 11.067 4.36523L13.3511 2.0812C11.9048 0.723121 9.98526 -0.0235266 7.99812 -1.02057e-05C4.97332 -1.02057e-05 2.2072 1.70493 0.849121 4.40932L3.50648 6.46995C4.13848 4.57394 5.91104 3.16589 7.99812 3.16589Z" fill="#EA4335" />
+        </g>
+        <defs>
+            <clipPath id="clip0">
+                <rect fill="white" height="16" width="15.6825" />
+            </clipPath>
+        </defs>
+    </svg>
+);
 
 // Zod validation schema
 const signInSchema = z.object({
@@ -31,7 +57,6 @@ export default function Home() {
         remember: false,
     });
     const [errors, setErrors] = useState({});
-    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
@@ -44,7 +69,7 @@ export default function Home() {
         onSuccess: (response) => {
             console.log('Sign in success:', response);
             const { accessToken, user } = response.data;
-            login(accessToken, user);
+            login(accessToken, user, formData.remember);
             toast.success(response.message || t('app.signInSuccess'));
             navigate("/dashboard");
         },
@@ -95,84 +120,94 @@ export default function Home() {
 
     return (
         <AuthLayout>
-            <Card className="w-full border-border/50 shadow-xl backdrop-blur-sm">
-                <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-center">
-                        {t('app.signIn')}
-                    </CardTitle>
-                    <CardDescription className="text-center">
-                        {t('app.welcome')}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">{t('app.email')}</Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                placeholder="example@rajtravels.com"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className={errors.email ? "border-destructive" : ""}
-                            />
-                            {errors.email && (
-                                <p className="text-destructive text-sm">{errors.email}</p>
-                            )}
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">{t('app.password')}</Label>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="••••••••"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className={`pr-10 ${errors.password ? "border-destructive" : ""}`}
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute inset-y-0 right-0 px-3 flex items-center"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                >
-                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </Button>
-                            </div>
-                            {errors.password && (
-                                <p className="text-destructive text-sm">{errors.password}</p>
-                            )}
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="remember"
-                                checked={formData.remember}
-                                onCheckedChange={(checked) =>
-                                    setFormData(prev => ({ ...prev, remember: checked }))
+            <div className="relative m-auto flex w-full max-w-sm flex-col items-center p-8 outline-0 outline-border/40 outline-offset-0.5 sm:outline-2 dark:outline-border/80">
+                <div className="absolute inset-x-0 top-0 w-[calc(100%+4rem)] -translate-x-8 border-t max-sm:hidden" />
+                <div className="absolute inset-x-0 bottom-0 w-[calc(100%+4rem)] -translate-x-8 border-b max-sm:hidden" />
+                <div className="absolute inset-y-0 left-0 h-[calc(100%+4rem)] -translate-y-8 border-s max-sm:hidden" />
+                <div className="absolute inset-y-0 right-0 h-[calc(100%+4rem)] -translate-y-8 border-e max-sm:hidden" />
+
+                <div className="absolute inset-x-0 -top-1 w-[calc(100%+3rem)] -translate-x-6 border-t max-sm:hidden" />
+                <div className="absolute inset-x-0 -bottom-1 w-[calc(100%+3rem)] -translate-x-6 border-b max-sm:hidden" />
+                <div className="absolute inset-y-0 -left-1 h-[calc(100%+3rem)] -translate-y-6 border-s max-sm:hidden" />
+                <div className="absolute inset-y-0 -right-1 h-[calc(100%+3rem)] -translate-y-6 border-e max-sm:hidden" />
+
+                {/* <Logo className="h-9 w-9" /> */}
+                <p className="mt-4 font-semibold text-xl tracking-tight">Sign in</p>
+
+                <Button
+                    className="mt-8 w-full gap-3"
+                    type="button"
+                    onClick={() => toast.info("Coming soon")}
+                >
+                    <GoogleLogo />
+                    Continue with Google
+                </Button>
+
+                <div className="my-7 flex w-full items-center justify-center overflow-hidden">
+                    <Separator />
+                    <span className="px-2 text-sm">OR</span>
+                    <Separator />
+                </div>
+
+                <form className="w-full space-y-4" onSubmit={handleSubmit}>
+                    <div className="space-y-2">
+                        <Label htmlFor="email">{t('app.email')}</Label>
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="example@rajtravels.com"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={errors.email ? "border-destructive" : ""}
+                        />
+                        {errors.email && (
+                            <p className="text-destructive text-sm">{errors.email}</p>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="password">{t('app.password')}</Label>
+                        <Input
+                            id="password"
+                            name="password"
+                            type="password"
+                            placeholder="Password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className={`${errors.password ? "border-destructive" : ""}`}
+                        />
+                        {errors.password && (
+                            <p className="text-destructive text-sm">{errors.password}</p>
+                        )}
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="remember"
+                            name="remember"
+                            checked={formData.remember}
+                            onCheckedChange={(checked) => {
+                                setFormData(prev => ({ ...prev, remember: checked }));
+                                if (errors.remember) {
+                                    setErrors(prev => ({ ...prev, remember: undefined }));
                                 }
-                            />
-                            <Label
-                                htmlFor="remember"
-                                className="text-sm font-normal cursor-pointer"
-                            >
-                                {t('app.rememberMe')}
-                            </Label>
-                        </div>
-                        <Button
-                            type="submit"
-                            disabled={mutation.isPending}
-                            className="w-full cursor-pointer"
-                            size="lg"
-                        >
-                            {mutation.isPending ? t('app.signingIn') : t('app.signIn')}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+                            }}
+                        />
+                        <Label htmlFor="remember" className="text-sm">Remember me</Label>
+                    </div>
+
+                    <Button className="mt-4 w-full" type="submit" disabled={mutation.isPending}>
+                        {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {mutation.isPending ? t('app.signingIn') : t('app.signIn')}
+                    </Button>
+                </form>
+
+                <p className="mt-5 text-center text-sm">
+                    Don’t have an account?
+                    <Link className="ml-1 text-muted-foreground underline" to="/sign-up">Create one</Link>
+                </p>
+            </div>
         </AuthLayout>
     );
 }

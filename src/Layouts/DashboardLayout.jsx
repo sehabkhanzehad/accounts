@@ -145,28 +145,6 @@ export default function DashboardLayout({ children, breadcrumbs }) {
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
-
-          {/* Footer */}
-          <footer className="border-t bg-background px-4 py-6 mt-auto">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <div className="flex items-center">
-                <p>© All rights reserved M/S Raj Travels</p>
-              </div>
-              <div className="flex items-center">
-                <p>
-                  Developed by{' '}
-                  <a
-                    href="https://zehad.me"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline text-primary"
-                  >
-                    Zehad
-                  </a>
-                </p>
-              </div>
-            </div>
-          </footer>
         </SidebarInset>
       </SidebarProvider>
       <CreateTransactionModal open={isModalOpen} onOpenChange={setIsModalOpen} />
