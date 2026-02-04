@@ -331,10 +331,6 @@ export default function PackagePilgrims() {
                             <CheckCircle className="h-4 w-4" />
                             {t({ en: "Collect", bn: "কালেক্ট" })}
                         </Button>
-                        <Button variant="secondary" onClick={() => setShowIDCardModal(true)} className="gap-2">
-                            <CreditCard className="h-4 w-4" />
-                            {t({ en: "ID Cards", bn: "আইডি কার্ড" })}
-                        </Button>
                         <Button variant="outline" onClick={openCreatePage} className="gap-2">
                             <Plus className="h-4 w-4" />
                             {t({ en: "Add Pilgrim", bn: "অ্যাড পিলগ্রিম" })}
@@ -481,6 +477,10 @@ export default function PackagePilgrims() {
                                             )}
                                         </div>
                                         <div className="flex items-center gap-2">
+                                            <Button variant="outline" onClick={() => setShowIDCardModal(true)} className="gap-2">
+                                                <CreditCard className="h-4 w-4" />
+                                                {t({ en: "ID Cards", bn: "আইডি কার্ড" })}
+                                            </Button>
                                             <Sheet open={showPrintModal} onOpenChange={setShowPrintModal}>
                                                 <SheetTrigger asChild>
                                                     <Button variant="outline" className="gap-2">

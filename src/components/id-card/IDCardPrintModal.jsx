@@ -113,10 +113,32 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                 print-color-adjust: exact;
                 -webkit-print-color-adjust: exact;
             }
+            /* Avatar image styles for print */
+            img {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            span[role="img"],
+            span.inline-flex {
+                display: inline-flex !important;
+                align-items: center;
+                justify-content: center;
+            }
+            span[role="img"] img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: inherit;
+            }
             @media print {
                 body {
                     print-color-adjust: exact;
                     -webkit-print-color-adjust: exact;
+                }
+                img {
+                    print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact;
+                    max-width: 100%;
                 }
             }
         `

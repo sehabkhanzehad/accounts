@@ -48,6 +48,8 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                     width: cardWidth,
                     height: cardHeight,
                     borderRadius: `${Math.max(12, 12 * scaleFactor)}px`,
+                    backgroundImage: 'linear-gradient(to bottom right, #f0fdf4, #ffffff, #f0fdf4)',
+                    borderColor: '#bbf7d0',
                 }}
             >
                 <div className="absolute inset-0 opacity-5">
@@ -137,12 +139,14 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                     width: cardWidth,
                     height: cardHeight,
                     borderRadius: `${Math.max(16, 16 * scaleFactor)}px`,
+                    backgroundImage: 'linear-gradient(to bottom right, #ffedd5, #ffffff, #ffedd5)',
+                    borderColor: '#fb923c',
                 }}
             >
-                <div className="absolute top-0 left-0 border-t-4 border-l-4 border-orange-400 rounded-tl-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px` }}></div>
-                <div className="absolute top-0 right-0 border-t-4 border-r-4 border-orange-400 rounded-tr-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px` }}></div>
-                <div className="absolute bottom-0 left-0 border-b-4 border-l-4 border-orange-400 rounded-bl-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px` }}></div>
-                <div className="absolute bottom-0 right-0 border-b-4 border-r-4 border-orange-400 rounded-br-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px` }}></div>
+                <div className="absolute top-0 left-0 border-t-4 border-l-4 border-orange-400 rounded-tl-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px`, borderColor: '#fb923c' }}></div>
+                <div className="absolute top-0 right-0 border-t-4 border-r-4 border-orange-400 rounded-tr-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px`, borderColor: '#fb923c' }}></div>
+                <div className="absolute bottom-0 left-0 border-b-4 border-l-4 border-orange-400 rounded-bl-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px`, borderColor: '#fb923c' }}></div>
+                <div className="absolute bottom-0 right-0 border-b-4 border-r-4 border-orange-400 rounded-br-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px`, borderColor: '#fb923c' }}></div>
 
                 <div className="relative h-full flex flex-col items-center justify-center text-center" style={{ padding: `${padding}px`, gap: `${padding * 0.8}px` }}>
                     {size.name !== 'Standard Card' && size.name !== 'Custom Size' && (
@@ -186,24 +190,26 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                     width: cardWidth,
                     height: cardHeight,
                     borderRadius: `${Math.max(12, 12 * scaleFactor)}px`,
+                    backgroundImage: 'linear-gradient(to bottom right, #f8fafc, #e2e8f0, #cbd5e1)',
+                    borderColor: '#94a3b8',
                 }}
             >
                 <div className="h-full flex flex-col" style={{ padding: `${padding}px` }}>
                     <div className="flex items-center justify-center" style={{ marginBottom: `${padding * 0.6}px`, gap: `${padding * 0.5}px` }}>
-                        <div className="bg-slate-700 rounded flex items-center justify-center" style={{ width: `${clampSize(Math.round(28 * scaleFactor), 26, 30)}px`, height: `${clampSize(Math.round(28 * scaleFactor), 26, 30)}px`, flexShrink: 0 }}>
+                        <div className="bg-slate-700 rounded flex items-center justify-center" style={{ width: `${clampSize(Math.round(28 * scaleFactor), 26, 30)}px`, height: `${clampSize(Math.round(28 * scaleFactor), 26, 30)}px`, flexShrink: 0, backgroundColor: '#334155' }}>
                             <img src="/logo.png" alt="Logo" className="object-contain" style={{ height: `${clampSize(Math.round(18 * scaleFactor), 16, 20)}px`, width: `${clampSize(Math.round(18 * scaleFactor), 16, 20)}px` }} onError={(e) => e.target.style.display = 'none'} />
                         </div>
                         <div>
-                            <h2 className="font-bold text-slate-900" style={{ fontSize: `${titleSize}px` }}>{companyInfo.name || 'M/S Raj Travel'}</h2>
-                            <p className="text-slate-600" style={{ fontSize: `${subtitleSize}px` }}>Hajj License: {companyInfo.hlNumber || '0935'}</p>
+                            <h2 className="font-bold text-slate-900" style={{ fontSize: `${titleSize}px`, color: '#0f172a' }}>{companyInfo.name || 'M/S Raj Travel'}</h2>
+                            <p className="text-slate-600" style={{ fontSize: `${subtitleSize}px`, color: '#475569' }}>Hajj License: {companyInfo.hlNumber || '0935'}</p>
                         </div>
                     </div>
 
                     <div className="flex-1" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.6}px` }}>
                         {size.name !== 'Standard Card' && size.name !== 'Custom Size' && (
-                            <div className="bg-slate-50 rounded-lg border border-slate-200" style={{ padding: `${padding * 0.6}px` }}>
-                                <h3 className="font-bold text-slate-900" style={{ fontSize: `${labelSize}px`, marginBottom: `${padding * 0.3}px` }}>Terms and Conditions</h3>
-                                <ul className="text-slate-600 list-disc list-inside" style={{ fontSize: `${footerSize}px`, display: 'flex', flexDirection: 'column', gap: `${padding * 0.15}px` }}>
+                            <div className="bg-slate-50 rounded-lg border border-slate-200" style={{ padding: `${padding * 0.6}px`, backgroundColor: '#f8fafc', borderColor: '#e2e8f0' }}>
+                                <h3 className="font-bold text-slate-900" style={{ fontSize: `${labelSize}px`, marginBottom: `${padding * 0.3}px`, color: '#0f172a' }}>Terms and Conditions</h3>
+                                <ul className="text-slate-600 list-disc list-inside" style={{ fontSize: `${footerSize}px`, display: 'flex', flexDirection: 'column', gap: `${padding * 0.15}px`, color: '#475569' }}>
                                     <li>Card must be worn visibly at all times</li>
                                     <li>Report lost cards immediately</li>
                                     <li>Non-transferable property</li>
@@ -211,18 +217,18 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                             </div>
                         )}
 
-                        <div className="bg-slate-50 rounded-lg border border-slate-200" style={{ padding: `${padding * 0.6}px` }}>
-                            <p className="font-semibold text-slate-700" style={{ fontSize: `${textSize}px` }}>Address:</p>
-                            <p className="text-slate-600" style={{ fontSize: `${textSize}px` }}>{companyInfo.address || 'N/A'}</p>
+                        <div className="bg-slate-50 rounded-lg border border-slate-200" style={{ padding: `${padding * 0.6}px`, backgroundColor: '#f8fafc', borderColor: '#e2e8f0' }}>
+                            <p className="font-semibold text-slate-700" style={{ fontSize: `${textSize}px`, color: '#334155' }}>Address:</p>
+                            <p className="text-slate-600" style={{ fontSize: `${textSize}px`, color: '#475569' }}>{companyInfo.address || 'N/A'}</p>
                         </div>
 
-                        <div className="bg-slate-700 rounded-lg" style={{ padding: `${padding * 0.6}px` }}>
-                            <p className="font-bold text-yellow-400" style={{ fontSize: `${textSize}px` }}>Emergency Contact</p>
-                            <p className="text-white" style={{ fontSize: `${textSize}px` }}>{companyInfo.emergencyContact || 'N/A'}</p>
+                        <div className="bg-slate-700 rounded-lg" style={{ padding: `${padding * 0.6}px`, backgroundColor: '#334155' }}>
+                            <p className="font-bold text-yellow-400" style={{ fontSize: `${textSize}px`, color: '#facc15' }}>Emergency Contact</p>
+                            <p className="text-white" style={{ fontSize: `${textSize}px`, color: '#ffffff' }}>{companyInfo.emergencyContact || 'N/A'}</p>
                         </div>
                     </div>
 
-                    <div className="text-center text-slate-500 border-t border-slate-300" style={{ fontSize: `${footerSize}px`, paddingTop: `${padding * 0.6}px` }}>
+                    <div className="text-center text-slate-500 border-t border-slate-300" style={{ fontSize: `${footerSize}px`, paddingTop: `${padding * 0.6}px`, color: '#64748b', borderColor: '#cbd5e1' }}>
                         <span>Issue Date: {new Date().toLocaleDateString()}</span>
                     </div>
                 </div>
