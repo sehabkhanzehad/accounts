@@ -13,8 +13,7 @@ import { LanguageToggle } from "@/components/ui/language-toggle"
 import { z } from 'zod'
 
 const accountSchema = z.object({
-    firstName: z.string().min(1, 'First name is required'),
-    lastName: z.string().optional(),
+    name: z.string().min(1, 'Name is required'),
     email: z.string().email('Invalid email address'),
 })
 
@@ -27,20 +26,18 @@ export default function AccountSettings() {
         queryKey: ['user'],
         queryFn: async () => {
             const response = await api.get('/user')
-            return response.data.data ? response.data.data.attributes : response.data.attributes
+            return response.data.data.attributes;
         },
     })
 
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [avatar, setAvatar] = useState(null)
     const [errors, setErrors] = useState({})
 
     useEffect(() => {
         if (userData) {
-            setFirstName(userData.firstName || '')
-            setLastName(userData.lastName || '')
+            setName(userData.name)
             setEmail(userData.email)
             setAvatar(userData.avatar)
         }
@@ -49,25 +46,20 @@ export default function AccountSettings() {
     const { mutate, isPending } = useMutation({
         mutationFn: async (data) =>
             await api.post('/user/profile', data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                headers: { 'Content-Type': 'multipart/form-data' },
             }),
         onSuccess: async () => {
             try {
-                // Refetch user data to get the latest and update localStorage
                 const response = await api.get('/user')
-                const updatedUser = response.data.data ? response.data.data.attributes : response.data.attributes
-                // Construct name from firstName and lastName to match sign-in structure
-                updatedUser.name = `${updatedUser.firstName} ${updatedUser.lastName || ''}`.trim()
-                // Match sign-in structure: {type: "user", id, attributes}
+                const updatedUser = response.data.data?.attributes || response.data.attributes
+
                 const fullUser = {
                     type: "user",
-                    id: updatedUser.id || user.id, // Use from updated or current user
+                    id: updatedUser.id || user.id,
                     attributes: updatedUser
                 }
+
                 localStorage.setItem('user', JSON.stringify(fullUser))
-                // Dispatch custom event to update context in same tab
                 window.dispatchEvent(new CustomEvent('userUpdated', { detail: fullUser }))
                 queryClient.setQueryData(['user'], updatedUser)
                 toast.success('Account updated!')
@@ -83,24 +75,18 @@ export default function AccountSettings() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        const formData = new FormData()
 
-        // Validate form with Zod
-        const payload = { firstName, lastName, email }
-        const result = accountSchema.safeParse(payload)
+        const result = accountSchema.safeParse({ name, email })
 
         if (!result.success) {
-            // Use Zod's flatten() helper to reliably get field errors as a map
             const flattened = result.error.flatten()
             const fieldErrors = {}
 
-            // flattened.fieldErrors is Record<string, string[]>
             Object.entries(flattened.fieldErrors).forEach(([key, arr]) => {
-                if (arr && arr.length > 0) fieldErrors[key] = arr.join(', ')
+                if (arr?.length) fieldErrors[key] = arr.join(', ')
             })
 
-            // Also capture form-level (non-field) errors if any
-            if (flattened.formErrors && flattened.formErrors.length) {
+            if (flattened.formErrors?.length) {
                 fieldErrors._form = flattened.formErrors.join(', ')
             }
 
@@ -110,9 +96,13 @@ export default function AccountSettings() {
 
         setErrors({})
 
+        const formData = new FormData()
+        formData.append('name', result.data.name)
+        formData.append('email', result.data.email)
+
         if (avatar === null) {
             formData.append('avatar', '')
-        } else if (avatar && avatar instanceof File) {
+        } else if (avatar instanceof File) {
             const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']
             const maxSize = 2 * 1024 * 1024 // 2MB
 
@@ -129,10 +119,6 @@ export default function AccountSettings() {
             formData.append('avatar', avatar)
         }
 
-        formData.append('first_name', firstName)
-        formData.append('last_name', lastName || '')
-        formData.append('email', result.data.email)
-
         mutate(formData)
     }
 
@@ -144,9 +130,7 @@ export default function AccountSettings() {
                     <CardDescription>{t('app.updateAccountInfo')}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-red-500">
-                        Error loading user data: {error.message}
-                    </div>
+                    <div className="text-red-500">Error loading user data: {error.message}</div>
                 </CardContent>
             </Card>
         )
@@ -160,13 +144,11 @@ export default function AccountSettings() {
                     <CardDescription>{t('app.updateAccountInfo')}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4 max-w-md">
-                        <div className="space-y-4 animate-pulse">
-                            <div className="h-20 bg-gray-300 rounded"></div>
-                            <div className="h-10 bg-gray-300 rounded"></div>
-                            <div className="h-10 bg-gray-300 rounded"></div>
-                            <div className="h-10 bg-gray-300 rounded"></div>
-                        </div>
+                    <div className="space-y-4 max-w-md animate-pulse">
+                        <div className="h-20 bg-gray-300 rounded"></div>
+                        <div className="h-10 bg-gray-300 rounded"></div>
+                        <div className="h-10 bg-gray-300 rounded"></div>
+                        <div className="h-10 bg-gray-300 rounded"></div>
                     </div>
                 </CardContent>
             </Card>
@@ -181,60 +163,42 @@ export default function AccountSettings() {
                     <CardDescription>{t('app.updateAccountInfo')}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form action="" className="space-y-4" onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-4 max-w-md">
                             <div className="space-y-1.5">
-                                <div>
-                                    <ImageUpload
-                                        value={userData?.avatar}
-                                        onChange={(file) => setAvatar(file)}
-                                        onRemove={() => setAvatar(null)}
-                                    />
-                                    {errors.avatar && <p className="mt-1 text-xs text-red-600">{errors.avatar}</p>}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="firstName">{t('app.firstName')}</Label>
-                                    <Input
-                                        id="firstName"
-                                        value={firstName}
-                                        onChange={(e) => setFirstName(e.target.value)}
-                                    />
-                                    {errors.firstName && <p className="mt-1 text-xs text-red-600">{errors.firstName}</p>}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="lastName">{t('app.lastName')}</Label>
-                                    <Input
-                                        id="lastName"
-                                        value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
-                                    />
-                                    {errors.lastName && <p className="mt-1 text-xs text-red-600">{errors.lastName}</p>}
-                                </div>
+                                <ImageUpload
+                                    value={userData?.avatar}
+                                    onChange={setAvatar}
+                                    onRemove={() => setAvatar(null)}
+                                />
+                                {errors.avatar && <p className="mt-1 text-xs text-red-600">{errors.avatar}</p>}
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label>Email</Label>
-                                <div>
-                                    <Input
-                                        type="email"
-                                        name="email"
-                                        placeholder="Your email address"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                    {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
-                                </div>
+                                <Label htmlFor="name">{t('app.name')}</Label>
+                                <Input
+                                    id="name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                                {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
                             </div>
 
-                            <div>
-                                <Button type="submit" disabled={isPending}>
-                                    {isPending ? t('app.saving') : t('app.save')}
-                                </Button>
+                            <div className="space-y-1.5">
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="Your email address"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                                {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
                             </div>
+
+                            <Button type="submit" disabled={isPending}>
+                                {isPending ? t('app.saving') : t('app.save')}
+                            </Button>
                         </div>
                     </form>
                 </CardContent>
