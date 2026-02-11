@@ -77,11 +77,12 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                         // Portrait Layout - Centered vertical design
                         <>
                             <div className="text-center" style={{ marginBottom: `${padding * 0.2}px`, paddingBottom: `${padding * 0.3}px`, borderBottom: '1px solid #bfdbfe' }}>
-                                <div className="flex items-center justify-center" style={{ marginBottom: `${padding * 0.1}px` }}>
+                                <div className="flex items-center justify-between" style={{ marginBottom: `${padding * 0.1}px` }}>
                                     <img src="/logo.png" alt="Logo" style={{ height: `${Math.max(32, headerLogoSize * 1.2)}px`, width: `${Math.max(32, headerLogoSize * 1.2)}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                                    <img src="/bd.png" alt="Bangladesh Flag" style={{ height: `${Math.max(32, headerLogoSize * 1.2)}px`, width: `${Math.max(32, headerLogoSize * 1.2)}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
                                 </div>
                                 <h1 className="font-bold text-blue-600" style={{ fontSize: `${titleSize + 2}px`, lineHeight: '1.1', fontFamily: "'Hind Siliguri', sans-serif" }}>{companyInfo.nameBn || 'মেসার্স রাজ ট্রাভেলস্'}</h1>
-                                <h2 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px`, lineHeight: '1.2' }}>{companyInfo.name || 'M/S Raj Travels'}</h2>
+                                <h2 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px`, lineHeight: '1.2' }}>{(companyInfo.name || 'M/S. RAJ TRAVELS').toUpperCase()}</h2>
                                 <p className={`${designStyle.subText} font-medium`} style={{ fontSize: `${subtitleSize}px`, lineHeight: '1.2' }}>Hajj License No: {companyInfo.hlNumber || '0935'}</p>
                             </div>
 
@@ -93,13 +94,13 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                                     </AvatarFallback>
                                 </Avatar>
 
-                                <h3 className="font-bold text-gray-900 text-center truncate w-full" style={{ fontSize: `${nameSize}px`, marginBottom: `${padding * 0.3}px` }}>{user?.fullName}</h3>
+                                <h3 className="font-bold text-gray-900 text-center truncate w-full" style={{ fontSize: `${nameSize}px`, marginBottom: `${padding * 0.6}px` }}>{user?.fullName?.toUpperCase() || ''}</h3>
 
                                 <div className="text-gray-700 w-full" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.15}px`, paddingLeft: `${padding * 0.5}px`, paddingRight: `${padding * 0.5}px` }}>
-                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>PASSPORT NO</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{passport?.passportNumber}</span></div>
-                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>FATHER'S NAME</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span>{user?.fatherName}</span></div>
-                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>NID/BIRTH</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.nid}</span></div>
-                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>DATE OF BIRTH</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.dateOfBirth}</span></div>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '70px', flexShrink: 0 }}>PASSPORT NO</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{passport?.passportNumber}</span></div>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '70px', flexShrink: 0 }}>FATHER'S NAME</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span>{user?.fatherName}</span></div>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '70px', flexShrink: 0 }}>NID/BIRTH</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span>{user?.nid}</span></div>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '70px', flexShrink: 0 }}>DATE OF BIRTH</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.dateOfBirth}</span></div>
                                 </div>
                             </div>
                         </>
@@ -111,9 +112,10 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                                     <img src="/logo.png" alt="Logo" style={{ height: `${Math.max(40, headerLogoSize * 1.6)}px`, width: `${Math.max(40, headerLogoSize * 1.6)}px`, flexShrink: 0 }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
                                     <div className="flex-1">
                                         <h1 className="font-bold text-blue-600" style={{ fontSize: `${titleSize + 2}px`, fontFamily: "'Hind Siliguri', sans-serif" }}>{companyInfo.nameBn || 'মেসার্স রাজ ট্রাভেলস্'}</h1>
-                                        <h2 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>{companyInfo.name || 'M/S. RAJ TRAVELS'}</h2>
+                                        <h2 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>{(companyInfo.name || 'M/S. RAJ TRAVELS').toUpperCase()}</h2>
                                         <p className={`${designStyle.subText} font-medium`} style={{ fontSize: `${subtitleSize}px` }}>Hajj License No: {companyInfo.hlNumber || '0935'}</p>
                                     </div>
+                                    <img src="/bd.png" alt="Bangladesh Flag" style={{ height: `${Math.max(40, headerLogoSize * 1.6)}px`, width: `${Math.max(40, headerLogoSize * 1.6)}px`, flexShrink: 0 }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
                                 </div>
                             </div>
 
@@ -129,11 +131,11 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
 
                                 <div className="flex-1 min-w-0">
                                     <div className="text-gray-700" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.15}px` }}>
-                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>NAME</span>: {user?.fullName}</p>
-                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>PASSPORT NO</span>: {passport?.passportNumber}</p>
-                                        <p style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>FATHER'S NAME</span>: {user?.fatherName}</p>
-                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>NID/BIRTH REG NO</span>: {user?.nid}</p>
-                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>DATE OF BIRTH</span>: {user?.dateOfBirth}</p>
+                                        <p className="truncate" style={{ fontSize: `${infoSize}px`, marginBottom: `${padding * 0.3}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '70px' }}>NAME</span>: {user?.fullName?.toUpperCase() || ''}</p>
+                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '70px' }}>PASSPORT NO</span>: {passport?.passportNumber}</p>
+                                        <p style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '70px' }}>FATHER'S NAME</span>: {user?.fatherName}</p>
+                                        <p style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '70px' }}>NID/BIRTH REG NO</span>: {user?.nid}</p>
+                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '70px' }}>DATE OF BIRTH</span>: {user?.dateOfBirth}</p>
                                     </div>
                                 </div>
                             </div>
@@ -181,8 +183,8 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                             </AvatarFallback>
                         </Avatar>
 
-                        <h2 className="font-extrabold text-gray-900" style={{ fontSize: `${Math.max(12, nameSize + 1)}px` }}>{user?.fullName}</h2>
-                        <p className="text-gray-700" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.6}px`, fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
+                        <h2 className="font-extrabold text-gray-900" style={{ fontSize: `${Math.max(12, nameSize + 1)}px` }}>{user?.fullName?.toUpperCase() || ''}</h2>
+                        <p className="text-gray-700" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.9}px`, fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
 
                         <div className="grid grid-cols-2 text-gray-700" style={{ gap: `${padding * 0.3}px ${padding * 0.6}px`, fontSize: `${subtitleSize}px`, paddingLeft: `${padding * 0.8}px`, paddingRight: `${padding * 0.8}px` }}>
                             <div className="text-right font-medium">Passport:</div>
@@ -220,8 +222,8 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                             </div>
 
                             <div className="flex-1 min-w-0">
-                                <h2 className="font-extrabold text-gray-900 truncate" style={{ fontSize: `${nameSize}px` }}>{user?.fullName}</h2>
-                                <p className="text-gray-700 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.4}px`, fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
+                                <h2 className="font-extrabold text-gray-900 truncate" style={{ fontSize: `${nameSize}px` }}>{user?.fullName?.toUpperCase() || ''}</h2>
+                                <p className="text-gray-700 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.7}px`, fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
                                 <div className="text-gray-700" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.2}px`, fontSize: `${infoSize}px` }}>
                                     <p className="truncate"><span className="font-semibold">Passport:</span> {passport?.passportNumber}</p>
                                     <p className="truncate"><span className="font-semibold">NID:</span> {user?.nid}</p>
@@ -278,8 +280,8 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                                 </AvatarFallback>
                             </Avatar>
 
-                            <h2 className="font-bold text-white" style={{ fontSize: `${Math.max(12, nameSize + 1)}px`, color: '#ffffff' }}>{user?.fullName}</h2>
-                            <p className="text-gray-300" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.6}px`, color: '#d1d5db', fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
+                            <h2 className="font-bold text-white" style={{ fontSize: `${Math.max(12, nameSize + 1)}px`, color: '#ffffff' }}>{user?.fullName?.toUpperCase() || ''}</h2>
+                            <p className="text-gray-300" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.9}px`, color: '#d1d5db', fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
 
                             <div className="grid grid-cols-2 text-gray-300" style={{ gap: `${padding * 0.3}px ${padding * 0.6}px`, fontSize: `${subtitleSize}px`, paddingLeft: `${padding * 0.8}px`, paddingRight: `${padding * 0.8}px`, color: '#d1d5db' }}>
                                 <div className="text-right font-medium text-cyan-400" style={{ color: '#22d3ee' }}>Passport:</div>
@@ -301,8 +303,8 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                             </Avatar>
 
                             <div className="flex-1 min-w-0">
-                                <h2 className="font-bold text-white" style={{ fontSize: `${nameSize}px`, color: '#ffffff' }}>{user?.fullName}</h2>
-                                <p className="text-gray-300 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.4}px`, color: '#d1d5db', fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
+                                <h2 className="font-bold text-white" style={{ fontSize: `${nameSize}px`, color: '#ffffff' }}>{user?.fullName?.toUpperCase() || ''}</h2>
+                                <p className="text-gray-300 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.7}px`, color: '#d1d5db', fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
                                 <div className="text-gray-300" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.2}px`, fontSize: `${textSize}px`, color: '#d1d5db' }}>
                                     <p className="truncate"><span className="text-cyan-400" style={{ color: '#22d3ee' }}>Passport:</span> {passport?.passportNumber}</p>
                                     <p className="truncate"><span className="text-cyan-400" style={{ color: '#22d3ee' }}>NID:</span> {user?.nid}</p>

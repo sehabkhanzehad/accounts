@@ -42,6 +42,7 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
     const [madinaHotelName, setMadinaHotelName] = useState('')
     const [madinaHotelAddress, setMadinaHotelAddress] = useState('')
     const [madinaHotelContact, setMadinaHotelContact] = useState('')
+    const [footerText, setFooterText] = useState('Non-Transferable')
 
     // Merge user-entered hotel info with companyInfo
     const mergedCompanyInfo = {
@@ -52,6 +53,7 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
         madinaHotelName: madinaHotelName || companyInfo?.madinaHotelName,
         madinaHotelAddress: madinaHotelAddress || companyInfo?.madinaHotelAddress,
         madinaHotelContact: madinaHotelContact || companyInfo?.madinaHotelContact,
+        footerText: footerText || 'Non-Transferable',
     }
 
     const handlePrint = () => {
@@ -362,6 +364,19 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                                         className="h-8 text-sm"
                                     />
                                 </div>
+                            </div>
+
+                            {/* Footer Text */}
+                            <div className="border-t pt-4">
+                                <Label className="text-sm font-medium mb-3 block text-gray-600">
+                                    {t({ en: "Footer Text", bn: "ফুটার টেক্সট" })}
+                                </Label>
+                                <Input
+                                    placeholder={t({ en: "Footer text (e.g., Non-Transferable)", bn: "ফুটার টেক্সট (যেমন: হস্তান্তরযোগ্য নয়)" })}
+                                    value={footerText}
+                                    onChange={(e) => setFooterText(e.target.value)}
+                                    className="h-8 text-sm"
+                                />
                             </div>
                         </div>
                     </div>

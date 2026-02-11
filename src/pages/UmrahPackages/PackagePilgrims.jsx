@@ -399,10 +399,10 @@ export default function PackagePilgrims() {
                             {/* Price and Status */}
                             <div className="text-right mt-3 md:mt-0">
                                 <div className="text-lg font-bold text-green-600">
-                                    ৳{parseFloat(packageInfo.price).toLocaleString()}
+                                    ${parseFloat(packageInfo.price).toLocaleString('en-US')}
                                 </div>
                                 <Badge variant={packageInfo.status ? "default" : "destructive"} className="text-xs mt-1">
-                                    {packageInfo.status ? 'Active' : 'Inzactive'}
+                                    {packageInfo.status ? 'Active' : 'Inactive'}
                                 </Badge>
                             </div>
                         </div>
@@ -601,11 +601,11 @@ export default function PackagePilgrims() {
                     pilgrims={pilgrims || []}
                     packageInfo={packageInfo}
                     companyInfo={{
-                        name: 'M/S Raj Travels',
-                        phone: '+8801799745020',
-                        email: 'info@msrajtravel.com',
-                        address: '189/1, Nayagola, Nayagola Hat-6300, Chapainawaganj, Rajshahi, Dhaka, Bangladesh',
-                        emergencyContact: '+8802587738935',
+                        name: 'M/S. RAJ TRAVELS',
+                        phone: '+880-1799-745020',
+                        email: 'rajtravels.bd@gmail.com',
+                        address: '189/1, Nayagola, Nayagola Hat-6300, Chapainawaganj, Rajshahi, Bangladesh',
+                        emergencyContact: '+880-1799-745020',
                         hajjLicense: '0935',
                     }}
                 />

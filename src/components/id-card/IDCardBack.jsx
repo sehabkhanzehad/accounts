@@ -51,6 +51,11 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                     border: '1px solid #e5e7eb',
                 }}
             >
+                {/* Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.10, pointerEvents: 'none' }}>
+                    <img src="/logo.png" alt="Watermark" className="object-contain" style={{ height: '70%', width: '70%' }} onError={(e) => e.target.style.display = 'none'} />
+                </div>
+
                 <div className="h-full flex flex-col" style={{ padding: `${padding * 0.7}px` }}>
                     {/* Header - Company Info */}
                     <div className="text-center" style={{
@@ -61,12 +66,17 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                         <h1 className="font-bold text-gray-800" style={{ fontSize: `${titleSize + 2}px` }}>
                             {companyInfo.name || 'M/S. RAJ TRAVELS'}
                         </h1>
-                        <p className="text-gray-500" style={{ fontSize: `${subtitleSize}px`, marginTop: `${padding * 0.15}px` }}>
-                            {companyInfo.phone || '+8801799-745020'} | {companyInfo.website || 'www.msrajtravels.com'}
-                        </p>
-                        <p className="text-gray-500" style={{ fontSize: `${subtitleSize}px` }}>
-                            {companyInfo.address || 'N/A'}
-                        </p>
+                        <div className="flex items-center justify-center" style={{ marginTop: `${padding * 0.15}px`, gap: `${padding * 0.2}px` }}>
+                            <span style={{ fontSize: `${subtitleSize}px` }}>🌐</span>
+                            <p className="text-gray-500" style={{ fontSize: `${subtitleSize}px` }}>
+                                {companyInfo.website || 'www.msrajtravels.com'}
+                            </p>
+                        </div>
+                        <div className="flex items-center justify-center" style={{ gap: `${padding * 0.2}px` }}>
+                            <p className="text-gray-500" style={{ fontSize: `${subtitleSize}px` }}>
+                                <img src="/location.png" alt="Location" style={{ height: `${Math.max(10, subtitleSize)}px`, width: `${Math.max(10, subtitleSize)}px` }} className="object-contain inline-block" onError={(e) => e.target.style.display = 'none'} /> {companyInfo.address || 'N/A'}
+                            </p>
+                        </div>
                     </div>
 
                     {/* Hotels Container */}
@@ -127,10 +137,24 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                             borderRadius: `${Math.max(6, 6 * scaleFactor)}px`,
                         }}>
                             <p style={{ fontSize: `${labelSize - 1}px`, color: '#b91c1c' }}>EMERGENCY CONTACT</p>
-                            <p className="font-bold" style={{ fontSize: `${titleSize + 1}px`, color: '#dc2626' }}>{companyInfo.emergencyContact || '+8802587738935'}</p>
+                            <p className="font-bold" style={{ fontSize: `${titleSize + 1}px`, color: '#dc2626' }}>{companyInfo.emergencyContact || '+8801799-745020'}</p>
+                            <div className="flex items-center justify-center" style={{ marginTop: `${padding * 0.3}px`, gap: `${padding * 0.4}px` }}>
+                                <div className="flex items-center" style={{ gap: `${padding * 0.15}px` }}>
+                                    <img src="/telephone.png" alt="Call" style={{ height: `${Math.max(8, textSize)}px`, width: `${Math.max(8, textSize)}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                                    <span style={{ fontSize: `${footerSize}px`, color: '#b91c1c' }}>Call</span>
+                                </div>
+                                <div className="flex items-center" style={{ gap: `${padding * 0.15}px` }}>
+                                    <img src="/whatsapp.png" alt="WhatsApp" style={{ height: `${Math.max(8, textSize)}px`, width: `${Math.max(8, textSize)}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                                    <span style={{ fontSize: `${footerSize}px`, color: '#25D366' }}>WhatsApp</span>
+                                </div>
+                                <div className="flex items-center" style={{ gap: `${padding * 0.15}px` }}>
+                                    <img src="/imo.png" alt="IMO" style={{ height: `${Math.max(8, textSize)}px`, width: `${Math.max(8, textSize)}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                                    <span style={{ fontSize: `${footerSize}px`, color: '#1C8ADB' }}>imo</span>
+                                </div>
+                            </div>
                         </div>
                         <div className="flex justify-between items-center" style={{ paddingTop: `${padding * 0.25}px` }}>
-                            <p style={{ fontSize: `${footerSize}px`, color: '#9ca3af' }}>Non-Transferable</p>
+                            <p style={{ fontSize: `${footerSize}px`, color: '#9ca3af' }}>{companyInfo.footerText || 'Non-Transferable'}</p>
                             <p style={{ fontSize: `${footerSize}px`, color: '#9ca3af' }}>Issued: {new Date().toLocaleDateString()}</p>
                         </div>
                     </div>
@@ -160,6 +184,11 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                 <div className="absolute bottom-0 left-0 border-b-4 border-l-4 border-orange-400 rounded-bl-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px`, borderColor: '#fb923c' }}></div>
                 <div className="absolute bottom-0 right-0 border-b-4 border-r-4 border-orange-400 rounded-br-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px`, borderColor: '#fb923c' }}></div>
 
+                {/* Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.12, pointerEvents: 'none' }}>
+                    <img src="/logo.png" alt="Watermark" className="object-contain" style={{ height: '65%', width: '65%' }} onError={(e) => e.target.style.display = 'none'} />
+                </div>
+
                 <div className="relative h-full flex flex-col items-center justify-center text-center" style={{ padding: `${padding}px`, gap: `${padding * 0.8}px` }}>
                     {size.name !== 'Standard Card' && size.name !== 'Custom Size' && (
                         <img src="/logo.png" alt="Logo" className="object-contain" style={{ height: `${logoSize}px`, width: `${logoSize}px` }} onError={(e) => e.target.style.display = 'none'} />
@@ -186,7 +215,7 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                     </div>
 
                     <p className="text-gray-500 mt-auto" style={{ fontSize: `${footerSize}px` }}>
-                        Non-Transferable | Issued: {new Date().toLocaleDateString()}
+                        {companyInfo.footerText || 'Non-Transferable'} | Issued: {new Date().toLocaleDateString()}
                     </p>
                 </div>
             </div>
@@ -206,6 +235,11 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                     borderColor: '#94a3b8',
                 }}
             >
+                {/* Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.08, pointerEvents: 'none' }}>
+                    <img src="/logo.png" alt="Watermark" className="object-contain" style={{ height: '75%', width: '75%' }} onError={(e) => e.target.style.display = 'none'} />
+                </div>
+
                 <div className="h-full flex flex-col" style={{ padding: `${padding}px` }}>
                     <div className="flex items-center justify-center" style={{ marginBottom: `${padding * 0.6}px`, gap: `${padding * 0.5}px` }}>
                         <div className="bg-slate-700 rounded flex items-center justify-center" style={{ width: `${clampSize(Math.round(28 * scaleFactor), 26, 30)}px`, height: `${clampSize(Math.round(28 * scaleFactor), 26, 30)}px`, flexShrink: 0, backgroundColor: '#334155' }}>
@@ -241,7 +275,10 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
                     </div>
 
                     <div className="text-center text-slate-500 border-t border-slate-300" style={{ fontSize: `${footerSize}px`, paddingTop: `${padding * 0.6}px`, color: '#64748b', borderColor: '#cbd5e1' }}>
-                        <span>Issue Date: {new Date().toLocaleDateString()}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>{companyInfo.footerText || 'Non-Transferable'}</span>
+                            <span>Issue Date: {new Date().toLocaleDateString()}</span>
+                        </div>
                     </div>
                 </div>
             </div>
