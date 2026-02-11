@@ -52,7 +52,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
     if (design === 'modern') {
         return (
             <div
-                className={`id-card-front relative overflow-hidden bg-gradient-to-br ${designStyle.gradient} border-2 ${designStyle.border} shadow-lg`}
+                className={`id-card-front relative overflow-hidden bg-linear-to-br ${designStyle.gradient} border-2 ${designStyle.border} shadow-lg`}
                 style={{
                     width: cardWidth,
                     height: cardHeight,
@@ -73,43 +73,72 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                 </div>
 
                 <div className="relative h-full flex flex-col" style={{ padding: `${padding}px` }}>
-                    <div className={`border-b ${designStyle.headerBorder}`} style={{ paddingBottom: `${padding * 0.6}px`, marginBottom: `${padding * 0.6}px` }}>
-                        <div className="flex items-center" style={{ gap: `${padding * 0.6}px` }}>
-                            <img src="/logo.png" alt="Logo" style={{ height: `${Math.max(40, headerLogoSize * 1.6)}px`, width: `${Math.max(40, headerLogoSize * 1.6)}px`, flexShrink: 0 }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
-                            <div className="flex-1">
-                                <h1 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>{companyInfo.name || 'M/S Raj Travel'}</h1>
-                                <p className={`${designStyle.subText} font-medium`} style={{ fontSize: `${subtitleSize}px` }}>Hajj License: {companyInfo.hlNumber || '0935'}</p>
+                    {isPortrait ? (
+                        // Portrait Layout - Centered vertical design
+                        <>
+                            <div className="text-center" style={{ marginBottom: `${padding * 0.2}px`, paddingBottom: `${padding * 0.3}px`, borderBottom: '1px solid #bfdbfe' }}>
+                                <div className="flex items-center justify-center" style={{ marginBottom: `${padding * 0.1}px` }}>
+                                    <img src="/logo.png" alt="Logo" style={{ height: `${Math.max(32, headerLogoSize * 1.2)}px`, width: `${Math.max(32, headerLogoSize * 1.2)}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                                </div>
+                                <h1 className="font-bold text-blue-600" style={{ fontSize: `${titleSize + 2}px`, lineHeight: '1.1', fontFamily: "'Hind Siliguri', sans-serif" }}>{companyInfo.nameBn || 'মেসার্স রাজ ট্রাভেলস্'}</h1>
+                                <h2 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px`, lineHeight: '1.2' }}>{companyInfo.name || 'M/S Raj Travels'}</h2>
+                                <p className={`${designStyle.subText} font-medium`} style={{ fontSize: `${subtitleSize}px`, lineHeight: '1.2' }}>Hajj License No: {companyInfo.hlNumber || '0935'}</p>
                             </div>
-                        </div>
-                    </div>
 
-                    <div className={`flex-1 flex ${isPortrait ? 'flex-col items-center' : 'items-center'}`} style={{ gap: `${padding}px` }}>
-                        <div className="flex-shrink-0">
-                            <Avatar className={`border-2 ${designStyle.avatarBorder} shadow-md`} style={{ height: `${avatarSize}px`, width: `${avatarSize}px`, borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <AvatarImage src={user?.avatar} alt={user?.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} font-semibold`} style={{ backgroundColor: '#dbeafe', color: '#1e40af', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
-                                    {getInitials(user?.firstName, user?.lastName)}
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
+                            <div className="flex-1 flex flex-col items-center justify-start" style={{ paddingTop: `${padding * 0.5}px` }}>
+                                <Avatar className={`border-4 ${designStyle.avatarBorder} shadow-lg`} style={{ height: `${Math.max(80, avatarSize * 1.1)}px`, width: `${Math.max(80, avatarSize * 1.1)}px`, marginBottom: `${padding * 0.2}px`, borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <AvatarImage src={user?.avatar} alt={user?.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} font-bold`} style={{ fontSize: `${Math.max(20, nameSize * 1.8)}px`, backgroundColor: '#dbeafe', color: '#1e40af', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+                                        {getInitials(user?.firstName, user?.lastName)}
+                                    </AvatarFallback>
+                                </Avatar>
 
-                        <div className={`flex-1 ${isPortrait ? 'text-center' : ''} min-w-0`} style={{ marginTop: isPortrait ? `${padding * 0.6}px` : '0' }}>
-                            <h2 className="font-bold text-gray-900 truncate" style={{ fontSize: `${nameSize}px` }}>{user?.fullName}</h2>
-                            <p className="text-gray-600 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px` }}>{user?.fullNameBn}</p>
-                            <div className="text-gray-700" style={{ marginTop: `${padding * 0.4}px`, display: 'flex', flexDirection: 'column', gap: `${padding * 0.2}px` }}>
-                                <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium">Passport:</span> {passport?.passportNumber}</p>
-                                {/* <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium">Phone:</span> {user?.phone}</p> */}
-                                <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium">NID:</span> {user?.nid}</p>
-                                <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium">DOB:</span> {user?.dateOfBirth}</p>
+                                <h3 className="font-bold text-gray-900 text-center truncate w-full" style={{ fontSize: `${nameSize}px`, marginBottom: `${padding * 0.3}px` }}>{user?.fullName}</h3>
+
+                                <div className="text-gray-700 w-full" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.15}px`, paddingLeft: `${padding * 0.5}px`, paddingRight: `${padding * 0.5}px` }}>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>PASSPORT NO</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{passport?.passportNumber}</span></div>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>FATHER'S NAME</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.fatherName}</span></div>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>NID/BIRTH</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.nid}</span></div>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>DATE OF BIRTH</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.dateOfBirth}</span></div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </>
+                    ) : (
+                        // Landscape Layout - Horizontal design
+                        <>
+                            <div className={`border-b ${designStyle.headerBorder}`} style={{ paddingBottom: `${padding * 0.6}px`, marginBottom: `${padding * 0.6}px` }}>
+                                <div className="flex items-center" style={{ gap: `${padding * 0.6}px` }}>
+                                    <img src="/logo.png" alt="Logo" style={{ height: `${Math.max(40, headerLogoSize * 1.6)}px`, width: `${Math.max(40, headerLogoSize * 1.6)}px`, flexShrink: 0 }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                                    <div className="flex-1">
+                                        <h1 className="font-bold text-blue-600" style={{ fontSize: `${titleSize + 2}px`, fontFamily: "'Hind Siliguri', sans-serif" }}>{companyInfo.nameBn || 'মেসার্স রাজ ট্রাভেলস্'}</h1>
+                                        <h2 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>{companyInfo.name || 'M/S. RAJ TRAVELS'}</h2>
+                                        <p className={`${designStyle.subText} font-medium`} style={{ fontSize: `${subtitleSize}px` }}>Hajj License No: {companyInfo.hlNumber || '0935'}</p>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div className={`border-t ${designStyle.headerBorder} flex items-center justify-between`} style={{ paddingTop: `${padding * 0.6}px`, marginTop: `${padding * 0.6}px` }}>
-                        <img src="/kaaba2.png" alt="Makkah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
-                        <img src="/bd.png" alt="Bangladesh" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
-                        <img src="/madinah2.png" alt="Madinah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
-                    </div>
+                            <div className="flex-1 flex items-center" style={{ gap: `${padding}px` }}>
+                                <div className="shrink-0">
+                                    <Avatar className={`border-2 ${designStyle.avatarBorder} shadow-md`} style={{ height: `${avatarSize}px`, width: `${avatarSize}px`, borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <AvatarImage src={user?.avatar} alt={user?.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} font-semibold`} style={{ backgroundColor: '#dbeafe', color: '#1e40af', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+                                            {getInitials(user?.firstName, user?.lastName)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </div>
+
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-gray-700" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.15}px` }}>
+                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>NAME</span>: {user?.fullName}</p>
+                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>PASSPORT NO</span>: {passport?.passportNumber}</p>
+                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>FATHER'S NAME</span>: {user?.fatherName}</p>
+                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>NID/BIRTH REG NO</span>: {user?.nid}</p>
+                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>DATE OF BIRTH</span>: {user?.dateOfBirth}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         )
@@ -153,7 +182,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                         </Avatar>
 
                         <h2 className="font-extrabold text-gray-900" style={{ fontSize: `${Math.max(12, nameSize + 1)}px` }}>{user?.fullName}</h2>
-                        <p className="text-gray-700" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.6}px` }}>{user?.fullNameBn}</p>
+                        <p className="text-gray-700" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.6}px`, fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
 
                         <div className="grid grid-cols-2 text-gray-700" style={{ gap: `${padding * 0.3}px ${padding * 0.6}px`, fontSize: `${subtitleSize}px`, paddingLeft: `${padding * 0.8}px`, paddingRight: `${padding * 0.8}px` }}>
                             <div className="text-right font-medium">Passport:</div>
@@ -181,7 +210,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                         </div>
 
                         <div className="flex-1 flex items-center" style={{ gap: `${padding}px` }}>
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                                 <Avatar className={`border-4 ${designStyle.avatarBorder} shadow-xl`} style={{ height: `${avatarSize}px`, width: `${avatarSize}px`, borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <AvatarImage src={user?.avatar} alt={user?.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} font-bold`} style={{ fontSize: `${Math.max(20, nameSize * 1.8)}px`, backgroundColor: '#fef3c7', color: '#92400e', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
@@ -192,7 +221,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
 
                             <div className="flex-1 min-w-0">
                                 <h2 className="font-extrabold text-gray-900 truncate" style={{ fontSize: `${nameSize}px` }}>{user?.fullName}</h2>
-                                <p className="text-gray-700 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.4}px` }}>{user?.fullNameBn}</p>
+                                <p className="text-gray-700 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.4}px`, fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
                                 <div className="text-gray-700" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.2}px`, fontSize: `${infoSize}px` }}>
                                     <p className="truncate"><span className="font-semibold">Passport:</span> {passport?.passportNumber}</p>
                                     <p className="truncate"><span className="font-semibold">NID:</span> {user?.nid}</p>
@@ -250,7 +279,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                             </Avatar>
 
                             <h2 className="font-bold text-white" style={{ fontSize: `${Math.max(12, nameSize + 1)}px`, color: '#ffffff' }}>{user?.fullName}</h2>
-                            <p className="text-gray-300" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.6}px`, color: '#d1d5db' }}>{user?.fullNameBn}</p>
+                            <p className="text-gray-300" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.6}px`, color: '#d1d5db', fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
 
                             <div className="grid grid-cols-2 text-gray-300" style={{ gap: `${padding * 0.3}px ${padding * 0.6}px`, fontSize: `${subtitleSize}px`, paddingLeft: `${padding * 0.8}px`, paddingRight: `${padding * 0.8}px`, color: '#d1d5db' }}>
                                 <div className="text-right font-medium text-cyan-400" style={{ color: '#22d3ee' }}>Passport:</div>
@@ -264,7 +293,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                     ) : (
                         // Landscape Layout - Side by side
                         <div className="flex-1 flex items-center" style={{ gap: `${padding}px` }}>
-                            <Avatar className={`border-2 ${designStyle.avatarBorder} shadow-lg flex-shrink-0`} style={{ height: `${avatarSize}px`, width: `${avatarSize}px`, borderColor: '#22d3ee', borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Avatar className={`border-2 ${designStyle.avatarBorder} shadow-lg shrink-0`} style={{ height: `${avatarSize}px`, width: `${avatarSize}px`, borderColor: '#22d3ee', borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <AvatarImage src={user?.avatar} alt={user?.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 <AvatarFallback className="bg-slate-600 text-cyan-300 font-bold" style={{ fontSize: `${Math.max(20, nameSize * 1.8)}px`, backgroundColor: '#475569', color: '#67e8f9', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
                                     {getInitials(user?.firstName, user?.lastName)}
@@ -273,7 +302,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
 
                             <div className="flex-1 min-w-0">
                                 <h2 className="font-bold text-white" style={{ fontSize: `${nameSize}px`, color: '#ffffff' }}>{user?.fullName}</h2>
-                                <p className="text-gray-300 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.4}px`, color: '#d1d5db' }}>{user?.fullNameBn}</p>
+                                <p className="text-gray-300 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.4}px`, color: '#d1d5db', fontFamily: "'Hind Siliguri', sans-serif" }}>{user?.fullNameBn}</p>
                                 <div className="text-gray-300" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.2}px`, fontSize: `${textSize}px`, color: '#d1d5db' }}>
                                     <p className="truncate"><span className="text-cyan-400" style={{ color: '#22d3ee' }}>Passport:</span> {passport?.passportNumber}</p>
                                     <p className="truncate"><span className="text-cyan-400" style={{ color: '#22d3ee' }}>NID:</span> {user?.nid}</p>

@@ -602,10 +602,10 @@ export default function PackagePilgrims() {
                     packageInfo={packageInfo}
                     companyInfo={{
                         name: 'M/S Raj Travels',
-                        phone: '+880 1234-567890',
+                        phone: '+8801799745020',
                         email: 'info@msrajtravel.com',
                         address: '189/1, Nayagola, Nayagola Hat-6300, Chapainawaganj, Rajshahi, Dhaka, Bangladesh',
-                        emergencyContact: '+880 9876-543210',
+                        emergencyContact: '+8802587738935',
                         hajjLicense: '0935',
                     }}
                 />

@@ -36,91 +36,103 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
     const headerIconSize = clampSize(Math.round(titleSize * 2.2), 22, 28)
     const headerIconSizeLg = clampSize(Math.round(titleSize * 2.6), 26, 32)
 
-    // Modern Design Layout
+    // Modern Design Layout - Clean Minimal Design
     if (design === 'modern') {
-        // Check if it's landscape with standard or custom size
-        const isCompactLayout = !isPortrait && (size.name === 'Standard Card' || size.name === 'Custom Size')
+        const iconSize = Math.max(22, Math.round(22 * scaleFactor))
 
         return (
             <div
-                className={`id-card-back relative overflow-hidden bg-gradient-to-br ${designStyle.gradient} border-2 ${designStyle.border} shadow-lg`}
+                className="id-card-back relative overflow-hidden"
                 style={{
                     width: cardWidth,
                     height: cardHeight,
-                    borderRadius: `${Math.max(12, 12 * scaleFactor)}px`,
-                    backgroundImage: 'linear-gradient(to bottom right, #f0fdf4, #ffffff, #f0fdf4)',
-                    borderColor: '#bbf7d0',
+                    borderRadius: `${Math.max(10, 10 * scaleFactor)}px`,
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
                 }}
             >
-                <div className="absolute inset-0 opacity-5">
-                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <pattern id={`grid-back-${design}`} width="20" height="20" patternUnits="userSpaceOnUse">
-                                <circle cx="10" cy="10" r="1" fill={designStyle.patternColor} />
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill={`url(#grid-back-${design})`} />
-                    </svg>
-                </div>
+                <div className="h-full flex flex-col" style={{ padding: `${padding * 0.7}px` }}>
+                    {/* Header - Company Info */}
+                    <div className="text-center" style={{
+                        paddingBottom: `${padding * 0.4}px`,
+                        marginBottom: `${padding * 0.4}px`,
+                        borderBottom: '1px solid #e5e7eb'
+                    }}>
+                        <h1 className="font-bold text-gray-800" style={{ fontSize: `${titleSize + 2}px` }}>
+                            {companyInfo.name || 'M/S. RAJ TRAVELS'}
+                        </h1>
+                        <p className="text-gray-500" style={{ fontSize: `${subtitleSize}px`, marginTop: `${padding * 0.15}px` }}>
+                            {companyInfo.phone || '+8801799-745020'} | {companyInfo.website || 'www.msrajtravels.com'}
+                        </p>
+                        <p className="text-gray-500" style={{ fontSize: `${subtitleSize}px` }}>
+                            {companyInfo.address || 'N/A'}
+                        </p>
+                    </div>
 
-                <div className="relative h-full flex flex-col" style={{ padding: `${padding}px` }}>
-                    {isCompactLayout ? (
-                        <div className={`border-b ${designStyle.headerBorder}`} style={{ paddingBottom: `${padding * 0.6}px`, marginBottom: `${padding * 0.6}px` }}>
-                            <div className="flex items-center" style={{ gap: `${padding * 0.6}px` }}>
-                                <img src="/logo.png" alt="Logo" style={{ height: `${Math.max(36, titleSize * 2.8)}px`, width: `${Math.max(36, titleSize * 2.8)}px`, flexShrink: 0 }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
-                                <div className="flex-1">
-                                    <h2 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>
-                                        {companyInfo.name || 'M/S Raj Travels'}
-                                    </h2>
-                                    <p className="text-gray-600" style={{ fontSize: `${subtitleSize}px`, marginTop: `${padding * 0.1}px` }}>
-                                        {companyInfo.phone || '+880 1234-567890'} | {companyInfo.email || 'info@msrajtravel.com'}
-                                    </p>
+                    {/* Hotels Container */}
+                    <div className="flex-1 flex flex-col justify-center" style={{ gap: `${padding * 0.5}px` }}>
+                        {/* Makkah Hotel Section */}
+                        <div style={{
+                            border: '1px solid #d1fae5',
+                            borderRadius: `${Math.max(6, 6 * scaleFactor)}px`,
+                            overflow: 'hidden'
+                        }}>
+                            <div className="flex items-center" style={{
+                                backgroundColor: '#ecfdf5',
+                                padding: `${padding * 0.25}px ${padding * 0.4}px`,
+                                borderBottom: '1px solid #d1fae5'
+                            }}>
+                                <img src="/kaaba2.png" alt="Makkah" style={{ height: `${iconSize}px`, width: `${iconSize}px`, marginRight: `${padding * 0.3}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                                <span className="font-medium" style={{ fontSize: `${labelSize}px`, color: '#047857' }}>MAKKAH HOTEL</span>
+                            </div>
+                            <div style={{ backgroundColor: '#ffffff', padding: `${padding * 0.3}px ${padding * 0.4}px` }}>
+                                <div style={{ fontSize: `${textSize}px`, lineHeight: '1.4', color: '#374151' }}>
+                                    <p><span className="font-medium">Hotel:</span> {companyInfo.makkahHotelName || 'N/A'}</p>
+                                    <p><span className="font-medium">Address:</span> {companyInfo.makkahHotelAddress || 'N/A'}</p>
+                                    <p><span className="font-medium">Contact:</span> {companyInfo.makkahHotelContact || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
-                    ) : (
-                        <div className={`border-b ${designStyle.headerBorder} text-center`} style={{ paddingBottom: `${padding * 0.6}px`, marginBottom: `${padding * 0.6}px` }}>
-                            <div className="flex flex-col items-center" style={{ gap: `${padding * 0.3}px` }}>
-                                <img src="/logo.png" alt="Logo" style={{ height: `${Math.max(40, titleSize * 3)}px`, width: `${Math.max(40, titleSize * 3)}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
-                                <div>
-                                    <h2 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>
-                                        {companyInfo.name || 'M/S Raj Travels'}
-                                    </h2>
-                                    <p className="text-gray-600" style={{ fontSize: `${subtitleSize}px`, marginTop: `${padding * 0.2}px` }}>
-                                        {companyInfo.phone || '+880 1234-567890'}
-                                    </p>
-                                    <p className="text-gray-600" style={{ fontSize: `${subtitleSize}px` }}>
-                                        {companyInfo.email || 'info@msrajtravel.com'}
-                                    </p>
+
+                        {/* Madina Hotel Section */}
+                        <div style={{
+                            border: '1px solid #ede9fe',
+                            borderRadius: `${Math.max(6, 6 * scaleFactor)}px`,
+                            overflow: 'hidden'
+                        }}>
+                            <div className="flex items-center" style={{
+                                backgroundColor: '#f5f3ff',
+                                padding: `${padding * 0.25}px ${padding * 0.4}px`,
+                                borderBottom: '1px solid #ede9fe'
+                            }}>
+                                <img src="/madinah2.png" alt="Madina" style={{ height: `${iconSize}px`, width: `${iconSize}px`, marginRight: `${padding * 0.3}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                                <span className="font-medium" style={{ fontSize: `${labelSize}px`, color: '#6d28d9' }}>MADINA HOTEL</span>
+                            </div>
+                            <div style={{ backgroundColor: '#ffffff', padding: `${padding * 0.3}px ${padding * 0.4}px` }}>
+                                <div style={{ fontSize: `${textSize}px`, lineHeight: '1.4', color: '#374151' }}>
+                                    <p><span className="font-medium">Hotel:</span> {companyInfo.madinaHotelName || 'N/A'}</p>
+                                    <p><span className="font-medium">Address:</span> {companyInfo.madinaHotelAddress || 'N/A'}</p>
+                                    <p><span className="font-medium">Contact:</span> {companyInfo.madinaHotelContact || 'N/A'}</p>
                                 </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="flex-1" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.6}px` }}>
-                        <div>
-                            <h3 className="font-semibold text-gray-800" style={{ fontSize: `${labelSize}px`, marginBottom: `${padding * 0.3}px` }}>Address:</h3>
-                            <div className={`${designStyle.sectionBg} rounded border ${designStyle.sectionBorder}`} style={{ padding: `${padding * 0.4}px` }}>
-                                <p className="text-gray-700" style={{ fontSize: `${textSize}px` }}>
-                                    {companyInfo.address || 'Dhaka, Bangladesh'}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold text-gray-800" style={{ fontSize: `${labelSize}px`, marginBottom: `${padding * 0.3}px` }}>Emergency Contact:</h3>
-                            <div className={`${designStyle.emergencyBg} rounded border ${designStyle.emergencyBorder}`} style={{ padding: `${padding * 0.4}px` }}>
-                                <p className="text-gray-700" style={{ fontSize: `${textSize}px` }}>
-                                    <span className="font-medium">Phone:</span> {companyInfo?.emergencyContact || 'N/A'}
-                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className={`border-t ${designStyle.headerBorder}`} style={{ paddingTop: `${padding * 0.6}px`, marginTop: `${padding * 0.6}px` }}>
-                        <p className="text-gray-500 text-center" style={{ fontSize: `${footerSize}px` }}>
-                            This card is non-transferable | Issue Date: {new Date().toLocaleDateString()}
-                        </p>
+                    {/* Emergency Contact & Footer */}
+                    <div style={{ marginTop: `${padding * 0.4}px` }}>
+                        <div className="text-center" style={{
+                            backgroundColor: '#fef2f2',
+                            border: '1px solid #fecaca',
+                            padding: `${padding * 0.35}px`,
+                            borderRadius: `${Math.max(6, 6 * scaleFactor)}px`,
+                        }}>
+                            <p style={{ fontSize: `${labelSize - 1}px`, color: '#b91c1c' }}>EMERGENCY CONTACT</p>
+                            <p className="font-bold" style={{ fontSize: `${titleSize + 1}px`, color: '#dc2626' }}>{companyInfo.emergencyContact || '+8802587738935'}</p>
+                        </div>
+                        <div className="flex justify-between items-center" style={{ paddingTop: `${padding * 0.25}px` }}>
+                            <p style={{ fontSize: `${footerSize}px`, color: '#9ca3af' }}>Non-Transferable</p>
+                            <p style={{ fontSize: `${footerSize}px`, color: '#9ca3af' }}>Issued: {new Date().toLocaleDateString()}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,7 +182,7 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
 
                     <div className={`${designStyle.emergencyBg} rounded-xl border-2 ${designStyle.emergencyBorder} w-full`} style={{ padding: `${padding * 0.6}px` }}>
                         <h3 className="font-bold text-red-800" style={{ fontSize: `${labelSize}px`, marginBottom: `${padding * 0.3}px` }}>Emergency Contact</h3>
-                        <p className="text-gray-700" style={{ fontSize: `${textSize}px` }}>{companyInfo.emergencyContact || 'N/A'}</p>
+                        <p className="text-gray-700" style={{ fontSize: `${textSize}px` }}>{companyInfo.emergencyContact || '+8802587738935'}</p>
                     </div>
 
                     <p className="text-gray-500 mt-auto" style={{ fontSize: `${footerSize}px` }}>
@@ -224,7 +236,7 @@ export function IDCardBack({ pilgrim, packageInfo, size, orientation = 'landscap
 
                         <div className="bg-slate-700 rounded-lg" style={{ padding: `${padding * 0.6}px`, backgroundColor: '#334155' }}>
                             <p className="font-bold text-yellow-400" style={{ fontSize: `${textSize}px`, color: '#facc15' }}>Emergency Contact</p>
-                            <p className="text-white" style={{ fontSize: `${textSize}px`, color: '#ffffff' }}>{companyInfo.emergencyContact || 'N/A'}</p>
+                            <p className="text-white" style={{ fontSize: `${textSize}px`, color: '#ffffff' }}>{companyInfo.emergencyContact || '+8802587738935'}</p>
                         </div>
                     </div>
 

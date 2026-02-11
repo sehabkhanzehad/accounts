@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Printer, CreditCard } from 'lucide-react'
 import { IDCardFront } from './IDCardFront'
@@ -30,9 +31,28 @@ const getDesignDescriptionBn = (design) => {
 export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInfo, companyInfo }) {
     const { t } = useI18n()
     const [selectedSize, setSelectedSize] = useState('standard')
-    const [cardOrientation, setCardOrientation] = useState('landscape')
+    const [cardOrientation, setCardOrientation] = useState('portrait')
     const [selectedDesign, setSelectedDesign] = useState('modern')
     const printMode = 'double'
+
+    // Hotel info state
+    const [makkahHotelName, setMakkahHotelName] = useState('')
+    const [makkahHotelAddress, setMakkahHotelAddress] = useState('')
+    const [makkahHotelContact, setMakkahHotelContact] = useState('')
+    const [madinaHotelName, setMadinaHotelName] = useState('')
+    const [madinaHotelAddress, setMadinaHotelAddress] = useState('')
+    const [madinaHotelContact, setMadinaHotelContact] = useState('')
+
+    // Merge user-entered hotel info with companyInfo
+    const mergedCompanyInfo = {
+        ...companyInfo,
+        makkahHotelName: makkahHotelName || companyInfo?.makkahHotelName,
+        makkahHotelAddress: makkahHotelAddress || companyInfo?.makkahHotelAddress,
+        makkahHotelContact: makkahHotelContact || companyInfo?.makkahHotelContact,
+        madinaHotelName: madinaHotelName || companyInfo?.madinaHotelName,
+        madinaHotelAddress: madinaHotelAddress || companyInfo?.madinaHotelAddress,
+        madinaHotelContact: madinaHotelContact || companyInfo?.madinaHotelContact,
+    }
 
     const handlePrint = () => {
         const size = IDCardSizes[selectedSize]
@@ -149,6 +169,9 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
             <head>
                 <meta charset="utf-8">
                 <title>Pilgrim ID Cards - ${pilgrims.length} Card(s)</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
                 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
                 <style>${css}</style>
             </head>
@@ -192,7 +215,7 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent side="right" className="w-full sm:max-w-7xl p-0 flex flex-col bg-background">
+            <SheetContent side="right" className="w-full sm:max-w-7xl p-0 flex flex-col bg-background font-bengali">
                 <SheetHeader className="px-6 py-4 border-b border-border">
                     <SheetTitle className="text-foreground">{t({ en: "Print ID Cards", bn: "আইডি কার্ড প্রিন্ট করুন" })}</SheetTitle>
                     <SheetDescription className="text-muted-foreground">
@@ -286,39 +309,89 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                                     </div>
                                 </RadioGroup>
                             </div>
+
+                            {/* Makkah Hotel Info */}
+                            <div className="border-t pt-4">
+                                <Label className="text-sm font-medium mb-3 block text-emerald-600">
+                                    {t({ en: "Makkah Hotel", bn: "মক্কা হোটেল" })}
+                                </Label>
+                                <div className="space-y-2">
+                                    <Input
+                                        placeholder={t({ en: "Hotel Name", bn: "হোটেলের নাম" })}
+                                        value={makkahHotelName}
+                                        onChange={(e) => setMakkahHotelName(e.target.value)}
+                                        className="h-8 text-sm"
+                                    />
+                                    <Input
+                                        placeholder={t({ en: "Address", bn: "ঠিকানা" })}
+                                        value={makkahHotelAddress}
+                                        onChange={(e) => setMakkahHotelAddress(e.target.value)}
+                                        className="h-8 text-sm"
+                                    />
+                                    <Input
+                                        placeholder={t({ en: "Contact", bn: "যোগাযোগ" })}
+                                        value={makkahHotelContact}
+                                        onChange={(e) => setMakkahHotelContact(e.target.value)}
+                                        className="h-8 text-sm"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Madina Hotel Info */}
+                            <div className="border-t pt-4">
+                                <Label className="text-sm font-medium mb-3 block text-purple-600">
+                                    {t({ en: "Madina Hotel", bn: "মদিনা হোটেল" })}
+                                </Label>
+                                <div className="space-y-2">
+                                    <Input
+                                        placeholder={t({ en: "Hotel Name", bn: "হোটেলের নাম" })}
+                                        value={madinaHotelName}
+                                        onChange={(e) => setMadinaHotelName(e.target.value)}
+                                        className="h-8 text-sm"
+                                    />
+                                    <Input
+                                        placeholder={t({ en: "Address", bn: "ঠিকানা" })}
+                                        value={madinaHotelAddress}
+                                        onChange={(e) => setMadinaHotelAddress(e.target.value)}
+                                        className="h-8 text-sm"
+                                    />
+                                    <Input
+                                        placeholder={t({ en: "Contact", bn: "যোগাযোগ" })}
+                                        value={madinaHotelContact}
+                                        onChange={(e) => setMadinaHotelContact(e.target.value)}
+                                        className="h-8 text-sm"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Right Panel - Preview */}
                     <div className="flex-1 overflow-y-auto bg-muted/30 dark:bg-muted/20 p-6">
-                        <div className="max-w-xl mx-auto">
+                        <div className="max-w-4xl mx-auto">
                             <div className="space-y-6">
                                 {pilgrims.slice(0, 1).map((pilgrim, index) => (
-                                    <div key={index} className="space-y-4">
-                                        <div className="flex justify-center">
-                                            <div id={`id-card-front-${index}`} className="shadow-2xl ring-1 ring-black/5 dark:ring-white/10 rounded-xl">
-                                                <IDCardFront
+                                    <div key={index} className={`flex justify-center items-start gap-6 ${cardOrientation === 'portrait' ? 'flex-row' : 'flex-col'}`}>
+                                        <div id={`id-card-front-${index}`} className="shadow-2xl ring-1 ring-black/5 dark:ring-white/10 rounded-xl">
+                                            <IDCardFront
+                                                pilgrim={pilgrim}
+                                                packageInfo={packageInfo}
+                                                size={size}
+                                                orientation={cardOrientation}
+                                                design={selectedDesign}
+                                                companyInfo={mergedCompanyInfo}
+                                            />
+                                        </div>
+                                        {printMode === 'double' && (
+                                            <div id={`id-card-back-${index}`} className="shadow-2xl ring-1 ring-black/5 dark:ring-white/10 rounded-xl">
+                                                <IDCardBack
                                                     pilgrim={pilgrim}
                                                     packageInfo={packageInfo}
                                                     size={size}
                                                     orientation={cardOrientation}
                                                     design={selectedDesign}
-                                                    companyInfo={companyInfo}
+                                                    companyInfo={mergedCompanyInfo}
                                                 />
-                                            </div>
-                                        </div>
-                                        {printMode === 'double' && (
-                                            <div className="flex justify-center">
-                                                <div id={`id-card-back-${index}`} className="shadow-2xl ring-1 ring-black/5 dark:ring-white/10 rounded-xl">
-                                                    <IDCardBack
-                                                        pilgrim={pilgrim}
-                                                        packageInfo={packageInfo}
-                                                        size={size}
-                                                        orientation={cardOrientation}
-                                                        design={selectedDesign}
-                                                        companyInfo={companyInfo}
-                                                    />
-                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -337,7 +410,7 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                                             size={size}
                                             orientation={cardOrientation}
                                             design={selectedDesign}
-                                            companyInfo={companyInfo}
+                                            companyInfo={mergedCompanyInfo}
                                         />
                                     </div>
                                     {printMode === 'double' && (
@@ -348,7 +421,7 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                                                 size={size}
                                                 orientation={cardOrientation}
                                                 design={selectedDesign}
-                                                companyInfo={companyInfo}
+                                                companyInfo={mergedCompanyInfo}
                                             />
                                         </div>
                                     )}
